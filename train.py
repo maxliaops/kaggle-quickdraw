@@ -42,8 +42,8 @@ def evaluate(model, data_loader, criterion):
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
 
-            prediction_logits = model(images)
-            loss = criterion(prediction_logits, categories)
+            predictions = torch.sigmoid(model(images))
+            loss = criterion(predictions, categories)
 
             loss_sum += loss.item()
 
@@ -94,10 +94,10 @@ def main():
 
     train_data = TrainData(input_dir)
 
-    train_set = TrainDataset(train_data.train_set_df, image_size_target, 1000)
+    train_set = TrainDataset(train_data.train_set_df, image_size_target)
     train_set_data_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
-    val_set = TrainDataset(train_data.val_set_df, image_size_target, 1000)
+    val_set = TrainDataset(train_data.val_set_df, image_size_target)
     val_set_data_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=2)
 
     model = create_model(type=model_type).to(device)
@@ -145,8 +145,8 @@ def main():
 
     train_start_time = time.time()
 
-    if loss_type == "bce":
-        criterion = nn.BCEWithLogitsLoss()
+    if loss_type == "cce":
+        criterion = nn.CrossEntropyLoss()
     else:
         raise Exception("Unsupported loss type: '{}".format(loss_type))
 
@@ -177,8 +177,8 @@ def main():
                     batch[0].to(device, non_blocking=True), \
                     batch[1].to(device, non_blocking=True)
 
-                prediction_logits = model(images)
-                loss = criterion(prediction_logits, categories)
+                predictions = torch.sigmoid(model(images))
+                loss = criterion(predictions, categories)
                 loss.backward()
 
                 with torch.no_grad():
@@ -289,7 +289,7 @@ if __name__ == "__main__":
     argparser.add_argument("--model", default="resnet")
     argparser.add_argument("--patience", default=30, type=int)
     argparser.add_argument("--optimizer", default="adam")
-    argparser.add_argument("--loss", default="bce")
+    argparser.add_argument("--loss", default="cce")
     argparser.add_argument("--sgdr_cycle_epochs", default=20, type=int)
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=3, type=int)

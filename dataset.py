@@ -44,11 +44,10 @@ class TrainData:
 
 
 class TrainDataset(Dataset):
-    def __init__(self, df, image_size, category_count):
+    def __init__(self, df, image_size):
         super().__init__()
         self.df = df
         self.image_size = image_size
-        self.category_count = category_count
 
     def __len__(self):
         return len(self.df)
@@ -58,7 +57,7 @@ class TrainDataset(Dataset):
         category = self.df.category.values[index]
 
         image = image_to_tensor(image)
-        category = category_to_tensor(category, self.category_count)
+        category = category_to_tensor(category)
 
         image_mean = 0.0
         image_stdev = 1.0
@@ -81,7 +80,5 @@ def image_to_tensor(image):
     return torch.from_numpy((image / 255.)).float()
 
 
-def category_to_tensor(category, category_count):
-    category_array = np.zeros(category_count)
-    category_array[category] = 1
-    return torch.from_numpy(np.asarray(category_array)).float()
+def category_to_tensor(category):
+    return torch.tensor(category.item()).long()
