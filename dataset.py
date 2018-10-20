@@ -13,7 +13,9 @@ from utils import draw_it
 class TrainData:
     def __init__(self, data_dir):
         category_dfs = []
-        for data_file in glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir)):
+        data_files = sorted(glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir)))
+        for i, data_file in enumerate(data_files):
+            print("[{:03d}/{:03d}] reading the data file '{}'".format(i, len(data_files), data_file))
             category_df = pd.read_csv(
                 data_file,
                 index_col="key_id",

@@ -74,7 +74,7 @@ def main():
     output_dir = args.output_dir
     image_size_target = args.image_size
     batch_size = args.batch_size
-    batch_iters = args.batch_iters
+    batch_iterations = args.batch_iterations
     num_workers = args.num_workers
     epochs_to_train = args.epochs
     max_epoch_iterations = args.max_epoch_iterations
@@ -103,14 +103,14 @@ def main():
     model = create_model(type=model_type).to(device)
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
 
-    epoch_iterations = ceil(len(train_set) / (batch_size * batch_iters))
+    epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
     if max_epoch_iterations > 0:
         epoch_iterations = min(epoch_iterations, max_epoch_iterations)
 
     print("train_set_samples: {}, val_set_samples: {}, samples_per_epoch: {}".format(
         len(train_set),
         len(val_set),
-        min(len(train_set), epoch_iterations * batch_size * batch_iters)),
+        min(len(train_set), epoch_iterations * batch_size * batch_iterations)),
         flush=True)
     print()
 
@@ -151,7 +151,6 @@ def main():
         raise Exception("Unsupported loss type: '{}".format(loss_type))
 
     for epoch in range(epochs_to_train):
-        print(".")
         epoch_start_time = time.time()
 
         model.train()
@@ -161,7 +160,6 @@ def main():
         train_set_data_loader_iter = iter(train_set_data_loader)
 
         for _ in range(epoch_iterations):
-            print("-")
             lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
@@ -169,7 +167,7 @@ def main():
             batch_loss_sum = 0.0
 
             batch_iter_count = 0
-            for _ in range(batch_iters):
+            for _ in range(batch_iterations):
                 try:
                     batch = next(train_set_data_loader_iter)
                 except StopIteration:
@@ -282,7 +280,7 @@ if __name__ == "__main__":
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=1, type=int)
-    argparser.add_argument("--batch_iters", default=32, type=int)
+    argparser.add_argument("--batch_iterations", default=32, type=int)
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--lr_min", default=0.0001, type=float)
     argparser.add_argument("--lr_max", default=0.001, type=float)
