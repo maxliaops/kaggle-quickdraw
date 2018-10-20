@@ -13,7 +13,7 @@ from utils import draw_it
 class TrainData:
     def __init__(self, data_dir):
         category_dfs = []
-        for data_file in glob.glob("{}/train_simplified_shard_0/owl*.csv".format(data_dir)):
+        for data_file in glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir)):
             category_df = pd.read_csv(
                 data_file,
                 index_col="key_id",
