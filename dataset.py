@@ -25,9 +25,6 @@ class TrainData:
 
         df["category"] = [categories.index(word) for word in df.word]
 
-        print("min category: {}".format(df.category.min()))
-        print("max category: {}".format(df.category.max()))
-
         train_set_ids, val_set_ids = train_test_split(
             df.index,
             test_size=0.001,
