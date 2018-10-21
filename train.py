@@ -12,10 +12,10 @@ import torch.optim as optim
 from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
-from torchvision.models.resnet import resnet34
 
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
+from models import ResNet34, SimpleCnn
 from utils import get_learning_rate
 
 cudnn.enabled = True
@@ -26,7 +26,9 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def create_model(type):
     if type == "resnet":
-        model = resnet34(pretrained=True)
+        model = ResNet34()
+    elif type == "cnn":
+        model = SimpleCnn()
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
@@ -297,7 +299,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
-    argparser.add_argument("--image_size", default=224, type=int)
+    argparser.add_argument("--image_size", default=64, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=32, type=int)
@@ -308,7 +310,7 @@ if __name__ == "__main__":
     argparser.add_argument("--lr_max", default=0.001, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
     argparser.add_argument("--lr_max_decay", default=1.0, type=float)
-    argparser.add_argument("--model", default="resnet")
+    argparser.add_argument("--model", default="cnn")
     argparser.add_argument("--patience", default=30, type=int)
     argparser.add_argument("--optimizer", default="adam")
     argparser.add_argument("--loss", default="cce")
