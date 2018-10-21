@@ -72,7 +72,7 @@ class TrainDataset(Dataset):
 
     def image_to_tensor(self, image):
         image = np.expand_dims(image, 0)
-        image = np.repeat(image, 3, 0)
+        # image = np.repeat(image, 3, 0)
         return torch.from_numpy((image / 255.)).float()
 
     def category_to_tensor(self, category):

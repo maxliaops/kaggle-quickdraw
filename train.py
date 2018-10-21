@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
-from models import ResNet34, SimpleCnn
+from models import ResNet34, SimpleCnn, SimpleCnn2
 from utils import get_learning_rate
 
 cudnn.enabled = True
@@ -24,11 +24,13 @@ cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def create_model(type, num_classes):
+def create_model(type, input_size, num_classes):
     if type == "resnet":
         model = ResNet34()
     elif type == "cnn":
-        model = SimpleCnn(num_classes)
+        model = SimpleCnn(input_size, num_classes)
+    elif type == "cnn2":
+        model = SimpleCnn2(input_size, num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
@@ -80,7 +82,7 @@ def main():
 
     input_dir = args.input_dir
     output_dir = args.output_dir
-    image_size_target = args.image_size
+    image_size = args.image_size
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
     num_loaders = args.num_loaders
@@ -105,17 +107,17 @@ def main():
 
     train_data = TrainData(input_dir, num_loaders)
 
-    train_set = TrainDataset(train_data.train_set_df, image_size_target)
+    train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
-    val_set = TrainDataset(train_data.val_set_df, image_size_target)
+    val_set = TrainDataset(train_data.val_set_df, image_size)
     val_set_data_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=2)
 
     load_end_time = time.time()
     print()
     print("Load time: %s" % str(datetime.timedelta(seconds=load_end_time - load_start_time)))
 
-    model = create_model(type=model_type, num_classes=len(train_data.categories)).to(device)
+    model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
 
     epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
