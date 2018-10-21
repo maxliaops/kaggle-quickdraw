@@ -33,7 +33,7 @@ def create_model(type):
 def evaluate(model, data_loader, criterion):
     model.eval()
 
-    loss_sum_tensor = torch.tensor(0.0).float()
+    loss_sum_tensor = torch.tensor(0.0).float().to(device, non_blocking=True)
     step_count = 0
 
     with torch.no_grad():
@@ -161,18 +161,16 @@ def main():
 
         model.train()
 
-        train_loss_sum = 0.0
-
         train_set_data_loader_iter = iter(train_set_data_loader)
+
+        train_loss_sum_tensor = torch.tensor(0.0).float().to(device, non_blocking=True)
+        epoch_batch_iter_count = 0
 
         for _ in range(epoch_iterations):
             lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
 
-            batch_loss_sum_tensor = torch.tensor(0.0).float()
-
-            batch_iter_count = 0
             for _ in range(batch_iterations):
                 try:
                     batch = next(train_set_data_loader_iter)
@@ -188,20 +186,18 @@ def main():
                 loss.backward()
 
                 with torch.no_grad():
-                    batch_loss_sum_tensor += loss
+                    train_loss_sum_tensor += loss
 
-                batch_iter_count += 1
+                epoch_batch_iter_count += 1
 
             optimizer.step()
-
-            train_loss_sum += batch_loss_sum_tensor.item() / batch_iter_count
 
             sgdr_iterations += 1
             batch_count += 1
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
-        train_loss_avg = train_loss_sum / epoch_iterations
+        train_loss_avg = train_loss_sum_tensor / epoch_batch_iter_count
 
         val_loss_avg = evaluate(model, val_set_data_loader, criterion)
 
