@@ -54,7 +54,8 @@ class TrainDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, index):
-        print("getting item {}".format(index))
+        print("getting item {}".format(index), flush=True)
+
         image = draw_it(self.df.drawing.values[index], size=self.image_size)
         category = self.df.category.values[index]
 
