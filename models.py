@@ -25,7 +25,7 @@ class SimpleCnn(nn.Module):
             nn.Linear(64 * 16 * 16, 1024),
             nn.ReLU(inplace=True),
             nn.Dropout2d(0.4),
-            nn.Linear(1024, 340)
+            nn.Linear(1024, 345)
         )
 
     def forward(self, x):
