@@ -33,7 +33,7 @@ def create_model(type):
 def evaluate(model, data_loader, criterion):
     model.eval()
 
-    loss_sum = 0.0
+    loss_sum_tensor = torch.tensor(0.0).float()
     step_count = 0
 
     with torch.no_grad():
@@ -45,11 +45,11 @@ def evaluate(model, data_loader, criterion):
             predictions = torch.sigmoid(model(images))
             loss = criterion(predictions, categories)
 
-            loss_sum += loss.item()
+            loss_sum_tensor += loss
 
             step_count += 1
 
-    loss_avg = loss_sum / step_count
+    loss_avg = loss_sum_tensor.item() / step_count
 
     return loss_avg
 
@@ -170,7 +170,7 @@ def main():
 
             optimizer.zero_grad()
 
-            batch_loss_sum = 0.0
+            batch_loss_sum_tensor = torch.tensor(0.0).float()
 
             batch_iter_count = 0
             for _ in range(batch_iterations):
@@ -188,13 +188,13 @@ def main():
                 loss.backward()
 
                 with torch.no_grad():
-                    batch_loss_sum += loss.item()
+                    batch_loss_sum_tensor += loss
 
                 batch_iter_count += 1
 
             optimizer.step()
 
-            train_loss_sum += batch_loss_sum / batch_iter_count
+            train_loss_sum += batch_loss_sum_tensor.item() / batch_iter_count
 
             sgdr_iterations += 1
             batch_count += 1
