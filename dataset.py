@@ -28,7 +28,8 @@ class TrainData:
         train_set_ids, val_set_ids = train_test_split(
             df.index,
             test_size=0.001,
-            stratify=df.word
+            stratify=df.word,
+            random_state=42
         )
 
         train_set_df = df[df.index.isin(train_set_ids)].copy()
