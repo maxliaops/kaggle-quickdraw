@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 from torchvision.models.resnet import resnet34
 
 from dataset import TrainData, TrainDataset
+from metrics import accuracy
 from utils import get_learning_rate
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -33,7 +34,8 @@ def create_model(type):
 def evaluate(model, data_loader, criterion):
     model.eval()
 
-    loss_sum_tensor = torch.tensor(0.0).float().to(device, non_blocking=True)
+    loss_sum = 0.0
+    accuracy_sum = 0.0
     step_count = 0
 
     with torch.no_grad():
@@ -45,13 +47,15 @@ def evaluate(model, data_loader, criterion):
             predictions = torch.sigmoid(model(images))
             loss = criterion(predictions, categories)
 
-            loss_sum_tensor += loss
+            loss_sum += loss.item()
+            accuracy_sum += accuracy(predictions, categories).item()
 
             step_count += 1
 
-    loss_avg = loss_sum_tensor.item() / step_count
+    loss_avg = loss_sum / step_count
+    accuracy_avg = accuracy_sum / step_count
 
-    return loss_avg
+    return loss_avg, accuracy_avg
 
 
 def create_optimizer(type, model, lr):
@@ -120,8 +124,8 @@ def main():
         flush=True)
     print()
 
-    global_val_loss_best_avg = float("-inf")
-    sgdr_cycle_val_loss_best_avg = float("-inf")
+    global_val_accuracy_best_avg = float("-inf")
+    sgdr_cycle_val_accuracy_best_avg = float("-inf")
 
     optimizer = create_optimizer(optimizer_type, model, lr_max)
     lr_scheduler = CosineAnnealingLR(optimizer, T_max=sgdr_cycle_epochs, eta_min=lr_min)
@@ -143,9 +147,11 @@ def main():
         model_index = int(model_file_name.replace("model-", "").replace(".pth", ""))
         ensemble_model_index = max(ensemble_model_index, model_index + 1)
 
-    print('{"chart": "best_val_loss", "axis": "epoch"}')
+    print('{"chart": "best_val_accuracy", "axis": "epoch"}')
+    print('{"chart": "val_accuracy", "axis": "epoch"}')
     print('{"chart": "val_loss", "axis": "epoch"}')
     print('{"chart": "sgdr_cycle", "axis": "epoch"}')
+    print('{"chart": "accuracy", "axis": "epoch"}')
     print('{"chart": "loss", "axis": "epoch"}')
     print('{"chart": "lr_scaled", "axis": "epoch"}')
 
@@ -163,7 +169,9 @@ def main():
 
         train_set_data_loader_iter = iter(train_set_data_loader)
 
-        train_loss_sum_tensor = torch.tensor(0.0).float().to(device, non_blocking=True)
+        train_loss_sum = 0.0
+        train_accuracy_sum = 0.0
+
         epoch_batch_iter_count = 0
 
         for _ in range(epoch_iterations):
@@ -186,7 +194,8 @@ def main():
                 loss.backward()
 
                 with torch.no_grad():
-                    train_loss_sum_tensor += loss
+                    train_loss_sum += loss.item()
+                    train_accuracy_sum += accuracy(predictions, categories).item().item()
 
                 epoch_batch_iter_count += 1
 
@@ -197,20 +206,21 @@ def main():
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
-        train_loss_avg = train_loss_sum_tensor / epoch_batch_iter_count
+        train_loss_avg = train_loss_sum / epoch_batch_iter_count
+        train_accuracy_avg = train_accuracy_sum / epoch_batch_iter_count
 
-        val_loss_avg = evaluate(model, val_set_data_loader, criterion)
+        val_loss_avg, val_accuracy_avg = evaluate(model, val_set_data_loader, criterion)
 
-        model_improved_within_sgdr_cycle = val_loss_avg > sgdr_cycle_val_loss_best_avg
+        model_improved_within_sgdr_cycle = val_accuracy_avg > sgdr_cycle_val_accuracy_best_avg
         if model_improved_within_sgdr_cycle:
             torch.save(model.state_dict(), "{}/model-{}.pth".format(output_dir, ensemble_model_index))
-            sgdr_cycle_val_loss_best_avg = val_loss_avg
+            sgdr_cycle_val_accuracy_best_avg = val_accuracy_avg
 
-        model_improved = val_loss_avg > global_val_loss_best_avg
+        model_improved = val_accuracy_avg > global_val_accuracy_best_avg
         ckpt_saved = False
         if model_improved:
             torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
-            global_val_loss_best_avg = val_loss_avg
+            global_val_accuracy_best_avg = val_accuracy_avg
             epoch_of_last_improval = epoch
             ckpt_saved = True
 
@@ -221,7 +231,7 @@ def main():
             sgdr_next_cycle_end_epoch = epoch + 1 + current_sgdr_cycle_epochs + sgdr_cycle_end_prolongation
 
             ensemble_model_index += 1
-            sgdr_cycle_val_loss_best_avg = float("-inf")
+            sgdr_cycle_val_accuracy_best_avg = float("-inf")
             sgdr_cycle_count += 1
             sgdr_reset = True
 
@@ -234,27 +244,33 @@ def main():
         optim_summary_writer.add_scalar("sgdr_cycle", sgdr_cycle_count, epoch + 1)
 
         train_summary_writer.add_scalar("loss", train_loss_avg, epoch + 1)
+        train_summary_writer.add_scalar("accuracy", train_accuracy_avg, epoch + 1)
         val_summary_writer.add_scalar("loss", val_loss_avg, epoch + 1)
+        val_summary_writer.add_scalar("accuracy", val_accuracy_avg, epoch + 1)
 
         epoch_end_time = time.time()
         epoch_duration_time = epoch_end_time - epoch_start_time
 
         print(
-            "[%03d/%03d] %ds, lr: %.6f, loss: %.4f, val_loss: %.4f, ckpt: %d, rst: %d" % (
+            "[%03d/%03d] %ds, lr: %.6f, loss: %.4f, val_loss: %.4f, acc: %.4f, val_acc: %.4f, ckpt: %d, rst: %d" % (
                 epoch + 1,
                 epochs_to_train,
                 epoch_duration_time,
                 get_learning_rate(optimizer),
                 train_loss_avg,
                 val_loss_avg,
+                train_accuracy_avg,
+                val_accuracy_avg,
                 int(ckpt_saved),
                 int(sgdr_reset)),
             flush=True)
 
-        print('{"chart": "best_val_loss", "x": %d, "y": %.4f}' % (epoch + 1, global_val_loss_best_avg))
+        print('{"chart": "best_val_accuracy", "x": %d, "y": %.4f}' % (epoch + 1, global_val_accuracy_best_avg))
         print('{"chart": "val_loss", "x": %d, "y": %.4f}' % (epoch + 1, val_loss_avg))
+        print('{"chart": "val_accuracy", "x": %d, "y": %.4f}' % (epoch + 1, val_accuracy_avg))
         print('{"chart": "sgdr_cycle", "x": %d, "y": %d}' % (epoch + 1, sgdr_cycle_count))
         print('{"chart": "loss", "x": %d, "y": %.4f}' % (epoch + 1, train_loss_avg))
+        print('{"chart": "accuracy", "x": %d, "y": %.4f}' % (epoch + 1, train_accuracy_avg))
         print('{"chart": "lr_scaled", "x": %d, "y": %.4f}' % (epoch + 1, 1000 * get_learning_rate(optimizer)))
 
         if sgdr_reset and epoch - epoch_of_last_improval >= patience:
