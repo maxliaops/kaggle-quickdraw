@@ -29,8 +29,6 @@ def create_model(type, input_size, num_classes):
         model = ResNet34()
     elif type == "cnn":
         model = SimpleCnn(input_size, num_classes)
-    elif type == "cnn2":
-        model = SimpleCnn2(input_size, num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
