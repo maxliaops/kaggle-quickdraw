@@ -18,6 +18,8 @@ class TrainData:
         with Pool(8) as pool:
             df = pd.concat([c for c in pool.map(self.load_data, data_files)])
 
+        print("Loaded {} samples".format(len(df)))
+
         with open("{}/categories.txt".format(data_dir)) as categories_file:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
 
