@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
-from models import ResNet34, SimpleCnn, SimpleCnn2
+from models import ResNet34, SimpleCnn
 from utils import get_learning_rate
 
 cudnn.enabled = True
