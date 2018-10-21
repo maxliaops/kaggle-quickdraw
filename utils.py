@@ -40,7 +40,7 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def draw_it(strokes, size=256, line_width=2, padding=2):
+def draw_it(strokes, size=256, line_width=1, padding=0):
     max_value = 255
     scale_factor = (size - 2 * padding - 1) / max_value
 
