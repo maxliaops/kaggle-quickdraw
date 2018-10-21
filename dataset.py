@@ -70,13 +70,6 @@ class TrainDataset(Dataset):
         return image, category
 
 
-def calculate_coverage_class(mask):
-    coverage = mask.sum() / mask.size
-    for i in range(0, 11):
-        if coverage * 10 <= i:
-            return i
-
-
 def image_to_tensor(image):
     image = np.expand_dims(image, 0)
     image = np.repeat(image, 3, 0)
