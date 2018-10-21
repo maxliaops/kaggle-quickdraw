@@ -24,11 +24,11 @@ cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def create_model(type):
+def create_model(type, num_classes):
     if type == "resnet":
         model = ResNet34()
     elif type == "cnn":
-        model = SimpleCnn()
+        model = SimpleCnn(num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
@@ -115,7 +115,7 @@ def main():
     print()
     print("Load time: %s" % str(datetime.timedelta(seconds=load_end_time - load_start_time)))
 
-    model = create_model(type=model_type).to(device)
+    model = create_model(type=model_type, num_classes=len(train_data.categories)).to(device)
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
 
     epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))

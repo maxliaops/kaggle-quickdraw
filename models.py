@@ -12,7 +12,7 @@ class ResNet34(nn.Module):
 
 
 class SimpleCnn(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes):
         super().__init__()
         self.delegate = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=5, stride=1, padding=2),
@@ -25,7 +25,7 @@ class SimpleCnn(nn.Module):
             nn.Linear(64 * 16 * 16, 1024),
             nn.ReLU(inplace=True),
             nn.Dropout2d(0.4),
-            nn.Linear(1024, 345)
+            nn.Linear(1024, num_classes)
         )
 
     def forward(self, x):
