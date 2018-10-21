@@ -302,7 +302,7 @@ if __name__ == "__main__":
     argparser.add_argument("--image_size", default=64, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
-    argparser.add_argument("--batch_size", default=128, type=int)
+    argparser.add_argument("--batch_size", default=64, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--num_loaders", default=8, type=int)
     argparser.add_argument("--num_workers", default=16, type=int)
