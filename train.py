@@ -14,6 +14,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
 
 from dataset import TrainData, TrainDataset
+from metrics import accuracy
 from models import ResNet34, SimpleCnn, SimpleCnn2
 from utils import get_learning_rate
 
@@ -52,8 +53,8 @@ def evaluate(model, data_loader, criterion):
             prediction_logits = model(images)
             loss = criterion(prediction_logits, categories)
 
-            # loss_sum += loss.item()
-            # accuracy_sum += accuracy(prediction_logits, categories).item()
+            loss_sum += loss.item()
+            accuracy_sum += accuracy(prediction_logits, categories).item()
 
             step_count += 1
 
@@ -202,9 +203,8 @@ def main():
                 loss.backward()
 
                 with torch.no_grad():
-                    pass
-                    # train_loss_sum += loss.item()
-                    # train_accuracy_sum += accuracy(prediction_logits, categories).item()
+                    train_loss_sum += loss.item()
+                    train_accuracy_sum += accuracy(prediction_logits, categories).item()
 
                 epoch_batch_iter_count += 1
 
