@@ -59,8 +59,8 @@ class TrainDataset(Dataset):
         image = draw_it(self.df.iloc[index].drawing, size=self.image_size)
         category = self.df.iloc[index].category
 
-        image = image_to_tensor(image)
-        category = category_to_tensor(category)
+        image = self.image_to_tensor(image)
+        category = self.category_to_tensor(category)
 
         image_mean = 0.0
         image_stdev = 1.0
@@ -69,12 +69,10 @@ class TrainDataset(Dataset):
 
         return image, category
 
+    def image_to_tensor(self, image):
+        image = np.expand_dims(image, 0)
+        image = np.repeat(image, 3, 0)
+        return torch.from_numpy((image / 255.)).float()
 
-def image_to_tensor(image):
-    image = np.expand_dims(image, 0)
-    image = np.repeat(image, 3, 0)
-    return torch.from_numpy((image / 255.)).float()
-
-
-def category_to_tensor(category):
-    return torch.tensor(category.item()).long()
+    def category_to_tensor(self, category):
+        return torch.tensor(category.item()).long()
