@@ -12,10 +12,10 @@ from utils import draw_it
 
 
 class TrainData:
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, num_loaders):
         data_files = glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir))
 
-        with Pool(8) as pool:
+        with Pool(num_loaders) as pool:
             df = pd.concat([c for c in pool.map(self.load_data, data_files)])
 
         print("Loaded {} samples".format(len(df)))

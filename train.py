@@ -79,6 +79,7 @@ def main():
     image_size_target = args.image_size
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
+    num_loaders = args.num_loaders
     num_workers = args.num_workers
     epochs_to_train = args.epochs
     max_epoch_iterations = args.max_epoch_iterations
@@ -98,7 +99,7 @@ def main():
 
     load_start_time = time.time()
 
-    train_data = TrainData(input_dir)
+    train_data = TrainData(input_dir, num_loaders)
 
     train_set = TrainDataset(train_data.train_set_df, image_size_target)
     train_set_data_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
@@ -299,6 +300,7 @@ if __name__ == "__main__":
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=32, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
+    argparser.add_argument("--num_loaders", default=8, type=int)
     argparser.add_argument("--num_workers", default=16, type=int)
     argparser.add_argument("--lr_min", default=0.0001, type=float)
     argparser.add_argument("--lr_max", default=0.001, type=float)
