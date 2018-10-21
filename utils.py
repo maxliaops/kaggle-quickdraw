@@ -1,8 +1,8 @@
 import argparse
 
 import numpy as np
-from torch import nn
 from PIL import Image, ImageDraw
+from torch import nn
 
 
 def adjust_learning_rate(optimizer, lr):
@@ -49,15 +49,11 @@ def draw_it(strokes, size=256, line_width=6, padding=3):
 
     for stroke in strokes:
         for i in range(len(stroke[0]) - 1):
-            image_draw.line(
-                [
-                    int(scale_factor * stroke[0][i]) + padding,
-                    int(scale_factor * stroke[1][i]) + padding,
-                    int(scale_factor * stroke[0][i + 1]) + padding,
-                    int(scale_factor * stroke[1][i + 1]) + padding
-                ],
-                fill=0,
-                width=line_width)
+            x0 = int(scale_factor * stroke[0][i]) + padding
+            y0 = int(scale_factor * stroke[1][i]) + padding
+            x1 = int(scale_factor * stroke[0][i + 1]) + padding
+            y1 = int(scale_factor * stroke[1][i + 1]) + padding
+            image_draw.line([x0, y0, x1, y1], fill=0, width=line_width)
 
     # image = cv2.resize(image, (64, 64), interpolation=cv2.INTER_LINEAR)
 
