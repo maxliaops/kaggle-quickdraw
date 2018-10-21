@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 from torchvision.transforms.functional import normalize
 
+from utils import draw_it
+
 
 class TrainData:
     def __init__(self, data_dir, num_loaders):
@@ -57,8 +59,7 @@ class TrainDataset(Dataset):
         return len(self.df["drawing"])
 
     def __getitem__(self, index):
-        # image = draw_it(self.df["drawing"][index], size=self.image_size)
-        image = np.zeros((self.image_size, self.image_size))
+        image = draw_it(self.df["drawing"][index], size=self.image_size)
         category = self.df["category"][index]
 
         image = self.image_to_tensor(image)
