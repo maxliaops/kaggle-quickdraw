@@ -8,8 +8,6 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 from torchvision.transforms.functional import normalize
 
-from utils import draw_it
-
 
 class TrainData:
     def __init__(self, data_dir, num_loaders):
@@ -50,10 +48,11 @@ class TrainData:
 
 
 class TrainDataset(Dataset):
-    def __init__(self, df, image_size):
+    def __init__(self, df, image_size, device):
         super().__init__()
         self.df = df
         self.image_size = image_size
+        self.device = device
 
     def __len__(self):
         return len(self.df["drawing"])
@@ -70,6 +69,9 @@ class TrainDataset(Dataset):
         image_stdev = 1.0
 
         image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
+
+        image = image.to(self.device)
+        category = category.to(self.device)
 
         return image, category
 
