@@ -34,11 +34,11 @@ class TrainData:
             random_state=42
         )
 
-        train_set_df = df[df.index.isin(train_set_ids)].copy()
-        val_set_df = df[df.index.isin(val_set_ids)].copy()
+        train_set_df = df[df.index.isin(train_set_ids)]
+        val_set_df = df[df.index.isin(val_set_ids)]
 
-        self.train_set_df = train_set_df
-        self.val_set_df = val_set_df
+        self.train_set_df = train_set_df.to_dict(orient="list")
+        self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
     def load_data(self, data_file):
@@ -59,8 +59,8 @@ class TrainDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, index):
-        image = draw_it(self.df.iloc[index].drawing, size=self.image_size)
-        category = self.df.iloc[index].category
+        image = draw_it(self.df["drawing"][index], size=self.image_size)
+        category = self.df["category"][index]
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
