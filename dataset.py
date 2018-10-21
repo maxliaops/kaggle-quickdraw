@@ -15,10 +15,8 @@ class TrainData:
     def __init__(self, data_dir):
         data_files = glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir))
 
-        with Pool(16) as pool:
-            category_dfs = [c for c in pool.map(self.load_data, data_files)]
-
-        df = pd.concat(category_dfs)
+        with Pool(8) as pool:
+            df = pd.concat([c for c in pool.map(self.load_data, data_files)])
 
         with open("{}/categories.txt".format(data_dir)) as categories_file:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
