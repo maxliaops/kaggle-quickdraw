@@ -56,7 +56,7 @@ class TrainDataset(Dataset):
         self.image_size = image_size
 
     def __len__(self):
-        return len(self.df)
+        return len(self.df["drawing"])
 
     def __getitem__(self, index):
         image = draw_it(self.df["drawing"][index], size=self.image_size)
