@@ -59,7 +59,8 @@ class TrainDataset(Dataset):
         return len(self.df["drawing"])
 
     def __getitem__(self, index):
-        image = draw_it(self.df["drawing"][index], size=self.image_size)
+        # image = draw_it(self.df["drawing"][index], size=self.image_size)
+        image = np.zeros((self.image_size, self.image_size))
         category = self.df["category"][index]
 
         image = self.image_to_tensor(image)
