@@ -32,7 +32,7 @@ def create_model(type):
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
-    return model
+    return nn.DataParallel(model)
 
 
 def evaluate(model, data_loader, criterion):
