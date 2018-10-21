@@ -2,7 +2,6 @@ import argparse
 
 import cv2
 import numpy as np
-from PIL import Image, ImageDraw
 from torch import nn
 
 
@@ -41,12 +40,11 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def draw_it(strokes, size=256, line_width=6, padding=3):
+def draw_it(strokes, size=256, line_width=2, padding=2):
     max_value = 255
     scale_factor = (size - 2 * padding - 1) / max_value
 
-    image = np.zeros((size, size))
-    # image_draw = ImageDraw.Draw(image)
+    image = np.full((size, size), 255, dtype=np.uint8)
 
     for stroke in strokes:
         for i in range(len(stroke[0]) - 1):
@@ -54,7 +52,7 @@ def draw_it(strokes, size=256, line_width=6, padding=3):
             y0 = int(scale_factor * stroke[1][i]) + padding
             x1 = int(scale_factor * stroke[0][i + 1]) + padding
             y1 = int(scale_factor * stroke[1][i + 1]) + padding
-            cv2.line(image, (x0, y0), (x1, y1), 255, line_width)
+            cv2.line(image, (x0, y0), (x1, y1), 0, line_width)
 
     # image = cv2.resize(image, (64, 64), interpolation=cv2.INTER_LINEAR)
 
