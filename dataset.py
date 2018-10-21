@@ -15,7 +15,7 @@ class TrainData:
         category_dfs = []
         data_files = sorted(glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir)))
         for i, data_file in enumerate(data_files, 1):
-            print("[{:03d}/{:03d}] reading the data file '{}'".format(i, len(data_files), data_file))
+            print("[{:03d}/{:03d}] reading the data file '{}'".format(i, len(data_files), data_file), flush=True)
             category_df = pd.read_csv(
                 data_file,
                 index_col="key_id",
