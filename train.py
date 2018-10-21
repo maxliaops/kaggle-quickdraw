@@ -48,11 +48,11 @@ def evaluate(model, data_loader, criterion):
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
 
-            predictions = torch.sigmoid(model(images))
-            loss = criterion(predictions, categories)
+            prediction_logits = model(images)
+            loss = criterion(prediction_logits, categories)
 
             loss_sum += loss.item()
-            accuracy_sum += accuracy(predictions, categories).item()
+            accuracy_sum += accuracy(prediction_logits, categories).item()
 
             step_count += 1
 
@@ -194,13 +194,13 @@ def main():
                     batch[0].to(device, non_blocking=True), \
                     batch[1].to(device, non_blocking=True)
 
-                predictions = torch.sigmoid(model(images))
-                loss = criterion(predictions, categories)
+                prediction_logits = model(images)
+                loss = criterion(prediction_logits, categories)
                 loss.backward()
 
                 with torch.no_grad():
                     train_loss_sum += loss.item()
-                    train_accuracy_sum += accuracy(predictions, categories).item()
+                    train_accuracy_sum += accuracy(prediction_logits, categories).item()
 
                 epoch_batch_iter_count += 1
 
