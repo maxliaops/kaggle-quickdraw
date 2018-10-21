@@ -46,7 +46,7 @@ class TrainData:
         return pd.read_csv(
             data_file,
             index_col="key_id",
-            converters={"drawing": lambda drawing: draw_it(eval(drawing), size=64)})
+            converters={"drawing": lambda drawing: eval(drawing)})
 
 
 class TrainDataset(Dataset):
@@ -59,7 +59,7 @@ class TrainDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, index):
-        image = self.df.iloc[index].drawing
+        image = draw_it(self.df.iloc[index].drawing, size=self.image_size)
         category = self.df.iloc[index].category
 
         image = self.image_to_tensor(image)
