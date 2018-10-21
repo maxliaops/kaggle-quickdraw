@@ -281,7 +281,7 @@ if __name__ == "__main__":
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=32, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
-    argparser.add_argument("--num_workers", default=8, type=int)
+    argparser.add_argument("--num_workers", default=16, type=int)
     argparser.add_argument("--lr_min", default=0.0001, type=float)
     argparser.add_argument("--lr_max", default=0.001, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
