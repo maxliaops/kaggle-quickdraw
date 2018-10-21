@@ -14,7 +14,6 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
 
 from dataset import TrainData, TrainDataset
-from metrics import accuracy
 from models import ResNet34, SimpleCnn, SimpleCnn2
 from utils import get_learning_rate
 
@@ -108,10 +107,12 @@ def main():
     train_data = TrainData(input_dir, num_loaders)
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
-    train_set_data_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+    train_set_data_loader = \
+        DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
 
     val_set = TrainDataset(train_data.val_set_df, image_size)
-    val_set_data_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    val_set_data_loader = \
+        DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
 
     load_end_time = time.time()
     print()
