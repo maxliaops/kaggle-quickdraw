@@ -18,7 +18,7 @@ class SimpleCnn(nn.Module):
         last_layer_size = (input_size // 2) // 2
 
         self.delegate = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=5, padding=2),
+            nn.Conv2d(1, 32, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(32, 64, kernel_size=5, padding=2),
@@ -42,6 +42,7 @@ class SimpleCnn2(nn.Module):
         last_layer_size = (((input_size - 2) // 2) - 2) // 2
 
         self.delegate = nn.Sequential(
+            nn.BatchNorm2d(1),
             nn.Conv2d(1, 16, kernel_size=3, padding=1),
             nn.Conv2d(16, 16, kernel_size=3),
             nn.MaxPool2d(kernel_size=2),
