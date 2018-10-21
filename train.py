@@ -194,6 +194,8 @@ def main():
                     batch[0].to(device, non_blocking=True), \
                     batch[1].to(device, non_blocking=True)
 
+                print(categories.cpu().data.numpy())
+
                 predictions = torch.sigmoid(model(images))
                 loss = criterion(predictions, categories)
                 loss.backward()
