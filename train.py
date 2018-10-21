@@ -18,8 +18,10 @@ from dataset import TrainData, TrainDataset
 from metrics import accuracy
 from utils import get_learning_rate
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+cudnn.enabled = True
 cudnn.benchmark = True
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def create_model(type):
