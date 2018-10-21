@@ -1,4 +1,5 @@
 import glob
+from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
@@ -12,15 +13,10 @@ from utils import draw_it
 
 class TrainData:
     def __init__(self, data_dir):
-        category_dfs = []
-        data_files = sorted(glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir)))
-        for i, data_file in enumerate(data_files, 1):
-            print("[{:03d}/{:03d}] reading the data file '{}'".format(i, len(data_files), data_file), flush=True)
-            category_df = pd.read_csv(
-                data_file,
-                index_col="key_id",
-                converters={"drawing": lambda drawing: eval(drawing)})
-            category_dfs.append(category_df)
+        data_files = glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir))
+
+        with Pool(16) as pool:
+            category_dfs = [c for c in pool.map(self.load_data, data_files)]
 
         df = pd.concat(category_dfs)
 
@@ -41,6 +37,13 @@ class TrainData:
         self.train_set_df = train_set_df
         self.val_set_df = val_set_df
         self.categories = categories
+
+    def load_data(self, data_file):
+        print("reading the data file '{}'".format(data_file), flush=True)
+        return pd.read_csv(
+            data_file,
+            index_col="key_id",
+            converters={"drawing": lambda drawing: eval(drawing)})
 
 
 class TrainDataset(Dataset):
