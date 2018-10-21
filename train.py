@@ -196,7 +196,7 @@ def main():
 
                 with torch.no_grad():
                     train_loss_sum += loss.item()
-                    train_accuracy_sum += accuracy(predictions, categories).item().item()
+                    train_accuracy_sum += accuracy(predictions, categories).item()
 
                 epoch_batch_iter_count += 1
 
