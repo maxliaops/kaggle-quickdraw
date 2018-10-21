@@ -2,6 +2,7 @@ import argparse
 import datetime
 import glob
 import os
+import sys
 import time
 from math import ceil
 
@@ -160,6 +161,8 @@ def main():
         train_set_data_loader_iter = iter(train_set_data_loader)
 
         for _ in range(epoch_iterations):
+            sys.stdout.print(".")
+
             lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
