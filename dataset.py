@@ -13,7 +13,7 @@ class TrainData:
     def __init__(self, data_dir, num_loaders):
         data_files = glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir))
 
-        data_files = data_files[:20]
+        data_files = data_files[:30]
 
         with Pool(num_loaders) as pool:
             df = pd.concat([c for c in pool.map(self.load_data, data_files)])
@@ -27,7 +27,7 @@ class TrainData:
 
         train_set_ids, val_set_ids = train_test_split(
             df.index,
-            test_size=0.2,
+            test_size=0.3,
             stratify=df.word,
             random_state=42
         )
