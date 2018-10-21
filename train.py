@@ -311,7 +311,7 @@ if __name__ == "__main__":
     argparser.add_argument("--num_loaders", default=8, type=int)
     argparser.add_argument("--num_workers", default=16, type=int)
     argparser.add_argument("--lr_min", default=0.0001, type=float)
-    argparser.add_argument("--lr_max", default=0.002, type=float)
+    argparser.add_argument("--lr_max", default=0.001, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
     argparser.add_argument("--lr_max_decay", default=1.0, type=float)
     argparser.add_argument("--model", default="cnn")
