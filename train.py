@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
-from models import ResNet34, SimpleCnn
+from models import ResNet34, SimpleCnn, SimpleCnn2
 from utils import get_learning_rate
 
 cudnn.enabled = True
@@ -29,6 +29,8 @@ def create_model(type, input_size, num_classes):
         model = ResNet34()
     elif type == "cnn":
         model = SimpleCnn(input_size, num_classes)
+    elif type == "cnn2":
+        model = SimpleCnn2(input_size, num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
