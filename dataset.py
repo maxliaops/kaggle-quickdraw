@@ -25,7 +25,7 @@ class TrainData:
 
         train_set_ids, val_set_ids = train_test_split(
             df.index,
-            test_size=0.0001,
+            test_size=0.001,
             stratify=df.word
         )
 
