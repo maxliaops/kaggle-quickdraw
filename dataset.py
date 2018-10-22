@@ -45,7 +45,7 @@ class TrainData:
             data_file,
             index_col="key_id",
             converters={"drawing": lambda drawing: eval(drawing)})
-        df = df.drop(df.index[:len(df) // 4])
+        df = df.drop(df.index[len(df) // 4:])
         return df
 
 
