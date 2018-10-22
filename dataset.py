@@ -1,6 +1,5 @@
 import glob
 from multiprocessing import Pool
-import sys
 
 import numpy as np
 import pandas as pd
@@ -42,10 +41,12 @@ class TrainData:
 
     def load_data(self, data_file):
         print("reading the data file '{}'".format(data_file), flush=True)
-        return pd.read_csv(
+        df = pd.read_csv(
             data_file,
             index_col="key_id",
             converters={"drawing": lambda drawing: eval(drawing)})
+        df = df.drop(df.index[:len(df) // 4])
+        return df
 
 
 class TrainDataset(Dataset):
