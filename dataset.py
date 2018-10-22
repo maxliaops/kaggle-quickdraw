@@ -40,9 +40,9 @@ class TrainData:
         self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
-        print("Dataframe size: {:.2f} MB".format(sys.getsizeof(df)))
-        print("Train set data size: {:.2f} MB".format(sys.getsizeof(self.train_set_df)))
-        print("Val set data size: {:.2f} MB".format(sys.getsizeof(self.val_set_df)))
+        print("Dataframe size: {:.2f} MB".format(sys.getsizeof(df) / 2 ** 20))
+        print("Train set data size: {:.2f} MB".format(sys.getsizeof(self.train_set_df) / 2 ** 20)
+        print("Val set data size: {:.2f} MB".format(sys.getsizeof(self.val_set_df) / 2 ** 20)
 
     def load_data(self, data_file):
         print("reading the data file '{}'".format(data_file), flush=True)
