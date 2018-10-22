@@ -41,10 +41,10 @@ def str2bool(v):
 
 
 def draw_it(strokes, size=256, line_width=1, padding=0):
-    max_value = 255
-    scale_factor = (size - 2 * padding - 1) / max_value
+    max_size = 255
+    scale_factor = (max_size - 2 * padding) / max_size
 
-    image = np.full((size, size), 255, dtype=np.uint8)
+    image = np.full((max_size, max_size), 255, dtype=np.uint8)
 
     for stroke in strokes:
         for i in range(len(stroke[0]) - 1):
@@ -54,6 +54,6 @@ def draw_it(strokes, size=256, line_width=1, padding=0):
             y1 = int(scale_factor * stroke[1][i + 1]) + padding
             cv2.line(image, (x0, y0), (x1, y1), 0, line_width)
 
-    # image = cv2.resize(image, (64, 64), interpolation=cv2.INTER_LINEAR)
+    image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
 
     return image
