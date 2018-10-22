@@ -1,5 +1,6 @@
 import glob
 from multiprocessing import Pool
+import sys
 
 import numpy as np
 import pandas as pd
@@ -38,6 +39,10 @@ class TrainData:
         self.train_set_df = train_set_df.to_dict(orient="list")
         self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
+
+        print("Dataframe size: {:.2f} MB".format(sys.getsizeof(df)))
+        print("Train set data size: {:.2f} MB".format(sys.getsizeof(self.train_set_df)))
+        print("Val set data size: {:.2f} MB".format(sys.getsizeof(self.val_set_df)))
 
     def load_data(self, data_file):
         print("reading the data file '{}'".format(data_file), flush=True)
