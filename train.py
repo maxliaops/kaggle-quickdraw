@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
 from models import ResNet34, SimpleCnn, SimpleCnn2
-from utils import get_learning_rate
+from utils import get_learning_rate, str2bool
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -87,6 +87,7 @@ def main():
     batch_iterations = args.batch_iterations
     num_loaders = args.num_loaders
     num_workers = args.num_workers
+    pin_memory = args.pin_memory
     epochs_to_train = args.epochs
     max_epoch_iterations = args.max_epoch_iterations
     lr_min = args.lr_min
@@ -109,11 +110,11 @@ def main():
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = \
-        DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+        DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
 
     val_set = TrainDataset(train_data.val_set_df, image_size)
     val_set_data_loader = \
-        DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+        DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
     load_end_time = time.time()
     print()
@@ -310,6 +311,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--num_loaders", default=8, type=int)
     argparser.add_argument("--num_workers", default=8, type=int)
+    argparser.add_argument("--pin_memory", default=True, type=str2bool)
     argparser.add_argument("--lr_min", default=0.0001, type=float)
     argparser.add_argument("--lr_max", default=0.001, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
