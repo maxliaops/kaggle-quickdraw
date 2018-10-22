@@ -303,7 +303,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
-    argparser.add_argument("--image_size", default=28, type=int)
+    argparser.add_argument("--image_size", default=32, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
