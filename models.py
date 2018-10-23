@@ -20,11 +20,11 @@ class SimpleCnn(nn.Module):
         self.delegate = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
-            nn.BatchNorm2d(32),
+            # nn.BatchNorm2d(32),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(32, 64, kernel_size=5, padding=2),
             nn.ReLU(inplace=True),
-            nn.BatchNorm2d(64),
+            # nn.BatchNorm2d(64),
             nn.MaxPool2d(kernel_size=2, stride=2),
             Flatten(),
             nn.Linear(64 * last_layer_size * last_layer_size, 1024),
