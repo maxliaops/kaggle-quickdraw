@@ -1,6 +1,8 @@
 import torch.nn as nn
 from torchvision.models import resnet34
 
+from utils import with_he_normal_weights
+
 
 class ResNet34(nn.Module):
     def __init__(self):
@@ -18,11 +20,11 @@ class SimpleCnn(nn.Module):
         last_layer_size = (input_size // 2) // 2
 
         self.delegate = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=5, padding=2),
+            with_he_normal_weights(nn.Conv2d(1, 32, kernel_size=5, padding=2)),
             nn.ReLU(inplace=True),
             # nn.BatchNorm2d(32),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(32, 64, kernel_size=5, padding=2),
+            with_he_normal_weights(nn.Conv2d(32, 64, kernel_size=5, padding=2)),
             nn.ReLU(inplace=True),
             # nn.BatchNorm2d(64),
             nn.MaxPool2d(kernel_size=2, stride=2),
