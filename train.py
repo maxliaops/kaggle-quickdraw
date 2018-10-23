@@ -307,7 +307,7 @@ if __name__ == "__main__":
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--image_size", default=32, type=int)
-    argparser.add_argument("--epochs", default=500, type=int)
+    argparser.add_argument("--epochs", default=20, type=int)
     argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
@@ -326,6 +326,6 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=0, type=int)
     argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
-    argparser.add_argument("--max_sgdr_cycles", default=2, type=int)
+    argparser.add_argument("--max_sgdr_cycles", default=None, type=int)
 
     main()
