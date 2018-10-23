@@ -27,7 +27,7 @@ class SimpleCnn(nn.Module):
             # nn.BatchNorm2d(64),
             nn.MaxPool2d(kernel_size=2, stride=2),
             Flatten(),
-            nn.Linear(64 * last_layer_size * last_layer_size, 1024),
+            nn.Linear(64 * last_layer_size ** 2, 1024),
             nn.ReLU(inplace=True),
             # nn.BatchNorm1d(1024),
             nn.Dropout(0.4),
