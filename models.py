@@ -64,31 +64,6 @@ class SimpleDilatedCnn(nn.Module):
         return self.delegate(x)
 
 
-class SimpleCnn2(nn.Module):
-    def __init__(self, input_size, num_classes):
-        super().__init__()
-
-        last_layer_size = (((input_size - 2) // 2) - 2) // 2
-
-        self.delegate = nn.Sequential(
-            nn.BatchNorm2d(1),
-            nn.Conv2d(1, 16, kernel_size=3, padding=1),
-            nn.Conv2d(16, 16, kernel_size=3),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(16, 32, kernel_size=3, padding=1),
-            nn.Conv2d(32, 32, kernel_size=3),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            Flatten(),
-            nn.Dropout2d(0.5),
-            nn.Linear(last_layer_size * last_layer_size * 64, 256),
-            nn.Linear(256, num_classes)
-        )
-
-    def forward(self, x):
-        return self.delegate(x)
-
-
 class Flatten(nn.Module):
     def forward(self, x):
         return x.view(x.size(0), -1)
