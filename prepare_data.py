@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 import h5py
 import numpy as np
@@ -10,7 +11,7 @@ from utils import draw_it
 with open("/storage/kaggle/quickdraw/categories.txt") as categories_file:
     categories = [l.rstrip("\n") for l in categories_file.readlines()]
 
-with h5py.File("/storage/kaggle/quickdraw/quickdraw_train.hdf5", "w", libver="latest") as data_file:
+with h5py.File("/artifacts/quickdraw_train.hdf5", "w", libver="latest") as data_file:
     for csv_file in glob.glob("/storage/kaggle/quickdraw/train_simplified_shard_0/*.csv"):
         print("processing file '{}'".format(csv_file), flush=True)
 
@@ -25,3 +26,5 @@ with h5py.File("/storage/kaggle/quickdraw/quickdraw_train.hdf5", "w", libver="la
         group = data_file.create_group(category)
         group["thumbnail"] = thumbnail
         group["category"] = [categories.index(word) for word in df.word]
+
+shutil.copyfile("/artifacts/quickdraw_train.hdf5", "/storage/kaggle/quickdraw/quickdraw_train.hdf5")
