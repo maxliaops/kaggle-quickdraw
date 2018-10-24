@@ -8,6 +8,7 @@ class Flatten(nn.Module):
 
 class ExpandChannels2d(nn.Module):
     def __init__(self, num_channels):
+        super().__init__()
         self.num_channels = num_channels
 
     def forward(self, x):
