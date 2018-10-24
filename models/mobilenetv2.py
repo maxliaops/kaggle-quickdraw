@@ -1,5 +1,6 @@
 import torch.nn as nn
 import math
+from .common import ExpandChannels2d
 
 
 def conv_bn(inp, oup, stride):
@@ -62,6 +63,9 @@ class InvertedResidual(nn.Module):
 class MobileNetV2(nn.Module):
     def __init__(self, n_class=1000, input_size=224, width_mult=1.):
         super(MobileNetV2, self).__init__()
+
+        self.expand_channels = ExpandChannels2d(3)
+
         block = InvertedResidual
         input_channel = 32
         last_channel = 1280
@@ -104,6 +108,7 @@ class MobileNetV2(nn.Module):
         self._initialize_weights()
 
     def forward(self, x):
+        x = self.expand_channels(x)
         x = self.features(x)
         x = x.mean(3).mean(2)
         x = self.classifier(x)

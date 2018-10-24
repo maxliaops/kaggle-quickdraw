@@ -1,6 +1,6 @@
 import torch.nn as nn
 from torchvision.models import resnet34
-from common import ExpandChannels2d
+from .common import ExpandChannels2d
 
 
 class ResNet34(nn.Module):
