@@ -39,8 +39,8 @@ def prepare_strokes():
             # TODO: use enum type
             group["category"] = [categories.index(word) for word in df.word]
             # TODO: use vlen type
-            group["stroke_x"] = [flatten_strokes(d, 0) for d in df.drawing]
-            group["stroke_y"] = [flatten_strokes(d, 1) for d in df.drawing]
+            group["stroke_x"] = np.stack([flatten_strokes(d, 0) for d in df.drawing])
+            group["stroke_y"] = np.stack([flatten_strokes(d, 1) for d in df.drawing])
             group["stroke_len"] = [len(d[0]) for d in df.drawing]
 
     shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/")
