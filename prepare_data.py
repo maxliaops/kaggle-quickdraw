@@ -36,11 +36,16 @@ def prepare_strokes():
             category = os.path.basename(csv_file)[:-6]
 
             group = data_file.create_group(category)
+
+            stroke_dtype = h5py.special_dtype(vlen=np.dtype("uint8"))
+            stroke_x_ds = group.create_dataset("stroke_x", (len(df),), dtype=stroke_dtype)
+            stroke_x_ds[:] = [flatten_strokes(d, 0) for d in df.drawing]
+
             # TODO: use enum type
             group["category"] = [categories.index(word) for word in df.word]
             # TODO: use vlen type
-            group["stroke_x"] = np.stack([flatten_strokes(d, 0) for d in df.drawing])
-            group["stroke_y"] = np.stack([flatten_strokes(d, 1) for d in df.drawing])
+            group["stroke_x"] = [flatten_strokes(d, 0) for d in df.drawing]
+            group["stroke_y"] = [flatten_strokes(d, 1) for d in df.drawing]
             group["stroke_len"] = [len(d[0]) for d in df.drawing]
 
     shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/")
