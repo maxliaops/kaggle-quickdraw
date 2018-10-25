@@ -1,6 +1,7 @@
 import torch
+from .average_precision import mapk
 
 
-def accuracy(prediction_logits, categories):
-    _, predicted_categories = torch.max(prediction_logits, 1)
-    return (predicted_categories == categories).sum().float() / categories.size(0)
+def accuracy(prediction_logits, categories, topk=3):
+    _, predicted_categories = torch.topk(prediction_logits, topk, dim=1)
+    return mapk(categories, predicted_categories, k=topk)
