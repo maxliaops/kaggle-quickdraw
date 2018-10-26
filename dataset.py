@@ -48,8 +48,8 @@ class TrainData:
         return pd.read_hdf(
             "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
             key=category,
-            start=0,
-            stop=3000)
+            start=7000,
+            stop=10000)
 
 
 class TrainDataset(Dataset):
