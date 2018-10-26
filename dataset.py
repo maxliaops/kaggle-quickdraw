@@ -23,7 +23,7 @@ class TrainData:
         categories.remove('syringe')
 
         with Pool(num_loaders) as pool:
-            df = pd.concat([c for c in pool.map(lambda c: self.load_data(c, samples_per_category), categories)])
+            df = pd.concat([c for c in pool.map(lambda c: TrainData.load_data(c, samples_per_category), categories)])
 
         print("Loaded {} samples".format(len(df)))
 
@@ -43,7 +43,8 @@ class TrainData:
         self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
-    def load_data(self, category, samples_per_category):
+    @staticmethod
+    def load_data(category, samples_per_category):
         print("reading the data for category '{}'".format(category), flush=True)
         return pd.read_hdf(
             "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
