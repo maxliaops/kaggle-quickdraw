@@ -31,11 +31,7 @@ def prepare_strokes_pandas():
 
         print("processing file '{}'".format(csv_file), flush=True)
 
-        df = pd.read_csv(
-            csv_file,
-            index_col="key_id",
-            converters={"drawing": lambda drawing: eval(drawing)})
-
+        df = pd.read_csv(csv_file, index_col="key_id")
         df.to_hdf("quickdraw_train_pd.hdf5", key=category)
 
     shutil.move("quickdraw_train_pd.hdf5", "/storage/kaggle/quickdraw/")
