@@ -1,6 +1,5 @@
 import glob
 from multiprocessing import Pool
-import os
 
 import numpy as np
 import pandas as pd
@@ -47,7 +46,7 @@ class TrainData:
     def load_data(self, category):
         print("reading the data for category '{}'".format(category), flush=True)
         return pd.read_hdf(
-            data_file,
+            "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
             key=category,
             start=0,
             stop=3000)
