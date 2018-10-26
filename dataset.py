@@ -49,7 +49,7 @@ class TrainData:
             "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
             key=category,
             start=0,
-            stop=3000)
+            stop=4300)
 
 
 class TrainDataset(Dataset):
