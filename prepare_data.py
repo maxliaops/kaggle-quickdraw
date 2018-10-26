@@ -1,3 +1,4 @@
+import os
 import shutil
 
 import h5py
@@ -24,6 +25,8 @@ def prepare_strokes_pandas():
 
     for category in categories:
         csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+        if not os.path.isfile(csv_file):
+            print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
 
         print("processing file '{}'".format(csv_file), flush=True)
 
@@ -43,6 +46,8 @@ def prepare_strokes():
     with h5py.File("quickdraw_train.hdf5", "w", libver="latest") as data_file:
         for category in categories:
             csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+            if not os.path.isfile(csv_file):
+                print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
 
             print("processing file '{}'".format(csv_file), flush=True)
 
@@ -74,6 +79,8 @@ def prepare_thumbnails():
     with h5py.File("quickdraw_train_thumbnails.hdf5", "w", libver="latest") as data_file:
         for category in categories:
             csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+            if not os.path.isfile(csv_file):
+                print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
 
             print("processing file '{}'".format(csv_file), flush=True)
 
