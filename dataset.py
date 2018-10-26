@@ -1,5 +1,6 @@
 import glob
 from multiprocessing import Pool
+import os
 
 import numpy as np
 import pandas as pd
@@ -13,15 +14,19 @@ from utils import draw_it
 
 class TrainData:
     def __init__(self, data_dir, num_loaders):
-        data_files = glob.glob("{}/train_simplified_shard_0/*.csv".format(data_dir))
-
-        with Pool(num_loaders) as pool:
-            df = pd.concat([c for c in pool.map(self.load_data, data_files)])
-
-        print("Loaded {} samples".format(len(df)))
-
         with open("{}/categories.txt".format(data_dir)) as categories_file:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
+
+        categories.remove('aircraft carrier')
+        categories.remove('knife')
+        categories.remove('lighter')
+        categories.remove('rifle')
+        categories.remove('syringe')
+
+        with Pool(num_loaders) as pool:
+            df = pd.concat([c for c in pool.map(self.load_data, categories)])
+
+        print("Loaded {} samples".format(len(df)))
 
         df["category"] = [categories.index(word) for word in df.word]
 
@@ -39,13 +44,13 @@ class TrainData:
         self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
-    def load_data(self, data_file):
-        print("reading the data file '{}'".format(data_file), flush=True)
-        return pd.read_csv(
+    def load_data(self, category):
+        print("reading the data for category '{}'".format(category), flush=True)
+        return pd.read_hdf(
             data_file,
-            index_col="key_id",
-            converters={"drawing": lambda drawing: eval(drawing)},
-            nrows=3000)
+            key=category,
+            start=0,
+            stop=3000)
 
 
 class TrainDataset(Dataset):
