@@ -34,6 +34,7 @@ def prepare_strokes_pandas():
         df = pd.read_csv(
             csv_file,
             index_col="key_id",
+            usecols=["key_id", "drawing", "word"],
             converters={"drawing": lambda drawing: eval(drawing)})
 
         df.to_hdf("quickdraw_train_pd.hdf5", key=category)
@@ -56,6 +57,7 @@ def prepare_strokes():
             df = pd.read_csv(
                 csv_file,
                 index_col="key_id",
+                usecols=["key_id", "drawing", "word"],
                 converters={"drawing": lambda drawing: eval(drawing)})
 
             group = data_file.create_group(category)
@@ -90,6 +92,7 @@ def prepare_thumbnails():
             df = pd.read_csv(
                 csv_file,
                 index_col="key_id",
+                usecols=["key_id", "drawing", "word"],
                 converters={"drawing": lambda drawing: draw_it(eval(drawing), size=32)})
 
             thumbnail = np.stack(df.drawing.values)
