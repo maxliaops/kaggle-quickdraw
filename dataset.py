@@ -1,4 +1,5 @@
 import glob
+import itertools
 from multiprocessing import Pool
 
 import numpy as np
@@ -23,7 +24,7 @@ class TrainData:
         categories.remove('syringe')
 
         with Pool(num_loaders) as pool:
-            df = pd.concat([c for c in pool.map(lambda c: TrainData.load_data(c, samples_per_category), categories)])
+            df = pd.concat([c for c in pool.starmap(TrainData.load_data, zip(categories, itertools.repeat(samples_per_category))]))
 
         print("Loaded {} samples".format(len(df)))
 
