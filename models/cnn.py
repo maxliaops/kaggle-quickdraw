@@ -21,7 +21,7 @@ class SimpleCnn(nn.Module):
             Flatten(),
             nn.Linear(64 * last_layer_size ** 2, 1024),
             nn.ReLU(inplace=True),
-            # nn.BatchNorm1d(1024),
+            nn.BatchNorm1d(1024),
             nn.Dropout(0.4),
             nn.Linear(1024, num_classes)
         )
