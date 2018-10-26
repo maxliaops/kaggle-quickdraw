@@ -320,10 +320,10 @@ if __name__ == "__main__":
     argparser.add_argument("--patience", default=10, type=int)
     argparser.add_argument("--optimizer", default="sgd")
     argparser.add_argument("--loss", default="cce")
-    argparser.add_argument("--sgdr_cycle_epochs", default=12, type=int)
+    argparser.add_argument("--sgdr_cycle_epochs", default=10, type=int)
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=0, type=int)
-    argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
+    argparser.add_argument("--sgdr_cycle_end_patience", default=2, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
 
     main()
