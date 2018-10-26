@@ -24,7 +24,7 @@ class TrainData:
         categories.remove('syringe')
 
         with Pool(num_loaders) as pool:
-            df = pd.concat([c for c in pool.starmap(TrainData.load_data, zip(categories, itertools.repeat(samples_per_category))]))
+            df = pd.concat([c for c in pool.starmap(TrainData.load_data, zip(categories, itertools.repeat(samples_per_category)))])
 
         print("Loaded {} samples".format(len(df)))
 
