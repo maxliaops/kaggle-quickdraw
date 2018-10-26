@@ -27,6 +27,7 @@ def prepare_strokes_pandas():
         csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
         if not os.path.isfile(csv_file):
             print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
+            continue
 
         print("processing file '{}'".format(csv_file), flush=True)
 
@@ -48,6 +49,7 @@ def prepare_strokes():
             csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
             if not os.path.isfile(csv_file):
                 print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
+                continue
 
             print("processing file '{}'".format(csv_file), flush=True)
 
@@ -81,6 +83,7 @@ def prepare_thumbnails():
             csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
             if not os.path.isfile(csv_file):
                 print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
+                continue
 
             print("processing file '{}'".format(csv_file), flush=True)
 
