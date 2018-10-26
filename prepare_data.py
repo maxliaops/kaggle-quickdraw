@@ -19,6 +19,24 @@ def flatten_strokes(drawing, axis):
     return stroke
 
 
+def prepare_strokes_pandas():
+    categories = read_categories()
+
+    for category in categories:
+        csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+
+        print("processing file '{}'".format(csv_file), flush=True)
+
+        df = pd.read_csv(
+            csv_file,
+            index_col="key_id",
+            converters={"drawing": lambda drawing: eval(drawing)})
+
+        df.to_hdf("quickdraw_train_pd.hdf5", key=category)
+
+    shutil.move("quickdraw_train_pd.hdf5", "/storage/kaggle/quickdraw/")
+
+
 def prepare_strokes():
     categories = read_categories()
 
@@ -74,4 +92,4 @@ def prepare_thumbnails():
 
 
 if __name__ == "__main__":
-    prepare_strokes()
+    prepare_strokes_pandas()
