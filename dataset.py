@@ -12,7 +12,7 @@ from utils import draw_it
 
 
 class TrainData:
-    def __init__(self, data_dir, num_loaders):
+    def __init__(self, data_dir, samples_per_category, num_loaders):
         with open("{}/categories.txt".format(data_dir)) as categories_file:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
 
@@ -23,7 +23,7 @@ class TrainData:
         categories.remove('syringe')
 
         with Pool(num_loaders) as pool:
-            df = pd.concat([c for c in pool.map(self.load_data, categories)])
+            df = pd.concat([c for c in pool.map(lambda c: self.load_data(c, samples_per_category), categories)])
 
         print("Loaded {} samples".format(len(df)))
 
@@ -43,13 +43,13 @@ class TrainData:
         self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
-    def load_data(self, category):
+    def load_data(self, category, samples_per_category):
         print("reading the data for category '{}'".format(category), flush=True)
         return pd.read_hdf(
             "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
             key=category,
             start=0,
-            stop=4300)
+            stop=samples_per_category)
 
 
 class TrainDataset(Dataset):
