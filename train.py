@@ -42,6 +42,7 @@ def evaluate(model, data_loader, criterion):
 
     loss_sum = 0.0
     accuracy_sum = 0.0
+    accuracy_top1_sum = 0.0
     step_count = 0
 
     with torch.no_grad():
@@ -55,13 +56,15 @@ def evaluate(model, data_loader, criterion):
 
             loss_sum += loss.item()
             accuracy_sum += accuracy(prediction_logits, categories).item()
+            accuracy_top1_sum += accuracy(prediction_logits, categories, topk=1).item()
 
             step_count += 1
 
     loss_avg = loss_sum / step_count
     accuracy_avg = accuracy_sum / step_count
+    accuracy_top1_avg = accuracy_top1_sum / step_count
 
-    return loss_avg, accuracy_avg
+    return loss_avg, accuracy_avg, accuracy_top1_avg
 
 
 def create_optimizer(type, model, lr):
@@ -161,6 +164,7 @@ def main():
     print('{"chart": "best_val_accuracy", "axis": "epoch"}')
     print('{"chart": "val_accuracy", "axis": "epoch"}')
     print('{"chart": "val_loss", "axis": "epoch"}')
+    print('{"chart": "val_accuracy@1", "axis": "epoch"}')
     print('{"chart": "sgdr_cycle", "axis": "epoch"}')
     print('{"chart": "accuracy", "axis": "epoch"}')
     print('{"chart": "loss", "axis": "epoch"}')
@@ -220,7 +224,7 @@ def main():
         train_loss_avg = train_loss_sum / epoch_batch_iter_count
         train_accuracy_avg = train_accuracy_sum / epoch_batch_iter_count
 
-        val_loss_avg, val_accuracy_avg = evaluate(model, val_set_data_loader, criterion)
+        val_loss_avg, val_accuracy_avg, val_accuracy_top1_avg = evaluate(model, val_set_data_loader, criterion)
 
         model_improved_within_sgdr_cycle = val_accuracy_avg > sgdr_cycle_val_accuracy_best_avg
         if model_improved_within_sgdr_cycle:
@@ -279,6 +283,7 @@ def main():
         print('{"chart": "best_val_accuracy", "x": %d, "y": %.4f}' % (epoch + 1, global_val_accuracy_best_avg))
         print('{"chart": "val_loss", "x": %d, "y": %.4f}' % (epoch + 1, val_loss_avg))
         print('{"chart": "val_accuracy", "x": %d, "y": %.4f}' % (epoch + 1, val_accuracy_avg))
+        print('{"chart": "val_accuracy@1", "x": %d, "y": %.4f}' % (epoch + 1, val_accuracy_top1_avg))
         print('{"chart": "sgdr_cycle", "x": %d, "y": %d}' % (epoch + 1, sgdr_cycle_count))
         print('{"chart": "loss", "x": %d, "y": %.4f}' % (epoch + 1, train_loss_avg))
         print('{"chart": "accuracy", "x": %d, "y": %.4f}' % (epoch + 1, train_accuracy_avg))
