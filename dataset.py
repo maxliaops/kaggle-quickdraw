@@ -20,7 +20,7 @@ class DataFrame:
         return len(self.locs)
 
     def category(self, index):
-        return self.data_file["category"][self.locs[index]].item
+        return self.data_file["category"][self.locs[index]].item()
 
     def strokes(self, index):
         stroke_x = self.data_file["stroke_x"][self.locs[index]]
