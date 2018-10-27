@@ -62,17 +62,17 @@ def prepare_strokes():
 
             group = data_file.create_group(category)
 
-            group["category"] = [categories.index(word) for word in df.word]
+            key_id_ds = group.create_dataset("key_id", (len(df),), dtype=np.int32)
+            category_ds = group.create_dataset("category", (len(df),), dtype=np.int16)
+            stroke_x_ds = group.create_dataset("stroke_x", (len(df),), dtype=h5py.special_dtype(vlen=np.uint8))
+            stroke_y_ds = group.create_dataset("stroke_y", (len(df),), dtype=h5py.special_dtype(vlen=np.uint8))
+            stroke_len_ds = group.create_dataset("stroke_len", (len(df),), dtype=np.int32)
 
-            stroke_dtype = h5py.special_dtype(vlen=np.dtype("uint8"))
-
-            stroke_x_ds = group.create_dataset("stroke_x", (len(df),), dtype=stroke_dtype)
+            key_id_ds[:] = df.key_id.values
+            category_ds[:] = [categories.index(word) for word in df.word]
             stroke_x_ds[:] = [flatten_strokes(d, 0) for d in df.drawing]
-
-            stroke_y_ds = group.create_dataset("stroke_y", (len(df),), dtype=stroke_dtype)
             stroke_y_ds[:] = [flatten_strokes(d, 1) for d in df.drawing]
-
-            group["stroke_len"] = [len(d[0]) for d in df.drawing]
+            stroke_len_ds[:] = [len(d[0]) for d in df.drawing]
 
     shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/")
 
