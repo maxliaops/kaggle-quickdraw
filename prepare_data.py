@@ -26,6 +26,9 @@ def calculate_total_data_size():
     size = 0
     for category in categories:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+        if not os.path.isfile(csv_file_name):
+            continue
+
         with open(csv_file_name) as csv_file:
             size += sum(1 for _ in csv_file) - 1
 
