@@ -40,7 +40,16 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def draw_it(strokes, size=256, line_width=7, padding=3):
+def assemble_strokes(x, y, lens):
+    strokes = []
+    offset = 0
+    for i, l in enumerate(lens):
+        strokes.append([x[offset:offset + l], y[offset:offset + l]])
+        offset += l
+    return strokes
+
+
+def draw_strokes(strokes, size=256, line_width=7, padding=3):
     max_size = 255
     scale_factor = (max_size - 2 * padding) / max_size
 
