@@ -32,7 +32,7 @@ class TrainData:
 
         train_set_ids, val_set_ids = train_test_split(
             df.index,
-            test_size=0.3,
+            test_size=0.08,
             stratify=df.word,
             random_state=42
         )
@@ -51,7 +51,7 @@ class TrainData:
             "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
             key=category,
             start=0,
-            stop=samples_per_category)
+            stop=samples_per_category if samples_per_category > 0 else None)
 
 
 class TrainDataset(Dataset):
