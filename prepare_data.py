@@ -105,4 +105,4 @@ def prepare_thumbnails():
 
 
 if __name__ == "__main__":
-    prepare_strokes_pandas()
+    prepare_strokes()
