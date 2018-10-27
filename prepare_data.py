@@ -94,7 +94,7 @@ def prepare_strokes():
 
             offset += len(df)
 
-        print("wrote {} data elements".format(offset - 1))
+        print("wrote {} data elements".format(offset))
 
     shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/quickdraw_train.hdf5")
 
