@@ -68,7 +68,7 @@ def prepare_strokes():
             stroke_y_ds = group.create_dataset("stroke_y", (len(df),), dtype=h5py.special_dtype(vlen=np.uint8))
             stroke_len_ds = group.create_dataset("stroke_len", (len(df),), dtype=np.int32)
 
-            key_id_ds[:] = df.key_id.values
+            key_id_ds[:] = df.index.values
             category_ds[:] = [categories.index(word) for word in df.word]
             stroke_x_ds[:] = [flatten_strokes(d, 0) for d in df.drawing]
             stroke_y_ds[:] = [flatten_strokes(d, 1) for d in df.drawing]
