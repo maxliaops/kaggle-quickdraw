@@ -1,7 +1,4 @@
-import glob
-import itertools
-from multiprocessing import Pool
-
+import h5py
 import numpy as np
 import pandas as pd
 import torch
@@ -9,7 +6,22 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 from torchvision.transforms.functional import normalize
 
-from utils import draw_it
+from utils import draw_strokes, assemble_strokes
+
+
+class DataFrame:
+    def __init__(self, data_file, locs):
+        self.data_file = data_file
+        self.locs = locs
+
+    def category(self, index):
+        return self.data_file["category"][self.locs[index]]
+
+    def strokes(self, index):
+        stroke_x = self.data_file["stroke_x"][self.locs[index]]
+        stroke_y = self.data_file["stroke_y"][self.locs[index]]
+        stroke_len = self.data_file["stroke_len"][self.locs[index]]
+        return assemble_strokes(stroke_x, stroke_y, stroke_len)
 
 
 class TrainData:
@@ -17,31 +29,20 @@ class TrainData:
         with open("{}/categories.txt".format(data_dir)) as categories_file:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
 
-        categories.remove('aircraft carrier')
-        categories.remove('knife')
-        categories.remove('lighter')
-        categories.remove('rifle')
-        categories.remove('syringe')
+        data_file = h5py.File("{}/quickdraw_train.hdf5".format(data_dir), "r", libver="latest")
 
-        with Pool(num_loaders) as pool:
-            df = pd.concat([c for c in pool.starmap(TrainData.load_data, zip(categories, itertools.repeat(samples_per_category)))])
-
-        print("Loaded {} samples".format(len(df)))
-
-        df["category"] = [categories.index(word) for word in df.word]
+        num_samples = len(data_file["category"])
+        print("Loaded {} samples".format(num_samples))
 
         train_set_ids, val_set_ids = train_test_split(
-            df.index,
+            range(num_samples),
             test_size=0.06,
-            stratify=df.word,
+            stratify=data_file["category"].value,
             random_state=42
         )
 
-        train_set_df = df[df.index.isin(train_set_ids)]
-        val_set_df = df[df.index.isin(val_set_ids)]
-
-        self.train_set_df = train_set_df.to_dict(orient="list")
-        self.val_set_df = val_set_df.to_dict(orient="list")
+        self.train_set_df = DataFrame(data_file, train_set_ids)
+        self.val_set_df = DataFrame(data_file, val_set_ids)
         self.categories = categories
 
     @staticmethod
@@ -64,8 +65,8 @@ class TrainDataset(Dataset):
         return len(self.df["drawing"])
 
     def __getitem__(self, index):
-        image = draw_it(self.df["drawing"][index], size=self.image_size)
-        category = self.df["category"][index]
+        image = draw_strokes(self.df.strokes(index))
+        category = self.df.category(index)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)

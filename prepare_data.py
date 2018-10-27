@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from utils import draw_it
+from utils import draw_strokes
 
 
 def read_categories():
@@ -119,7 +119,7 @@ def prepare_thumbnails():
                 csv_file_name,
                 index_col="key_id",
                 usecols=["key_id", "drawing", "word"],
-                converters={"drawing": lambda drawing: draw_it(eval(drawing), size=32)})
+                converters={"drawing": lambda drawing: draw_strokes(eval(drawing), size=32)})
 
             thumbnail = np.stack(df.drawing.values)
 
