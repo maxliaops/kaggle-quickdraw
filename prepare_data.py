@@ -55,7 +55,7 @@ def prepare_strokes_pandas():
 
         df.to_hdf("quickdraw_train_pd.hdf5", key=category)
 
-    shutil.move("quickdraw_train_pd.hdf5", "/storage/kaggle/quickdraw/")
+    shutil.move("quickdraw_train_pd.hdf5", "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5")
 
 
 def prepare_strokes():
@@ -96,7 +96,7 @@ def prepare_strokes():
 
         print("wrote {} data elements".format(offset - 1))
 
-    shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/")
+    shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/quickdraw_train.hdf5")
 
 
 def prepare_thumbnails():
@@ -123,7 +123,7 @@ def prepare_thumbnails():
             group["thumbnail"] = thumbnail
             group["category"] = [categories.index(word) for word in df.word]
 
-    shutil.move("quickdraw_train_thumbnails.hdf5", "/storage/kaggle/quickdraw/")
+    shutil.move("quickdraw_train_thumbnails.hdf5", "/storage/kaggle/quickdraw/quickdraw_train_thumbnails.hdf5")
 
 
 if __name__ == "__main__":
