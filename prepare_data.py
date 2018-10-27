@@ -20,6 +20,10 @@ def flatten_strokes(drawing, axis):
     return stroke
 
 
+def flatten_stroke_lens(drawing):
+    return [len(s[0]) for s in drawing]
+
+
 def calculate_total_data_size():
     categories = read_categories()
 
@@ -68,7 +72,7 @@ def prepare_strokes():
         category_ds = data_file.create_dataset("category", (data_size,), dtype=np.int16)
         stroke_x_ds = data_file.create_dataset("stroke_x", (data_size,), dtype=h5py.special_dtype(vlen=np.uint8))
         stroke_y_ds = data_file.create_dataset("stroke_y", (data_size,), dtype=h5py.special_dtype(vlen=np.uint8))
-        stroke_len_ds = data_file.create_dataset("stroke_len", (data_size,), dtype=np.int32)
+        stroke_len_ds = data_file.create_dataset("stroke_len", (data_size,), dtype=h5py.special_dtype(vlen=np.uint32))
 
         offset = 0
 
@@ -90,7 +94,7 @@ def prepare_strokes():
             category_ds[offset:offset + len(df)] = [categories.index(word) for word in df.word]
             stroke_x_ds[offset:offset + len(df)] = [flatten_strokes(d, 0) for d in df.drawing]
             stroke_y_ds[offset:offset + len(df)] = [flatten_strokes(d, 1) for d in df.drawing]
-            stroke_len_ds[offset:offset + len(df)] = [len(d[0]) for d in df.drawing]
+            stroke_len_ds[offset:offset + len(df)] = [flatten_stroke_lens(d) for d in df.drawing]
 
             offset += len(df)
 
