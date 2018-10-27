@@ -20,19 +20,32 @@ def flatten_strokes(drawing, axis):
     return stroke
 
 
+def calculate_total_data_size():
+    categories = read_categories()
+
+    size = 0
+    for category in categories:
+        csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+        with open(csv_file_name) as csv_file:
+            size += sum(1 for _ in csv_file) - 1
+
+    print("total data size: {}".format(size))
+    return size
+
+
 def prepare_strokes_pandas():
     categories = read_categories()
 
     for category in categories:
-        csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-        if not os.path.isfile(csv_file):
+        csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+        if not os.path.isfile(csv_file_name):
             print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
             continue
 
-        print("processing file '{}'".format(csv_file), flush=True)
+        print("processing file '{}'".format(csv_file_name), flush=True)
 
         df = pd.read_csv(
-            csv_file,
+            csv_file_name,
             index_col="key_id",
             usecols=["key_id", "drawing", "word"],
             converters={"drawing": lambda drawing: eval(drawing)})
@@ -46,33 +59,39 @@ def prepare_strokes():
     categories = read_categories()
 
     with h5py.File("quickdraw_train.hdf5", "w", libver="latest") as data_file:
+        data_size = calculate_total_data_size()
+
+        key_id_ds = data_file.create_dataset("key_id", (data_size,), dtype=np.int32)
+        category_ds = data_file.create_dataset("category", (data_size,), dtype=np.int16)
+        stroke_x_ds = data_file.create_dataset("stroke_x", (data_size,), dtype=h5py.special_dtype(vlen=np.uint8))
+        stroke_y_ds = data_file.create_dataset("stroke_y", (data_size,), dtype=h5py.special_dtype(vlen=np.uint8))
+        stroke_len_ds = data_file.create_dataset("stroke_len", (data_size,), dtype=np.int32)
+
+        offset = 0
+
         for category in categories:
-            csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-            if not os.path.isfile(csv_file):
+            csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+            if not os.path.isfile(csv_file_name):
                 print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
                 continue
 
-            print("processing file '{}'".format(csv_file), flush=True)
+            print("processing file '{}'".format(csv_file_name), flush=True)
 
             df = pd.read_csv(
-                csv_file,
+                csv_file_name,
                 index_col="key_id",
                 usecols=["key_id", "drawing", "word"],
                 converters={"drawing": lambda drawing: eval(drawing)})
 
-            group = data_file.create_group(category)
+            key_id_ds[offset:offset + len(df)] = df.index.values
+            category_ds[offset:offset + len(df)] = [categories.index(word) for word in df.word]
+            stroke_x_ds[offset:offset + len(df)] = [flatten_strokes(d, 0) for d in df.drawing]
+            stroke_y_ds[offset:offset + len(df)] = [flatten_strokes(d, 1) for d in df.drawing]
+            stroke_len_ds[offset:offset + len(df)] = [len(d[0]) for d in df.drawing]
 
-            key_id_ds = group.create_dataset("key_id", (len(df),), dtype=np.int32)
-            category_ds = group.create_dataset("category", (len(df),), dtype=np.int16)
-            stroke_x_ds = group.create_dataset("stroke_x", (len(df),), dtype=h5py.special_dtype(vlen=np.uint8))
-            stroke_y_ds = group.create_dataset("stroke_y", (len(df),), dtype=h5py.special_dtype(vlen=np.uint8))
-            stroke_len_ds = group.create_dataset("stroke_len", (len(df),), dtype=np.int32)
+            offset += len(df)
 
-            key_id_ds[:] = df.index.values
-            category_ds[:] = [categories.index(word) for word in df.word]
-            stroke_x_ds[:] = [flatten_strokes(d, 0) for d in df.drawing]
-            stroke_y_ds[:] = [flatten_strokes(d, 1) for d in df.drawing]
-            stroke_len_ds[:] = [len(d[0]) for d in df.drawing]
+        print("wrote {} data elements".format(offset - 1))
 
     shutil.move("quickdraw_train.hdf5", "/storage/kaggle/quickdraw/")
 
@@ -82,15 +101,15 @@ def prepare_thumbnails():
 
     with h5py.File("quickdraw_train_thumbnails.hdf5", "w", libver="latest") as data_file:
         for category in categories:
-            csv_file = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-            if not os.path.isfile(csv_file):
+            csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
+            if not os.path.isfile(csv_file_name):
                 print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
                 continue
 
-            print("processing file '{}'".format(csv_file), flush=True)
+            print("processing file '{}'".format(csv_file_name), flush=True)
 
             df = pd.read_csv(
-                csv_file,
+                csv_file_name,
                 index_col="key_id",
                 usecols=["key_id", "drawing", "word"],
                 converters={"drawing": lambda drawing: draw_it(eval(drawing), size=32)})
