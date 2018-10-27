@@ -16,6 +16,9 @@ class DataFrame:
         self.data_file = data_file
         self.locs = locs
 
+    def __len__(self):
+        return len(self.locs)
+
     def category(self, index):
         return self.data_file["category"][self.locs[index]]
 
@@ -65,7 +68,7 @@ class TrainDataset(Dataset):
         self.image_size = image_size
 
     def __len__(self):
-        return len(self.df["drawing"])
+        return len(self.df)
 
     def __getitem__(self, index):
         image = draw_strokes(self.df.strokes(index))
