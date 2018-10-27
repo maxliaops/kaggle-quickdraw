@@ -64,7 +64,7 @@ def prepare_strokes():
     with h5py.File("quickdraw_train.hdf5", "w", libver="latest") as data_file:
         data_size = calculate_total_data_size()
 
-        key_id_ds = data_file.create_dataset("key_id", (data_size,), dtype=np.int32)
+        key_id_ds = data_file.create_dataset("key_id", (data_size,), dtype=np.int64)
         category_ds = data_file.create_dataset("category", (data_size,), dtype=np.int16)
         stroke_x_ds = data_file.create_dataset("stroke_x", (data_size,), dtype=h5py.special_dtype(vlen=np.uint8))
         stroke_y_ds = data_file.create_dataset("stroke_y", (data_size,), dtype=h5py.special_dtype(vlen=np.uint8))
