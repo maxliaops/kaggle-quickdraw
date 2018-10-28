@@ -11,13 +11,6 @@ from torchvision.transforms.functional import normalize
 from utils import draw_strokes, read_categories
 
 
-def drawing_to_bytes(drawing):
-    d = []
-    for s in drawing:
-        d.append([bytes(s[0]), bytes(s[1])])
-    return d
-
-
 class TrainData:
     def __init__(self, data_dir, samples_per_category, num_loaders):
         categories = read_categories("{}/categories.txt".format(data_dir))
@@ -45,13 +38,11 @@ class TrainData:
     @staticmethod
     def load_data(category, samples_per_category):
         print("reading the data for category '{}'".format(category), flush=True)
-        df = pd.read_hdf(
+        return pd.read_hdf(
             "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
             key=category,
             start=0,
             stop=samples_per_category if samples_per_category > 0 else None)
-        df.drawing = [drawing_to_bytes(d) for d in df.drawing]
-        return df
 
 
 class TrainDataset(Dataset):
