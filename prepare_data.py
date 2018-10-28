@@ -112,8 +112,7 @@ def prepare_thumbnails():
 def prepare_shards():
     num_shards = 50
 
-    if os.path.isdir("/storage/kaggle/quickdraw/train_simplified_shards"):
-        os.rmdir("/storage/kaggle/quickdraw/train_simplified_shards")
+    shutil.rmtree("/storage/kaggle/quickdraw/train_simplified_shards")
     os.makedirs("/storage/kaggle/quickdraw/train_simplified_shards")
 
     categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
