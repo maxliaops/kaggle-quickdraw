@@ -39,7 +39,7 @@ def create_model(type, input_size, num_classes):
     return nn.DataParallel(model)
 
 
-def evaluate(model, data_loader, criterion):
+def evaluate(model, data_loader, criterion, acc_topk):
     model.eval()
 
     loss_sum = 0.0
@@ -57,7 +57,7 @@ def evaluate(model, data_loader, criterion):
             loss = criterion(prediction_logits, categories)
 
             loss_sum += loss.item()
-            accuracy_sum += accuracy(prediction_logits, categories).item()
+            accuracy_sum += accuracy(prediction_logits, categories, topk=acc_topk).item()
             accuracy_top1_sum += accuracy(prediction_logits, categories, topk=1).item()
 
             step_count += 1
@@ -91,6 +91,7 @@ def main():
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
     samples_per_category = args.samples_per_category
+    acc_topk = args.acc_topk
     num_loaders = args.num_loaders
     num_workers = args.num_workers
     pin_memory = args.pin_memory
@@ -214,7 +215,7 @@ def main():
 
                 with torch.no_grad():
                     train_loss_sum += loss.item()
-                    train_accuracy_sum += accuracy(prediction_logits, categories).item()
+                    train_accuracy_sum += accuracy(prediction_logits, categories, topk=acc_topk).item()
 
                 epoch_batch_iter_count += 1
 
@@ -228,7 +229,8 @@ def main():
         train_loss_avg = train_loss_sum / epoch_batch_iter_count
         train_accuracy_avg = train_accuracy_sum / epoch_batch_iter_count
 
-        val_loss_avg, val_accuracy_avg, val_accuracy_top1_avg = evaluate(model, val_set_data_loader, criterion)
+        val_loss_avg, val_accuracy_avg, val_accuracy_top1_avg = \
+            evaluate(model, val_set_data_loader, criterion, acc_topk)
 
         model_improved_within_sgdr_cycle = val_accuracy_avg > sgdr_cycle_val_accuracy_best_avg
         if model_improved_within_sgdr_cycle:
@@ -322,6 +324,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_size", default=1024, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--samples_per_category", default=0, type=int)
+    argparser.add_argument("--acc_topk", default=3, type=int)
     argparser.add_argument("--num_loaders", default=8, type=int)
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
