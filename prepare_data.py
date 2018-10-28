@@ -142,7 +142,7 @@ def prepare_shards():
             start = s * shard_size
             end = min(start + shard_size, len(df))
             shard_df = df[df.index.isin(indexes[start:end])]
-            with open("/storage/kaggle/quickdraw/train_simplified_shards/shard-{}.csv", "a") as shard_file:
+            with open("/storage/kaggle/quickdraw/train_simplified_shards/shard-{}.csv".format(s), "a") as shard_file:
                 shard_df.to_csv(shard_file)
 
 
