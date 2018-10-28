@@ -23,6 +23,8 @@ class DataFrame:
         return self.data_file["category"][self.locs[index]].item()
 
     def strokes(self, index):
+        assert index < len(self)
+        assert self.locs[index] < len(self.data_file["category"])
         print("{} -> {}".format(index, self.locs[index]))
         stroke_x = self.data_file["stroke_x"][self.locs[index]]
         stroke_y = self.data_file["stroke_y"][self.locs[index]]
