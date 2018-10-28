@@ -5,12 +5,7 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from utils import draw_strokes
-
-
-def read_categories():
-    with open("/storage/kaggle/quickdraw/categories.txt") as categories_file:
-        return [l.rstrip("\n") for l in categories_file.readlines()]
+from utils import draw_strokes, read_categories
 
 
 def flatten_strokes(drawing, axis):
@@ -25,7 +20,7 @@ def flatten_stroke_lens(drawing):
 
 
 def calculate_total_data_size():
-    categories = read_categories()
+    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
 
     size = 0
     for category in categories:
@@ -41,7 +36,7 @@ def calculate_total_data_size():
 
 
 def prepare_strokes_pandas():
-    categories = read_categories()
+    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
 
     for category in categories:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
@@ -68,7 +63,7 @@ def prepare_strokes_pandas():
 
 
 def prepare_strokes():
-    categories = read_categories()
+    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
 
     with h5py.File("quickdraw_train.hdf5", "w", libver="latest") as data_file:
         data_size = calculate_total_data_size()
@@ -109,7 +104,7 @@ def prepare_strokes():
 
 
 def prepare_thumbnails():
-    categories = read_categories()
+    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
 
     with h5py.File("quickdraw_train_thumbnails.hdf5", "w", libver="latest") as data_file:
         for category in categories:

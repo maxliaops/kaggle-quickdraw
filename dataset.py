@@ -8,19 +8,12 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 from torchvision.transforms.functional import normalize
 
-from utils import draw_strokes
+from utils import draw_strokes, read_categories
 
 
 class TrainData:
     def __init__(self, data_dir, samples_per_category, num_loaders):
-        with open("{}/categories.txt".format(data_dir)) as categories_file:
-            categories = [l.rstrip("\n") for l in categories_file.readlines()]
-
-        categories.remove('aircraft carrier')
-        categories.remove('knife')
-        categories.remove('lighter')
-        categories.remove('rifle')
-        categories.remove('syringe')
+        categories = read_categories("{}/categories.txt".format(data_dir))
 
         with Pool(num_loaders) as pool:
             df = pd.concat(
