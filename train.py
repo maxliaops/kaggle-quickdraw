@@ -200,7 +200,7 @@ def main():
                 try:
                     batch = next(train_set_data_loader_iter)
                 except StopIteration:
-                    print("completed epoch {}".format(epoch + 1), flush=True)
+                    print("completed epoch", flush=True)
                     train_set_data_loader_iter = iter(train_set_data_loader)
                     batch = next(train_set_data_loader_iter)
 
