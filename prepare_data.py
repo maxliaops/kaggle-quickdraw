@@ -118,7 +118,7 @@ def prepare_shards():
 
     categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
 
-    for category in categories[0:1]:
+    for category in categories[0:2]:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified/{}.csv".format(category)
 
         print("processing file '{}'".format(csv_file_name), flush=True)
