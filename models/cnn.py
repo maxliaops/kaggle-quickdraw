@@ -2,7 +2,7 @@ import math
 
 import torch.nn as nn
 
-from models.se_blocks import ChannelSEBlock
+from models.se_blocks import SpatialChannelSEBlock
 from .common import Flatten
 
 
@@ -15,6 +15,7 @@ class ConvBlock(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding),
             nn.BatchNorm2d(out_channels),
+            SpatialChannelSEBlock(out_channels),
             nn.ReLU(inplace=True)
         )
 
