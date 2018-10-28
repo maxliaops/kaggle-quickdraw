@@ -17,6 +17,7 @@ from torch.utils.data import DataLoader
 
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
+from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet34, SimpleCnn, MobileNetV2
 from models.drn_wrapper import Drn
 from utils import get_learning_rate, str2bool
@@ -185,6 +186,8 @@ def main():
 
     if loss_type == "cce":
         criterion = nn.CrossEntropyLoss()
+    elif loss_type == "topk_svm":
+        criterion = SmoothSVM(n_classes=len(train_data.categories), k=accuracy_topk, tau=1., alpha=1.)
     else:
         raise Exception("Unsupported loss type: '{}".format(loss_type))
 
