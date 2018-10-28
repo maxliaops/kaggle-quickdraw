@@ -322,7 +322,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--samples_per_category", default=0, type=int)
     argparser.add_argument("--num_loaders", default=8, type=int)
-    argparser.add_argument("--num_workers", default=16, type=int)
+    argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
     argparser.add_argument("--lr_min", default=0.01, type=float)
     argparser.add_argument("--lr_max", default=0.1, type=float)
