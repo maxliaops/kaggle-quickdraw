@@ -51,6 +51,7 @@ class TrainData:
             start=0,
             stop=samples_per_category if samples_per_category > 0 else None)
         df.drawing = [drawing_to_bytes(d) for d in df.drawing]
+        return df
 
 
 class TrainDataset(Dataset):
