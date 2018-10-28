@@ -64,6 +64,15 @@ def flatten_stroke_lens(drawing):
     return [len(s[0]) for s in drawing]
 
 
+def encode_stroke_start(drawing):
+    start = []
+    for s in drawing:
+        s_start = [0] * len(s[0])
+        s_start[0] = 1
+        start.extend(s_start)
+    return start
+
+
 def assemble_strokes(x, y, lens):
     strokes = []
     offset = 0
