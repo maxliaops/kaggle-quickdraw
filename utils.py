@@ -53,6 +53,17 @@ def read_categories(file_path):
         return categories
 
 
+def flatten_strokes(drawing, axis):
+    stroke = []
+    for s in drawing:
+        stroke.extend(s[axis])
+    return stroke
+
+
+def flatten_stroke_lens(drawing):
+    return [len(s[0]) for s in drawing]
+
+
 def assemble_strokes(x, y, lens):
     strokes = []
     offset = 0

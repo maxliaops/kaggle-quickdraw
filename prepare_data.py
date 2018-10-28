@@ -5,18 +5,7 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from utils import draw_strokes, read_categories
-
-
-def flatten_strokes(drawing, axis):
-    stroke = []
-    for s in drawing:
-        stroke.extend(s[axis])
-    return stroke
-
-
-def flatten_stroke_lens(drawing):
-    return [len(s[0]) for s in drawing]
+from utils import draw_strokes, read_categories, flatten_strokes, flatten_stroke_lens
 
 
 def calculate_total_data_size():
