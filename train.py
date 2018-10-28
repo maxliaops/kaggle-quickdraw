@@ -180,8 +180,6 @@ def main():
     else:
         raise Exception("Unsupported loss type: '{}".format(loss_type))
 
-    train_set_data_loader_iter = iter(train_set_data_loader)
-
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
 
@@ -192,6 +190,9 @@ def main():
 
         epoch_batch_iter_count = 0
 
+        # TODO: initialize iter outside the epoch loop and continuously iterate over it
+        train_set_data_loader_iter = iter(train_set_data_loader)
+
         for _ in range(epoch_iterations):
             lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
@@ -201,9 +202,7 @@ def main():
                 try:
                     batch = next(train_set_data_loader_iter)
                 except StopIteration:
-                    print("completed epoch", flush=True)
-                    train_set_data_loader_iter = iter(train_set_data_loader)
-                    batch = next(train_set_data_loader_iter)
+                    break
 
                 images, categories = \
                     batch[0].to(device, non_blocking=True), \
