@@ -2,6 +2,7 @@ import argparse
 import datetime
 import glob
 import os
+import sys
 import time
 from math import ceil
 
@@ -281,8 +282,7 @@ def main():
                 train_accuracy_avg,
                 val_accuracy_avg,
                 int(ckpt_saved),
-                int(sgdr_reset)),
-            flush=True)
+                int(sgdr_reset)))
 
         print('{"chart": "best_val_accuracy", "x": %d, "y": %.4f}' % (epoch + 1, global_val_accuracy_best_avg))
         print('{"chart": "val_loss", "x": %d, "y": %.4f}' % (epoch + 1, val_loss_avg))
@@ -301,6 +301,8 @@ def main():
         if max_sgdr_cycles is not None and sgdr_cycle_count >= max_sgdr_cycles:
             print("early abort due to maximum number of sgdr cycles reached")
             break
+
+        sys.stdout.flush()
 
     optim_summary_writer.close()
     train_summary_writer.close()
