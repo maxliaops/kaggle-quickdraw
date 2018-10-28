@@ -60,7 +60,7 @@ def prepare_strokes_pandas():
                 "drawing": lambda drawing: eval(drawing)
             })
 
-        df.rename(columns={"word": "category"})
+        df = df.rename(columns={"word": "category"})
 
         df.to_hdf("quickdraw_train_pd.hdf5", key=category)
 
