@@ -42,12 +42,16 @@ def create_model(type, input_size, num_classes):
     return nn.DataParallel(model)
 
 
+def zero_item_tensor():
+    return torch.tensor(0.0).float().to(device, non_blocking=True)
+
+
 def evaluate(model, data_loader, criterion, accuracy_topk):
     model.eval()
 
-    loss_sum = 0.0
-    accuracy_sum = 0.0
-    accuracy_top1_sum = 0.0
+    loss_sum_t = zero_item_tensor()
+    accuracy_sum_t = zero_item_tensor()
+    accuracy_top1_sum_t = zero_item_tensor()
     step_count = 0
 
     with torch.no_grad():
@@ -59,15 +63,15 @@ def evaluate(model, data_loader, criterion, accuracy_topk):
             prediction_logits = model(images)
             loss = criterion(prediction_logits, categories)
 
-            loss_sum += loss.item()
-            accuracy_sum += accuracy(prediction_logits, categories, topk=accuracy_topk).item()
-            accuracy_top1_sum += accuracy(prediction_logits, categories, topk=1).item()
+            loss_sum_t += loss
+            accuracy_sum_t += accuracy(prediction_logits, categories, topk=accuracy_topk)
+            accuracy_top1_sum_t += accuracy(prediction_logits, categories, topk=1)
 
             step_count += 1
 
-    loss_avg = loss_sum / step_count
-    accuracy_avg = accuracy_sum / step_count
-    accuracy_top1_avg = accuracy_top1_sum / step_count
+    loss_avg = loss_sum_t.item() / step_count
+    accuracy_avg = accuracy_sum_t.item() / step_count
+    accuracy_top1_avg = accuracy_top1_sum_t.item() / step_count
 
     return loss_avg, accuracy_avg, accuracy_top1_avg
 
@@ -189,8 +193,8 @@ def main():
 
         model.train()
 
-        train_loss_sum = 0.0
-        train_accuracy_sum = 0.0
+        train_loss_sum_t = zero_item_tensor()
+        train_accuracy_sum_t = zero_item_tensor()
 
         epoch_batch_iter_count = 0
 
@@ -217,8 +221,8 @@ def main():
                 loss.backward()
 
                 with torch.no_grad():
-                    train_loss_sum += loss.item()
-                    train_accuracy_sum += accuracy(prediction_logits, categories, topk=accuracy_topk).item()
+                    train_loss_sum_t += loss
+                    train_accuracy_sum_t += accuracy(prediction_logits, categories, topk=accuracy_topk)
 
                 epoch_batch_iter_count += 1
 
@@ -229,8 +233,8 @@ def main():
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
-        train_loss_avg = train_loss_sum / epoch_batch_iter_count
-        train_accuracy_avg = train_accuracy_sum / epoch_batch_iter_count
+        train_loss_avg = train_loss_sum_t.item() / epoch_batch_iter_count
+        train_accuracy_avg = train_accuracy_sum_t.item() / epoch_batch_iter_count
 
         val_loss_avg, val_accuracy_avg, val_accuracy_top1_avg = \
             evaluate(model, val_set_data_loader, criterion, accuracy_topk)
