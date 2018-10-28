@@ -13,6 +13,7 @@ from utils import draw_strokes, assemble_strokes
 
 class DataFrame:
     def __init__(self, data_file, locs):
+        self.category = data_file["category"].value
         self.stroke_x = data_file["stroke_x"].value
         self.stroke_y = data_file["stroke_y"].value
         self.stroke_len = data_file["stroke_len"].value
@@ -22,7 +23,7 @@ class DataFrame:
         return len(self.locs)
 
     def category(self, index):
-        return self.data_file["category"][self.locs[index]].item()
+        return self.category[self.locs[index]].item()
 
     def strokes(self, index):
         stroke_x = self.stroke_x[self.locs[index]]
