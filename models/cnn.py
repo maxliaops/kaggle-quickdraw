@@ -1,3 +1,4 @@
+import math
 import torch.nn as nn
 
 from .common import Flatten
@@ -40,6 +41,11 @@ class SimpleCnn(nn.Module):
             nn.Dropout(0.4),
             nn.Linear(1024, num_classes)
         )
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
 
     def forward(self, x):
         return self.delegate(x)
