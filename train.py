@@ -179,12 +179,12 @@ def main():
     else:
         raise Exception("Unsupported loss type: '{}".format(loss_type))
 
+    train_set_data_loader_iter = iter(train_set_data_loader)
+
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
 
         model.train()
-
-        train_set_data_loader_iter = iter(train_set_data_loader)
 
         train_loss_sum = 0.0
         train_accuracy_sum = 0.0
@@ -200,7 +200,8 @@ def main():
                 try:
                     batch = next(train_set_data_loader_iter)
                 except StopIteration:
-                    break
+                    train_set_data_loader_iter = iter(train_set_data_loader)
+                    batch = next(train_set_data_loader_iter)
 
                 images, categories = \
                     batch[0].to(device, non_blocking=True), \
