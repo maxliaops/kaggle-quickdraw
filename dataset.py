@@ -38,7 +38,7 @@ class TrainData:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
 
         shutil.copy("{}/quickdraw_train.hdf5".format(data_dir), ".")
-        data_file = h5py.File("quickdraw_train.hdf5", "r", libver="latest")
+        data_file = h5py.File("quickdraw_train.hdf5", "r", driver="core", libver="latest")
 
         num_samples = len(data_file["category"])
         print("Loaded {} samples".format(num_samples))
