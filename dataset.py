@@ -13,7 +13,9 @@ from utils import draw_strokes, assemble_strokes
 
 class DataFrame:
     def __init__(self, data_file, locs):
-        self.data_file = data_file
+        self.stroke_x = data_file["stroke_x"].value
+        self.stroke_y = data_file["stroke_y"].value
+        self.stroke_len = data_file["stroke_len"].value
         self.locs = locs
 
     def __len__(self):
@@ -23,9 +25,9 @@ class DataFrame:
         return self.data_file["category"][self.locs[index]].item()
 
     def strokes(self, index):
-        stroke_x = self.data_file["stroke_x"][self.locs[index]]
-        stroke_y = self.data_file["stroke_y"][self.locs[index]]
-        stroke_len = self.data_file["stroke_len"][self.locs[index]]
+        stroke_x = self.stroke_x[self.locs[index]]
+        stroke_y = self.stroke_y[self.locs[index]]
+        stroke_len = self.stroke_len[self.locs[index]]
         return assemble_strokes(stroke_x, stroke_y, stroke_len)
 
 
@@ -35,21 +37,21 @@ class TrainData:
             categories = [l.rstrip("\n") for l in categories_file.readlines()]
 
         shutil.copy("{}/quickdraw_train.hdf5".format(data_dir), ".")
-        data_file = h5py.File("quickdraw_train.hdf5", "r", driver="core", libver="latest")
 
-        num_samples = len(data_file["category"])
-        print("Loaded {} samples".format(num_samples))
+        with h5py.File("quickdraw_train.hdf5", "r", libver="latest") as data_file:
+            num_samples = len(data_file["category"])
+            print("Loaded {} samples".format(num_samples))
 
-        train_set_ids, val_set_ids = train_test_split(
-            range(num_samples),
-            test_size=0.06,
-            stratify=data_file["category"].value,
-            random_state=42
-        )
+            train_set_ids, val_set_ids = train_test_split(
+                range(num_samples),
+                test_size=0.06,
+                stratify=data_file["category"].value,
+                random_state=42
+            )
 
-        self.train_set_df = DataFrame(data_file, train_set_ids)
-        self.val_set_df = DataFrame(data_file, val_set_ids)
-        self.categories = categories
+            self.train_set_df = DataFrame(data_file, train_set_ids)
+            self.val_set_df = DataFrame(data_file, val_set_ids)
+            self.categories = categories
 
     @staticmethod
     def load_data(category, samples_per_category):
