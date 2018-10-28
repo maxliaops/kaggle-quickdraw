@@ -28,8 +28,6 @@ class TrainData:
 
         print("Loaded {} samples".format(len(df)))
 
-        df["category"] = [categories.index(word) for word in df.word]
-
         train_set_ids, val_set_ids = train_test_split(
             df.index,
             test_size=0.06,

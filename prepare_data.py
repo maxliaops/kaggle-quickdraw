@@ -55,7 +55,12 @@ def prepare_strokes_pandas():
             csv_file_name,
             index_col="key_id",
             usecols=["key_id", "drawing", "word"],
-            converters={"drawing": lambda drawing: eval(drawing)})
+            converters={
+                "word": lambda word: categories.index(word),
+                "drawing": lambda drawing: eval(drawing)
+            })
+
+        df.rename(columns={"word": "category"})
 
         df.to_hdf("quickdraw_train_pd.hdf5", key=category)
 
@@ -131,4 +136,4 @@ def prepare_thumbnails():
 
 
 if __name__ == "__main__":
-    prepare_strokes()
+    prepare_strokes_pandas()
