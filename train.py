@@ -18,6 +18,7 @@ from torch.utils.data import DataLoader
 from dataset import TrainData, TrainDataset
 from metrics import accuracy
 from models import ResNet34, SimpleCnn, MobileNetV2
+from models.drn_wrapper import Drn
 from utils import get_learning_rate, str2bool
 
 cudnn.enabled = True
@@ -33,6 +34,8 @@ def create_model(type, input_size, num_classes):
         model = SimpleCnn(input_size=input_size, num_classes=num_classes)
     elif type == "mobilenetv2":
         model = MobileNetV2(input_size=input_size, n_class=num_classes)
+    elif type == "drn":
+        model = Drn(input_size=input_size, num_classes=num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 
