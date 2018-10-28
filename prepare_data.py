@@ -1,3 +1,4 @@
+import math
 import os
 import shutil
 
@@ -14,8 +15,6 @@ def calculate_total_data_size():
     size = 0
     for category in categories:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-        if not os.path.isfile(csv_file_name):
-            continue
 
         with open(csv_file_name) as csv_file:
             size += sum(1 for _ in csv_file) - 1
@@ -29,9 +28,6 @@ def prepare_strokes_pandas():
 
     for category in categories:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-        if not os.path.isfile(csv_file_name):
-            print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
-            continue
 
         print("processing file '{}'".format(csv_file_name), flush=True)
 
@@ -67,9 +63,6 @@ def prepare_strokes():
 
         for category in categories:
             csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-            if not os.path.isfile(csv_file_name):
-                print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
-                continue
 
             print("processing file '{}'".format(csv_file_name), flush=True)
 
@@ -98,9 +91,6 @@ def prepare_thumbnails():
     with h5py.File("quickdraw_train_thumbnails.hdf5", "w", libver="latest") as data_file:
         for category in categories:
             csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
-            if not os.path.isfile(csv_file_name):
-                print("skipping category '{}' for which no CSV file exists".format(category), flush=True)
-                continue
 
             print("processing file '{}'".format(csv_file_name), flush=True)
 
@@ -119,5 +109,42 @@ def prepare_thumbnails():
     shutil.move("quickdraw_train_thumbnails.hdf5", "/storage/kaggle/quickdraw/quickdraw_train_thumbnails.hdf5")
 
 
+def prepare_shards():
+    num_shards = 50
+
+    if os.path.isdir("/storage/kaggle/quickdraw/train_simplified_shards"):
+        os.rmdir("/storage/kaggle/quickdraw/train_simplified_shards")
+    os.makedirs("/storage/kaggle/quickdraw/train_simplified_shards")
+
+    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+
+    for category in categories[0:1]:
+        csv_file_name = "/storage/kaggle/quickdraw/train_simplified/{}.csv".format(category)
+
+        print("processing file '{}'".format(csv_file_name), flush=True)
+
+        df = pd.read_csv(
+            csv_file_name,
+            index_col="key_id",
+            usecols=["key_id", "drawing", "word"],
+            converters={
+                "word": lambda word: categories.index(word),
+                "drawing": lambda drawing: eval(drawing)
+            })
+
+        df = df.rename(columns={"word": "category"})
+
+        shard_size = math.ceil(len(df) / num_shards)
+        indexes = df.index.values
+        np.random.shuffle(indexes)
+
+        for s in range(num_shards):
+            start = s * shard_size
+            end = min(start + shard_size, len(df))
+            shard_df = df[df.index.isin(indexes[start:end])]
+            with open("/storage/kaggle/quickdraw/train_simplified_shards/shard-{}.csv", "a") as shard_file:
+                shard_df.to_csv(shard_file)
+
+
 if __name__ == "__main__":
-    prepare_strokes_pandas()
+    prepare_shards()
