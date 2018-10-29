@@ -5,6 +5,7 @@ import os
 import sys
 import time
 from math import ceil
+import multiprocessing as mp
 
 import psutil
 import torch
@@ -15,7 +16,7 @@ from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
 
-from dataset import TrainDataset, TrainDataProvider
+from dataset import TrainDataset, TrainDataProvider, TrainData
 from metrics import accuracy
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet34, SimpleCnn, MobileNetV2
@@ -332,6 +333,10 @@ def main():
     # train_data_provider.shutdown()
 
 
+def foo():
+    return TrainData("/storage/kaggle/quickdraw", 0)
+
+
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
@@ -360,4 +365,13 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
 
-    main()
+    pool = mp.Pool(processes=4)
+
+    requests = []
+    for s in range(20):
+        requests.append(pool.apply_async(foo, ()))
+
+    dfs = []
+    for request in requests:
+        dfs.append(request.get())
+        print("memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
