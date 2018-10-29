@@ -364,9 +364,11 @@ if __name__ == "__main__":
 
     requests = []
     for s in range(20):
-        requests.append(pool.apply_async(foo, ()))
+        # requests.append(pool.apply_async(foo, ()))
+        requests.append(foo())
 
     dfs = []
     for request in requests:
-        dfs.append(request.get())
+        # dfs.append(request.get())
+        dfs.append(request)
         print("memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
