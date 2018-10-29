@@ -1,3 +1,5 @@
+import datetime
+import time
 from queue import Queue
 from threading import Thread
 
@@ -29,9 +31,16 @@ class TrainDataProvider:
             loader_thread.start()
 
     def get_next(self):
+        start_time = time.time()
+
         self.request_data()
         data = self.data_queue.get()
         self.data_queue.task_done()
+
+        end_time = time.time()
+        print("Time to provide next shard data: %s"
+              % str(datetime.timedelta(seconds=end_time - start_time)), flush=True)
+
         return data
 
     def request_data(self):
@@ -48,6 +57,8 @@ class TrainDataProvider:
 
 class TrainData:
     def __init__(self, data_dir, shard):
+        start_time = time.time()
+
         categories = read_categories("{}/categories.txt".format(data_dir))
 
         data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
@@ -78,6 +89,9 @@ class TrainData:
         self.categories = categories
 
         del df
+
+        end_time = time.time()
+        print("Time to load data: %s" % str(datetime.timedelta(seconds=end_time - start_time)), flush=True)
 
 
 class TrainDataset(Dataset):

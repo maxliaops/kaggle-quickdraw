@@ -119,8 +119,6 @@ def main():
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
 
-    load_start_time = time.time()
-
     train_data_provider = \
         TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_threads=num_shard_loaders)
     train_data = train_data_provider.get_next()
@@ -132,10 +130,6 @@ def main():
     val_set = TrainDataset(train_data.val_set_df, image_size)
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
-
-    load_end_time = time.time()
-    print()
-    print("Load time: %s" % str(datetime.timedelta(seconds=load_end_time - load_start_time)))
 
     model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
