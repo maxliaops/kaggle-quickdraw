@@ -22,7 +22,7 @@ class _SVMLoss(nn.Module):
 
         super(_SVMLoss, self).__init__()
         self.alpha = alpha if alpha is not None else 1
-        self.register_buffer('labels', torch.from_numpy(np.arange(n_classes)))
+        self.register_buffer('labels', torch.from_numpy(np.arange(n_classes)).cuda())
         self.n_classes = n_classes
         self._tau = None
 
