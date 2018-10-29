@@ -13,7 +13,7 @@ from utils import read_categories, draw_strokes
 
 
 def foo():
-    return TrainData("/storage/kaggle/quickdraw", 0)
+    return TrainData("/Users/omallo/Downloads", 0)
 
 
 
@@ -72,7 +72,7 @@ class TrainData:
             data_file_name,
             # index_col="key_id",
             usecols=["category", "drawing"],
-            dtype={"key_id": int, "category": int, "drawing": str},
+            dtype={"key_id": int, "category": int},
             converters={"drawing": lambda drawing: eval(drawing)}
         )
 
