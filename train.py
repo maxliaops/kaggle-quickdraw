@@ -328,7 +328,8 @@ def main():
     print()
     print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)), flush=True)
 
-    train_data_provider.shutdown()
+    # TODO: check how to do proper cleanup
+    # train_data_provider.shutdown()
 
 
 if __name__ == "__main__":
