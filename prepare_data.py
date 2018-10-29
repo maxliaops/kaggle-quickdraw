@@ -171,7 +171,7 @@ def csv_to_npz(csv_file_name):
 def convert_csv_to_npz():
     csv_file_names = glob.glob("/storage/kaggle/quickdraw/train_simplified_shards/*.csv")
 
-    with Pool(10) as pool:
+    with Pool(5) as pool:
         for _ in pool.map(csv_to_npz, csv_file_names):
             pass
 
