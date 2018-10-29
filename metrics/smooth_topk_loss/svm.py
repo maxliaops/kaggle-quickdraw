@@ -118,11 +118,11 @@ class SmoothTopkSVM(_SVMLoss):
 
         loss = 0
         if smooth.data.sum():
-            x_s, y_s = x[smooth[:, None]], y[smooth]
+            x_s, y_s = x[smooth.unsqueeze(1).expand(-1, self.n_classes)], y[smooth]
             x_s = x_s.view(-1, x.size(1))
             loss += self.F_s(x_s, y_s).sum() / x.size(0)
         if hard.data.sum():
-            x_h, y_h = x[hard[:, None]], y[hard]
+            x_h, y_h = x[hard.unsqueeze(1).expand(-1, self.n_classes)], y[hard]
             x_h = x_h.view(-1, x.size(1))
             loss += self.F_h(x_h, y_h).sum() / x.size(0)
 
