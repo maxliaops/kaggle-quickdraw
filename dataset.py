@@ -17,7 +17,6 @@ class TrainDataProvider:
     def __init__(self, data_dir, num_shards, num_shard_preload, num_threads):
         self.data_dir = data_dir
         self.num_shards = num_shards
-        self.fixed_shard = None
 
         self.request_queue = Queue()
         self.data_queue = Queue()
@@ -34,10 +33,6 @@ class TrainDataProvider:
     def get_next(self):
         start_time = time.time()
 
-        if self.fixed_shard is None:
-            self.fixed_shard = TrainData(self.data_dir, 0)
-        return self.fixed_shard
-
         self.request_data()
         data = self.data_queue.get()
         self.data_queue.task_done()
@@ -50,9 +45,8 @@ class TrainDataProvider:
         return data
 
     def request_data(self):
-        pass
-        # self.request_queue.put(self.next_shard)
-        # self.next_shard = (self.next_shard + 1) % self.num_shards
+        self.request_queue.put(self.next_shard)
+        self.next_shard = (self.next_shard + 1) % self.num_shards
 
     def process_data_requests(self):
         while True:
