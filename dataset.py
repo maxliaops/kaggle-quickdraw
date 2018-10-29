@@ -55,6 +55,8 @@ class TrainData:
 
         df = pd.read_csv(
             data_file_name,
+            # index_col="key_id",
+            usecols=["category", "drawing"],
             dtype={"key_id": int, "category": int, "drawing": str},
             converters={"drawing": lambda drawing: eval(drawing)}
         )
@@ -87,7 +89,7 @@ class TrainDataset(Dataset):
 
     def __getitem__(self, index):
         image = draw_strokes(self.df["drawing"][index], size=self.image_size)
-        category = self.df["category"][index].item()
+        category = self.df["category"][index]
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
