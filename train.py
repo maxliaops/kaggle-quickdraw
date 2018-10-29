@@ -360,15 +360,18 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
 
+    # main()
+    # exit(0)
+
     pool = mp.Pool(processes=4)
 
     requests = []
     for s in range(1):
-        # requests.append(pool.apply_async(foo, ()))
-        requests.append(foo())
+        requests.append(pool.apply_async(foo, ()))
+        # requests.append(foo())
 
     dfs = []
     for request in requests:
-        # dfs.append(request.get())
-        dfs.append(request)
+        dfs.append(request.get())
+        # dfs.append(request)
         print("memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
