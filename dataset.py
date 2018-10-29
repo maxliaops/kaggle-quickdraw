@@ -33,8 +33,6 @@ class TrainDataProvider:
     def get_next(self):
         start_time = time.time()
 
-        print("[{}] requested a new shard".format(mp.current_process().name), flush=True)
-
         self.request_data()
         data = self.data_queue.get()
 
@@ -48,6 +46,7 @@ class TrainDataProvider:
         return data
 
     def request_data(self):
+        print("[{}] Placing request for shard {}".format(mp.current_process().name, self.next_shard), flush=True)
         self.request_queue.put(self.next_shard)
         self.next_shard = (self.next_shard + 1) % self.num_shards
 
