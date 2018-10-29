@@ -71,8 +71,8 @@ class TrainData:
         train_set_df = df[df.index.isin(train_set_ids)]
         val_set_df = df[df.index.isin(val_set_ids)]
 
-        self.train_set_df = train_set_df
-        self.val_set_df = val_set_df
+        self.train_set_df = train_set_df.to_dict(orient="list")
+        self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
 
@@ -86,8 +86,8 @@ class TrainDataset(Dataset):
         return len(self.df["drawing"])
 
     def __getitem__(self, index):
-        image = draw_strokes(self.df.iloc[index].drawing, size=self.image_size)
-        category = self.df.iloc[index].category.item()
+        image = draw_strokes(self.df["drawing"][index], size=self.image_size)
+        category = self.df["category"][index].item()
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
