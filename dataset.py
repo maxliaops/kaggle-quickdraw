@@ -53,11 +53,7 @@ class TrainData:
         data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
         print("Reading data file '{}'".format(data_file_name))
 
-        df = pd.read_csv(
-            data_file_name,
-            dtype={"category": np.int16},
-            converters={"drawing": lambda drawing: eval(drawing)}
-        )
+        df = pd.read_csv(data_file_name, converters={"drawing": lambda drawing: eval(drawing)})
 
         print("Loaded {} samples".format(len(df)))
 
