@@ -39,7 +39,8 @@ class TrainDataProvider:
 
         end_time = time.time()
         print("Time to provide next shard data: %s"
-              % str(datetime.timedelta(seconds=end_time - start_time)), flush=True)
+              % str(datetime.timedelta(seconds=end_time - start_time)),
+              flush=True)
 
         return data
 
@@ -91,7 +92,9 @@ class TrainData:
         del df
 
         end_time = time.time()
-        print("Time to load data: %s" % str(datetime.timedelta(seconds=end_time - start_time)), flush=True)
+        print("Time to load data of shard %d: %s"
+              % (shard, str(datetime.timedelta(seconds=end_time - start_time))),
+              flush=True)
 
 
 class TrainDataset(Dataset):
