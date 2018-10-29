@@ -28,7 +28,8 @@ class TrainDataProvider:
         start_time = time.time()
 
         self.request_data()
-        data = self.requests.pop(0).get()
+        # data = self.requests.pop(0).get()
+        data = self.requests.pop(0)
 
         end_time = time.time()
         print("[{}] Time to provide data of shard {}: {}".format(
@@ -42,7 +43,8 @@ class TrainDataProvider:
     def request_data(self):
         next_shard = self.shards[self.next_shard_index]
         print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
-        self.requests.append(self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard)))
+        # self.requests.append(self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard)))
+        self.requests.append(TrainDataProvider.load_data(self.data_dir, next_shard))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     @staticmethod
