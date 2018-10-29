@@ -90,7 +90,7 @@ class TrainData:
             usecols=["category", "drawing"],
             dtype={"key_id": int, "category": int, "drawing": str},
             converters={"drawing": lambda drawing: eval(drawing)},
-            nrows=10000
+            nrows=100000
         )
 
         print("Loaded {} samples".format(len(df)))
