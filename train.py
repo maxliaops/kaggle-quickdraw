@@ -99,6 +99,8 @@ def main():
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
     accuracy_topk = args.accuracy_topk
+    num_shard_preload = args.num_shard_preload
+    num_shard_loaders = args.num_shard_loaders
     num_workers = args.num_workers
     pin_memory = args.pin_memory
     epochs_to_train = args.epochs
@@ -119,7 +121,8 @@ def main():
 
     load_start_time = time.time()
 
-    train_data_provider = TrainDataProvider(input_dir, 50, num_shard_preload=2, num_threads=1)
+    train_data_provider = \
+        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_threads=num_shard_loaders)
     train_data = train_data_provider.get_next()
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
@@ -342,6 +345,8 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_size", default=1024, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--accuracy_topk", default=3, type=int)
+    argparser.add_argument("--num_shard_preload", default=2, type=int)
+    argparser.add_argument("--num_shard_loaders", default=2, type=int)
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
     argparser.add_argument("--lr_min", default=0.01, type=float)
