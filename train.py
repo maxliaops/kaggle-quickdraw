@@ -363,7 +363,7 @@ if __name__ == "__main__":
     pool = mp.Pool(processes=4)
 
     requests = []
-    for s in range(20):
+    for s in range(1):
         # requests.append(pool.apply_async(foo, ()))
         requests.append(foo())
 
