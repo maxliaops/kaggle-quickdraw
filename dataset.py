@@ -48,7 +48,7 @@ class TrainDataProvider:
 
     def load_data(self, shard):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(self.data_dir, shard)
+        return TrainData(self.data_dir, shard).train_set_df
 
 
 class TrainData:
