@@ -99,9 +99,3 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
     image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
 
     return image
-
-
-from dataset import TrainDataset, TrainDataProvider, TrainData
-def foo():
-    return TrainData("/storage/kaggle/quickdraw", 0)
-

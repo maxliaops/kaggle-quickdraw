@@ -12,6 +12,11 @@ from torchvision.transforms.functional import normalize
 from utils import read_categories, draw_strokes
 
 
+def foo():
+    return TrainData("/storage/kaggle/quickdraw", 0)
+
+
+
 class TrainDataProvider:
     def __init__(self, data_dir, num_shards, num_shard_preload, num_workers):
         self.data_dir = data_dir

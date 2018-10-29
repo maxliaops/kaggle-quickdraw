@@ -331,7 +331,7 @@ def main():
 
     # TODO: check how to do proper cleanup
     # train_data_provider.shutdown()
-from utils import foo
+from dataset import foo
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
