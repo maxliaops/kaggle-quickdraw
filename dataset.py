@@ -38,8 +38,8 @@ class TrainDataProvider:
         self.data_queue.task_done()
 
         end_time = time.time()
-        print("Time to provide next shard data: %s"
-              % str(datetime.timedelta(seconds=end_time - start_time)),
+        print("Time to provide data of shard %d: %s"
+              % (data.shard, str(datetime.timedelta(seconds=end_time - start_time))),
               flush=True)
 
         return data
@@ -58,6 +58,8 @@ class TrainDataProvider:
 
 class TrainData:
     def __init__(self, data_dir, shard):
+        self.shard = shard
+
         start_time = time.time()
 
         categories = read_categories("{}/categories.txt".format(data_dir))
