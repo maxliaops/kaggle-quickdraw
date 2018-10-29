@@ -18,25 +18,18 @@ class TrainDataProvider:
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
 
-        self.request_queue = mp.Queue()
-        self.data_queue = mp.Queue()
+        self.pool = mp.Pool(processes=num_workers)
+        self.requests = []
 
         self.next_shard_index = 0
         for _ in range(num_shard_preload):
             self.request_data()
 
-        self.loader_processes = []
-        for _ in range(num_workers):
-            loader_process = mp.Process(target=self.process_data_requests, args=(self.data_dir, self.request_queue, self.data_queue))
-            loader_process.daemon = True
-            loader_process.start()
-            self.loader_processes.append(loader_process)
-
     def get_next(self):
         start_time = time.time()
 
         self.request_data()
-        data = self.data_queue.get()
+        data = self.requests.pop(0).get()
 
         end_time = time.time()
         print("[{}] Time to provide data of shard {}: {}".format(
@@ -50,27 +43,12 @@ class TrainDataProvider:
     def request_data(self):
         next_shard = self.shards[self.next_shard_index]
         print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
-        self.request_queue.put(next_shard)
+        self.requests.append(self.pool.apply_async(self.load_data, (next_shard,)))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
-    def shutdown(self):
-        self.request_queue.close()
-        self.request_queue.join_thread()
-
-        self.data_queue.close()
-        self.data_queue.join_thread()
-
-        for loader_process in self.loader_processes:
-            loader_process.shutdown()
-
-    @staticmethod
-    def process_data_requests(data_dir, request_queue, data_queue):
-        while True:
-            print("[{}] Checking for new request".format(mp.current_process().name), flush=True)
-            shard = request_queue.get()
-            print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-            data = TrainData(data_dir, shard)
-            data_queue.put(data)
+    def load_data(self, shard):
+        print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
+        return TrainData(self.data_dir, shard)
 
 
 class TrainData:
