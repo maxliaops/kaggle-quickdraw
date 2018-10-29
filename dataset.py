@@ -77,6 +77,8 @@ class TrainData:
         self.val_set_df = val_set_df.to_dict(orient="list")
         self.categories = categories
 
+        del df
+
 
 class TrainDataset(Dataset):
     def __init__(self, df, image_size):
