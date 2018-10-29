@@ -328,8 +328,7 @@ def main():
     print()
     print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)), flush=True)
 
-    # TODO: check whether joining and terminating the processes is necessary or whether this happens automatically
-    # train_data_provider.shutdown()
+    train_data_provider.shutdown()
 
 
 if __name__ == "__main__":

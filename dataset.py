@@ -58,7 +58,7 @@ class TrainDataProvider:
         self.data_queue.join_thread()
 
         for loader_process in self.loader_processes:
-            loader_process.join()
+            loader_process.shutdown()
 
     @staticmethod
     def process_data_requests(data_dir, request_queue, data_queue):
