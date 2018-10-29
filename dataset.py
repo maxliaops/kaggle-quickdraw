@@ -51,7 +51,13 @@ class TrainData:
         categories = read_categories("{}/categories.txt".format(data_dir))
 
         data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
-        df = pd.read_csv(data_file_name, converters={"drawing": lambda drawing: eval(drawing)})
+        print("Reading data file '{}'".format(data_file_name))
+
+        df = pd.read_csv(
+            data_file_name,
+            dtype={"category": np.int16},
+            converters={"drawing": lambda drawing: eval(drawing)}
+        )
 
         print("Loaded {} samples".format(len(df)))
 
@@ -98,5 +104,4 @@ class TrainDataset(Dataset):
         return torch.from_numpy((image / 255.)).float()
 
     def category_to_tensor(self, category):
-        print("---> category: '{}'".format(category), flush=True)
         return torch.tensor(category).long()
