@@ -12,7 +12,7 @@ from utils import read_categories, draw_strokes
 
 
 class TrainDataProvider:
-    def __init__(self, data_dir, num_shards, num_shard_preload=2, num_threads=1):
+    def __init__(self, data_dir, num_shards, num_shard_preload, num_threads):
         self.data_dir = data_dir
         self.num_shards = num_shards
 

@@ -15,7 +15,7 @@ from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
 
-from dataset import TrainData, TrainDataset
+from dataset import TrainDataset, TrainDataProvider
 from metrics import accuracy
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet34, SimpleCnn, MobileNetV2
@@ -119,7 +119,8 @@ def main():
 
     load_start_time = time.time()
 
-    train_data = TrainData(input_dir, 0)
+    train_data_provider = TrainDataProvider(input_dir, 50, num_shard_preload=2, num_threads=1)
+    train_data = train_data_provider.get_next()
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = \
@@ -233,6 +234,15 @@ def main():
             batch_count += 1
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
+
+        # TODO: recalculate epoch_iterations and maybe other values?
+        train_data = train_data_provider.get_next()
+        train_set.df = train_data.train_set_df
+        val_set.df = train_data.val_set_df
+        # TODO: avoid duplicate code
+        epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
+        if max_epoch_iterations > 0:
+            epoch_iterations = min(epoch_iterations, max_epoch_iterations)
 
         train_loss_avg = train_loss_sum_t.item() / epoch_batch_iter_count
         train_accuracy_avg = train_accuracy_sum_t.item() / epoch_batch_iter_count
