@@ -1,7 +1,6 @@
 import datetime
+import multiprocessing as mp
 import time
-from queue import Queue
-from threading import Thread
 
 import numpy as np
 import pandas as pd
@@ -14,28 +13,28 @@ from utils import read_categories, draw_strokes
 
 
 class TrainDataProvider:
-    def __init__(self, data_dir, num_shards, num_shard_preload, num_threads):
+    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers):
         self.data_dir = data_dir
         self.num_shards = num_shards
 
-        self.request_queue = Queue()
-        self.data_queue = Queue()
+        self.request_queue = mp.Queue()
+        self.data_queue = mp.Queue()
 
         self.next_shard = 0
         for _ in range(num_shard_preload):
             self.request_data()
 
-        for _ in range(num_threads):
-            loader_thread = Thread(target=self.process_data_requests)
-            loader_thread.daemon = True
-            loader_thread.start()
+        self.loader_processes = []
+        for _ in range(num_workers):
+            loader_process = mp.Process(target=self.process_data_requests, args=(self.data_dir, self.request_queue, self.data_queue))
+            loader_process.start()
+            self.loader_processes.append(loader_process)
 
     def get_next(self):
         start_time = time.time()
 
         self.request_data()
         data = self.data_queue.get()
-        self.data_queue.task_done()
 
         end_time = time.time()
         print("Time to provide data of shard %d: %s"
@@ -48,12 +47,22 @@ class TrainDataProvider:
         self.request_queue.put(self.next_shard)
         self.next_shard = (self.next_shard + 1) % self.num_shards
 
-    def process_data_requests(self):
+    def shutdown(self):
+        self.request_queue.close()
+        self.request_queue.join_thread()
+
+        self.data_queue.close()
+        self.data_queue.join_thread()
+
+        for loader_process in self.loader_processes:
+            loader_process.join()
+
+    @staticmethod
+    def process_data_requests(data_dir, request_queue, data_queue):
         while True:
-            shard = self.request_queue.get()
-            data = TrainData(self.data_dir, shard)
-            self.data_queue.put(data)
-            self.request_queue.task_done()
+            shard = request_queue.get()
+            data = TrainData(data_dir, shard)
+            data_queue.put(data)
 
 
 class TrainData:

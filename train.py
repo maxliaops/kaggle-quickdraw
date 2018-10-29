@@ -120,7 +120,7 @@ def main():
     max_sgdr_cycles = args.max_sgdr_cycles
 
     train_data_provider = \
-        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_threads=num_shard_loaders)
+        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders)
     train_data = train_data_provider.get_next()
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
@@ -327,6 +327,8 @@ def main():
     train_end_time = time.time()
     print()
     print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)))
+
+    train_data_provider.shutdown()
 
 
 if __name__ == "__main__":
