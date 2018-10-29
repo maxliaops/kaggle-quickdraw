@@ -190,7 +190,7 @@ def main():
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
 
-        print("memory used: {}".format(psutil.virtual_memory().used >> 30), flush=True)
+        print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
 
         model.train()
 
@@ -236,8 +236,8 @@ def main():
 
         # TODO: recalculate epoch_iterations and maybe other values?
         train_data = train_data_provider.get_next()
-        train_set.df = train_data.train_set_df
-        val_set.df = train_data.val_set_df
+        # train_set.df = train_data.train_set_df
+        # val_set.df = train_data.val_set_df
         # TODO: avoid duplicate code
         epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
         if max_epoch_iterations > 0:
@@ -310,7 +310,7 @@ def main():
         print('{"chart": "loss", "x": %d, "y": %.4f}' % (epoch + 1, train_loss_avg))
         print('{"chart": "accuracy", "x": %d, "y": %.4f}' % (epoch + 1, train_accuracy_avg))
         print('{"chart": "lr_scaled", "x": %d, "y": %.4f}' % (epoch + 1, 1000 * get_learning_rate(optimizer)))
-        print('{"chart": "mem_used", "x": %d, "y": %.2f}' % (epoch + 1, psutil.virtual_memory().used >> 30))
+        print('{"chart": "mem_used", "x": %d, "y": %.2f}' % (epoch + 1, psutil.virtual_memory().used / 2 ** 30))
 
         sys.stdout.flush()
 
