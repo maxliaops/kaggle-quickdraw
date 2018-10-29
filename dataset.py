@@ -62,6 +62,7 @@ class TrainDataProvider:
     @staticmethod
     def process_data_requests(data_dir, request_queue, data_queue):
         while True:
+            print("Checking for new request inside processs '{}'".format(mp.current_process().name))
             shard = request_queue.get()
             print("Loading data for shard {} inside processs '{}'".format(shard, mp.current_process().name))
             data = TrainData(data_dir, shard)
