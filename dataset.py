@@ -51,12 +51,6 @@ class TrainDataProvider:
         self.next_shard = (self.next_shard + 1) % self.num_shards
 
     def shutdown(self):
-        self.request_queue.close()
-        self.request_queue.join_thread()
-
-        self.data_queue.close()
-        self.data_queue.join_thread()
-
         for loader_process in self.loader_processes:
             loader_process.shutdown()
 
