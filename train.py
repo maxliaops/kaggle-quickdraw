@@ -332,6 +332,7 @@ def main():
     # TODO: check how to do proper cleanup
     # train_data_provider.shutdown()
 from dataset import foo
+import gc
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
@@ -377,3 +378,7 @@ if __name__ == "__main__":
         dfs.append(request.get())
         # dfs.append(request)
         print("memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
+
+    print("end memory used (before gc): {}".format(psutil.virtual_memory().used / 2 ** 30))
+    gc.collect()
+    print("end memory used (after gc): {}".format(psutil.virtual_memory().used / 2 ** 30))
