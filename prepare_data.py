@@ -151,7 +151,7 @@ def prepare_shards():
 
 
 def csv_to_npz(csv_file_name):
-    print("processing file '{}'".format(csv_file_name), flush=True)
+    print("reading file '{}'".format(csv_file_name), flush=True)
 
     df = pd.read_csv(
         csv_file_name,
@@ -162,7 +162,8 @@ def csv_to_npz(csv_file_name):
     drawing = np.array(df.drawing.values)
     category = np.array(df.category.values, dtype=np.int16)
 
-    npz_file_name = csv_file_name[-4:] + ".npz"
+    npz_file_name = csv_file_name[:-4] + ".npz"
+    print("writing file '{}'".format(npz_file_name), flush=True)
     np.savez_compressed(npz_file_name, key_id=key_id, drawing=drawing, category=category)
 
     return None
