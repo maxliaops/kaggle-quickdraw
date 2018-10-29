@@ -310,15 +310,15 @@ def main():
         print('{"chart": "lr_scaled", "x": %d, "y": %.4f}' % (epoch + 1, 1000 * get_learning_rate(optimizer)))
         print('{"chart": "mem_used", "x": %d, "y": %.2f}' % (epoch + 1, psutil.virtual_memory().used / 2 ** 30))
 
+        sys.stdout.flush()
+
         if sgdr_reset and epoch - epoch_of_last_improval >= patience:
-            print("early abort due to lack of improval")
+            print("early abort due to lack of improval", flush=True)
             break
 
         if max_sgdr_cycles is not None and sgdr_cycle_count >= max_sgdr_cycles:
-            print("early abort due to maximum number of sgdr cycles reached")
+            print("early abort due to maximum number of sgdr cycles reached", flush=True)
             break
-
-        sys.stdout.flush()
 
     optim_summary_writer.close()
     train_summary_writer.close()
@@ -326,9 +326,10 @@ def main():
 
     train_end_time = time.time()
     print()
-    print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)))
+    print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)), flush=True)
 
-    train_data_provider.shutdown()
+    # TODO: check whether joining and terminating the processes is necessary or whether this happens automatically
+    # train_data_provider.shutdown()
 
 
 if __name__ == "__main__":
