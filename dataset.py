@@ -3,7 +3,6 @@ import multiprocessing as mp
 import time
 
 import numpy as np
-import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
@@ -60,34 +59,28 @@ class TrainData:
 
         categories = read_categories("{}/categories.txt".format(data_dir))
 
-        data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
+        data_file_name = "{}/train_simplified_shards/shard-{}.npz".format(data_dir, shard)
         print("Reading data file '{}'".format(data_file_name), flush=True)
 
-        df = pd.read_csv(
-            data_file_name,
-            # index_col="key_id",
-            usecols=["category", "drawing"],
-            dtype={"key_id": int, "category": int},
-            converters={"drawing": lambda drawing: eval(drawing)}
-        )
+        data = np.load(data_file_name)
+        data_category = data["category"]
+        data_drawing = data["drawing"]
 
-        print("Loaded {} samples".format(len(df)))
+        print("Loaded {} samples".format(len(data_category)))
 
-        train_set_ids, val_set_ids = train_test_split(
-            df.index,
+        train_categories, val_categories, train_drawing, val_drawing = train_test_split(
+            data_category,
+            data_drawing,
             test_size=0.3,
-            stratify=df.category,
+            stratify=data_category,
             random_state=42
         )
 
-        train_set_df = df[df.index.isin(train_set_ids)]
-        val_set_df = df[df.index.isin(val_set_ids)]
-
-        self.train_set_df = train_set_df.to_dict(orient="list")
-        self.val_set_df = val_set_df.to_dict(orient="list")
+        self.train_set_df = {"category": train_categories, "drawing": train_drawing}
+        self.val_set_df = {"category": val_categories, "drawing": val_drawing}
         self.categories = categories
 
-        del df
+        data.close()
 
         end_time = time.time()
         print("Time to load data of shard {}: {}".format(shard, str(datetime.timedelta(seconds=end_time - start_time))),
@@ -104,15 +97,16 @@ class TrainDataset(Dataset):
         return len(self.df["drawing"])
 
     def __getitem__(self, index):
-        image = draw_strokes(self.df["drawing"][index], size=self.image_size)
+        drawing = self.df["drawing"][index]
         category = self.df["category"][index]
+
+        image = self.df["image"][index] if "image" in self.df else draw_strokes(drawing, size=self.image_size)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
 
         image_mean = 0.0
         image_stdev = 1.0
-
         image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
 
         return image, category
