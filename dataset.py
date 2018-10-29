@@ -61,6 +61,7 @@ class TrainDataProvider:
     def process_data_requests(data_dir, request_queue, data_queue):
         while True:
             shard = request_queue.get()
+            print("Loading data for shard {} inside processs '{}'".format(shard, mp.current_process().name))
             data = TrainData(data_dir, shard)
             data_queue.put(data)
 
