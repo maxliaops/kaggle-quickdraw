@@ -98,5 +98,5 @@ class TrainDataset(Dataset):
         return torch.from_numpy((image / 255.)).float()
 
     def category_to_tensor(self, category):
-        print("---> category: '{}'".format(category))
+        print("---> category: '{}'".format(category), flush=True)
         return torch.tensor(category).long()
