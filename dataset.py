@@ -87,7 +87,7 @@ class TrainDataset(Dataset):
 
     def __getitem__(self, index):
         image = draw_strokes(self.df.iloc[index].drawing, size=self.image_size)
-        category = self.df.iloc[index].category
+        category = self.df.iloc[index].category.item()
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
