@@ -70,7 +70,7 @@ class TrainData:
 
         categories = read_categories("{}/categories.txt".format(data_dir))
 
-        data_file_name = "{}/train_simplified_shards/shard-{}.csv.gz".format(data_dir, shard)
+        data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
         print("Reading data file '{}'".format(data_file_name))
 
         df = pd.read_csv(
