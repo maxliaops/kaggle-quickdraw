@@ -1,5 +1,5 @@
-import itertools
-from multiprocessing import Pool
+from queue import Queue
+from threading import Thread
 
 import numpy as np
 import pandas as pd
@@ -11,19 +11,53 @@ from torchvision.transforms.functional import normalize
 from utils import read_categories, draw_strokes
 
 
+class TrainDataProvider:
+    def __init__(self, data_dir, num_shards, num_shard_preload=2, num_threads=1):
+        self.data_dir = data_dir
+        self.num_shards = num_shards
+
+        self.request_queue = Queue()
+        self.data_queue = Queue()
+
+        self.next_shard = 0
+        for _ in range(num_shard_preload):
+            self.request_data()
+
+        for _ in range(num_threads):
+            loader_thread = Thread(target=self.process_data_requests)
+            loader_thread.daemon = True
+            loader_thread.start()
+
+    def get(self):
+        data = self.data_queue.get()
+        self.data_queue.task_done()
+        self.request_data()
+        return data
+
+    def request_data(self):
+        self.request_queue.put(self.next_shard)
+        self.next_shard = (self.next_shard + 1) % self.num_shards
+
+    def process_data_requests(self):
+        while True:
+            shard = self.request_queue.get()
+            data = TrainData(self.data_dir, shard)
+            self.data_queue.put(data)
+            self.request_queue.task_done()
+
+
 class TrainData:
-    def __init__(self, data_dir, samples_per_category, num_loaders):
+    def __init__(self, data_dir, shard):
         categories = read_categories("{}/categories.txt".format(data_dir))
 
-        with Pool(num_loaders) as pool:
-            df = pd.concat(
-                [c for c in pool.starmap(TrainData.load_data, zip(categories, itertools.repeat(samples_per_category)))])
+        data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
+        df = pd.read_csv(data_file_name, converters={"drawing": lambda drawing: eval(drawing)})
 
         print("Loaded {} samples".format(len(df)))
 
         train_set_ids, val_set_ids = train_test_split(
             df.index,
-            test_size=0.06,
+            test_size=0.1,
             stratify=df.category,
             random_state=42
         )
@@ -31,18 +65,9 @@ class TrainData:
         train_set_df = df[df.index.isin(train_set_ids)]
         val_set_df = df[df.index.isin(val_set_ids)]
 
-        self.train_set_df = train_set_df.to_dict(orient="list")
-        self.val_set_df = val_set_df.to_dict(orient="list")
+        self.train_set_df = train_set_df
+        self.val_set_df = val_set_df
         self.categories = categories
-
-    @staticmethod
-    def load_data(category, samples_per_category):
-        print("reading the data for category '{}'".format(category), flush=True)
-        return pd.read_hdf(
-            "/storage/kaggle/quickdraw/quickdraw_train_pd.hdf5",
-            key=category,
-            start=0,
-            stop=samples_per_category if samples_per_category > 0 else None)
 
 
 class TrainDataset(Dataset):
@@ -55,8 +80,8 @@ class TrainDataset(Dataset):
         return len(self.df["drawing"])
 
     def __getitem__(self, index):
-        image = draw_strokes(self.df["drawing"][index], size=self.image_size)
-        category = self.df["category"][index]
+        image = draw_strokes(self.df.iloc[index].drawing, size=self.image_size)
+        category = self.df.iloc[index].category
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)

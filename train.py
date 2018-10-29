@@ -98,9 +98,7 @@ def main():
     image_size = args.image_size
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
-    samples_per_category = args.samples_per_category
     accuracy_topk = args.accuracy_topk
-    num_loaders = args.num_loaders
     num_workers = args.num_workers
     pin_memory = args.pin_memory
     epochs_to_train = args.epochs
@@ -121,7 +119,7 @@ def main():
 
     load_start_time = time.time()
 
-    train_data = TrainData(input_dir, samples_per_category, num_loaders)
+    train_data = TrainData(input_dir, 0)
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = \
@@ -330,12 +328,10 @@ if __name__ == "__main__":
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--image_size", default=32, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
-    argparser.add_argument("--max_epoch_iterations", default=700, type=int)
+    argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
-    argparser.add_argument("--samples_per_category", default=0, type=int)
     argparser.add_argument("--accuracy_topk", default=3, type=int)
-    argparser.add_argument("--num_loaders", default=8, type=int)
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
     argparser.add_argument("--lr_min", default=0.01, type=float)
