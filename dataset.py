@@ -43,12 +43,13 @@ class TrainDataProvider:
     def request_data(self):
         next_shard = self.shards[self.next_shard_index]
         print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
-        self.requests.append(self.pool.apply_async(self.load_data, (next_shard,)))
+        self.requests.append(self.pool.apply_async(TrainDataProvider.load_data, (next_shard,)))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
-    def load_data(self, shard):
+    @staticmethod
+    def load_data(shard):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return "foo"
+        return TrainData(self.data_dir, shard).train_set_df
 
 
 class TrainData:
