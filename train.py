@@ -5,7 +5,6 @@ import os
 import sys
 import time
 from math import ceil
-import multiprocessing as mp
 
 import psutil
 import torch
@@ -16,7 +15,7 @@ from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
 
-from dataset import TrainDataset, TrainDataProvider, TrainData
+from dataset import TrainDataset, TrainDataProvider
 from metrics import accuracy
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet34, SimpleCnn, MobileNetV2
@@ -331,8 +330,8 @@ def main():
 
     # TODO: check how to do proper cleanup
     # train_data_provider.shutdown()
-from dataset import foo
-import gc
+
+
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
@@ -361,24 +360,4 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
 
-    # main()
-    # exit(0)
-
-    print("start memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
-
-    pool = mp.Pool(processes=4)
-
-    requests = []
-    for s in range(1):
-        requests.append(pool.apply_async(foo, ()))
-        # requests.append(foo())
-
-    dfs = []
-    for request in requests:
-        dfs.append(request.get())
-        # dfs.append(request)
-        print("memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
-
-    print("end memory used (before gc): {}".format(psutil.virtual_memory().used / 2 ** 30))
-    gc.collect()
-    print("end memory used (after gc): {}".format(psutil.virtual_memory().used / 2 ** 30))
+    main()
