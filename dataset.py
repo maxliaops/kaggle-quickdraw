@@ -27,9 +27,10 @@ class TrainDataProvider:
     def get_next(self):
         start_time = time.time()
 
-        self.request_data()
+        if len(self.requests) == 0:
+            self.request_data()
         # data = self.requests.pop(0).get()
-        data = self.requests.pop(0)
+        data = self.requests[0]
 
         end_time = time.time()
         print("[{}] Time to provide data of shard {}: {}".format(
