@@ -116,4 +116,4 @@ class TrainDataset(Dataset):
         return torch.from_numpy((image / 255.)).float()
 
     def category_to_tensor(self, category):
-        return torch.tensor(category).long()
+        return torch.tensor(category.item()).long()
