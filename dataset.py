@@ -15,12 +15,13 @@ from utils import read_categories, draw_strokes
 class TrainDataProvider:
     def __init__(self, data_dir, num_shards, num_shard_preload, num_workers):
         self.data_dir = data_dir
-        self.num_shards = num_shards
+        self.shards = list(range(num_shards))
+        np.random.shuffle(self.shards)
 
         self.request_queue = mp.Queue()
         self.data_queue = mp.Queue()
 
-        self.next_shard = 0
+        self.next_shard_index = 0
         for _ in range(num_shard_preload):
             self.request_data()
 
@@ -47,9 +48,10 @@ class TrainDataProvider:
         return data
 
     def request_data(self):
-        print("[{}] Placing request for shard {}".format(mp.current_process().name, self.next_shard), flush=True)
-        self.request_queue.put(self.next_shard)
-        self.next_shard = (self.next_shard + 1) % self.num_shards
+        next_shard = self.shards[self.next_shard_index]
+        print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
+        self.request_queue.put(next_shard)
+        self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     def shutdown(self):
         self.request_queue.close()
