@@ -29,9 +29,9 @@ class TrainDataProvider:
             loader_thread.start()
 
     def get_next(self):
+        self.request_data()
         data = self.data_queue.get()
         self.data_queue.task_done()
-        self.request_data()
         return data
 
     def request_data(self):
