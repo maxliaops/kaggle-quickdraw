@@ -33,6 +33,8 @@ class TrainDataProvider:
     def get_next(self):
         start_time = time.time()
 
+        print("requested a new shard inside process '{}'".format(mp.current_process().name))
+
         self.request_data()
         data = self.data_queue.get()
 
