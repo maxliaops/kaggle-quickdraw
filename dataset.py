@@ -33,15 +33,17 @@ class TrainDataProvider:
     def get_next(self):
         start_time = time.time()
 
-        print("requested a new shard inside process '{}'".format(mp.current_process().name))
+        print("[{}] requested a new shard".format(mp.current_process().name), flush=True)
 
         self.request_data()
         data = self.data_queue.get()
 
         end_time = time.time()
-        print("Time to provide data of shard %d: %s"
-              % (data.shard, str(datetime.timedelta(seconds=end_time - start_time))),
-              flush=True)
+        print("[{}] Time to provide data of shard {}: {}".format(
+            mp.current_process().name,
+            data.shard,
+            str(datetime.timedelta(seconds=end_time - start_time))),
+            flush=True)
 
         return data
 
@@ -62,9 +64,9 @@ class TrainDataProvider:
     @staticmethod
     def process_data_requests(data_dir, request_queue, data_queue):
         while True:
-            print("Checking for new request inside processs '{}'".format(mp.current_process().name))
+            print("[{}] Checking for new request".format(mp.current_process().name), flush=True)
             shard = request_queue.get()
-            print("Loading data for shard {} inside processs '{}'".format(shard, mp.current_process().name))
+            print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
             data = TrainData(data_dir, shard)
             data_queue.put(data)
 
@@ -78,7 +80,7 @@ class TrainData:
         categories = read_categories("{}/categories.txt".format(data_dir))
 
         data_file_name = "{}/train_simplified_shards/shard-{}.csv".format(data_dir, shard)
-        print("Reading data file '{}'".format(data_file_name))
+        print("Reading data file '{}'".format(data_file_name), flush=True)
 
         df = pd.read_csv(
             data_file_name,
@@ -108,8 +110,7 @@ class TrainData:
         del df
 
         end_time = time.time()
-        print("Time to load data of shard %d: %s"
-              % (shard, str(datetime.timedelta(seconds=end_time - start_time))),
+        print("Time to load data of shard {}: {}".format(shard, str(datetime.timedelta(seconds=end_time - start_time))),
               flush=True)
 
 
