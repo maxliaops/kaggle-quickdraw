@@ -190,6 +190,8 @@ def main():
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
 
+        print("memory used: {}".format(psutil.virtual_memory().used >> 30), flush=True)
+
         model.train()
 
         train_loss_sum_t = zero_item_tensor()
@@ -308,7 +310,7 @@ def main():
         print('{"chart": "loss", "x": %d, "y": %.4f}' % (epoch + 1, train_loss_avg))
         print('{"chart": "accuracy", "x": %d, "y": %.4f}' % (epoch + 1, train_accuracy_avg))
         print('{"chart": "lr_scaled", "x": %d, "y": %.4f}' % (epoch + 1, 1000 * get_learning_rate(optimizer)))
-        print('{"chart": "mem_used", "x": %d, "y": %.2f}' % (epoch + 1, psutil.virtual_memory().used / 2 ** 30))
+        print('{"chart": "mem_used", "x": %d, "y": %.2f}' % (epoch + 1, psutil.virtual_memory().used >> 30))
 
         sys.stdout.flush()
 
