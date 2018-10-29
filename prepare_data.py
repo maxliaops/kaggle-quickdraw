@@ -1,6 +1,8 @@
+import glob
 import math
 import os
 import shutil
+from multiprocessing import Pool
 
 import h5py
 import numpy as np
@@ -148,5 +150,31 @@ def prepare_shards():
                 shard_df.to_csv(shard_file, header=write_csv_header)
 
 
+def csv_to_npz(csv_file_name):
+    print("processing file '{}'".format(csv_file_name), flush=True)
+
+    df = pd.read_csv(
+        csv_file_name,
+        index_col="key_id",
+        converters={"drawing": lambda drawing: np.array(eval(drawing))})
+
+    key_id = np.array(df.index.values, dtype=np.int64)
+    drawing = np.array(df.drawing.values)
+    category = np.array(df.category.values, dtype=np.int16)
+
+    npz_file_name = csv_file_name[-4:] + ".npz"
+    np.savez_compressed(npz_file_name, key_id=key_id, drawing=drawing, category=category)
+
+    return None
+
+
+def convert_csv_to_npz():
+    csv_file_names = glob.glob("/storage/kaggle/quickdraw/train_simplified_shards/*.csv")
+
+    with Pool(10) as pool:
+        for _ in pool.map(csv_to_npz, csv_file_names):
+            pass
+
+
 if __name__ == "__main__":
-    prepare_shards()
+    convert_csv_to_npz()
