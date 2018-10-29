@@ -363,6 +363,8 @@ if __name__ == "__main__":
     # main()
     # exit(0)
 
+    print("start memory used: {}".format(psutil.virtual_memory().used / 2 ** 30))
+
     pool = mp.Pool(processes=4)
 
     requests = []
