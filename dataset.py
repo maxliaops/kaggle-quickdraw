@@ -63,7 +63,7 @@ class TrainData:
 
         train_set_ids, val_set_ids = train_test_split(
             df.index,
-            test_size=0.1,
+            test_size=0.3,
             stratify=df.category,
             random_state=42
         )
