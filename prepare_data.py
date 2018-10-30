@@ -177,11 +177,14 @@ def convert_csv_to_npz():
 
 
 def draw_image(data_file_name):
+    print("reading file '{}'".format(data_file_name), flush=True)
+
     data = np.load(data_file_name)
     data_drawing = data["drawing"]
     data_image = np.array([draw_strokes(drawing, size=32) for drawing in data_drawing], dtype=np.uint8)
 
     image_file_name = data_file_name[:-4] + "-image32.npz"
+    print("writing file '{}'".format(image_file_name), flush=True)
     np.savez_compressed(image_file_name, image=data_image)
 
 def draw_images():
