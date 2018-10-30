@@ -98,14 +98,12 @@ def main():
     output_dir = args.output_dir
     image_size = args.image_size
     batch_size = args.batch_size
-    batch_iterations = args.batch_iterations
     accuracy_topk = args.accuracy_topk
     num_shard_preload = args.num_shard_preload
     num_shard_loaders = args.num_shard_loaders
     num_workers = args.num_workers
     pin_memory = args.pin_memory
     epochs_to_train = args.epochs
-    max_epoch_iterations = args.max_epoch_iterations
     lr_min = args.lr_min
     lr_max = args.lr_max
     lr_min_decay = args.lr_min_decay
@@ -135,15 +133,9 @@ def main():
     model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
 
-    epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
-    if max_epoch_iterations > 0:
-        epoch_iterations = min(epoch_iterations, max_epoch_iterations)
+    epoch_iterations = ceil(len(train_set) / batch_size)
 
-    print("train_set_samples: {}, val_set_samples: {}, samples_per_epoch: {}".format(
-        len(train_set),
-        len(val_set),
-        min(len(train_set), epoch_iterations * batch_size * batch_iterations)),
-        flush=True)
+    print("train_set_samples: {}, val_set_samples: {}, samples_per_epoch: {}".format(len(train_set), len(val_set)), flush=True)
     print()
 
     global_val_accuracy_best_avg = float("-inf")
@@ -200,51 +192,38 @@ def main():
 
         epoch_batch_iter_count = 0
 
-        # TODO: initialize iter outside the epoch loop and continuously iterate over it
-        train_set_data_loader_iter = iter(train_set_data_loader)
+        for batch in train_set_data_loader:
+            images, categories = \
+                batch[0].to(device, non_blocking=True), \
+                batch[1].to(device, non_blocking=True)
 
-        for _ in range(epoch_iterations):
             lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
 
-            for _ in range(batch_iterations):
-                try:
-                    batch = next(train_set_data_loader_iter)
-                except StopIteration:
-                    break
+            prediction_logits = model(images)
+            loss = criterion(prediction_logits, categories)
+            loss.backward()
 
-                images, categories = \
-                    batch[0].to(device, non_blocking=True), \
-                    batch[1].to(device, non_blocking=True)
-
-                prediction_logits = model(images)
-                loss = criterion(prediction_logits, categories)
-                loss.backward()
-
-                with torch.no_grad():
-                    train_loss_sum_t += loss
-                    train_accuracy_sum_t += accuracy(prediction_logits, categories, topk=accuracy_topk)
-
-                epoch_batch_iter_count += 1
+            with torch.no_grad():
+                train_loss_sum_t += loss
+                train_accuracy_sum_t += accuracy(prediction_logits, categories, topk=accuracy_topk)
 
             optimizer.step()
 
             sgdr_iterations += 1
             batch_count += 1
+            epoch_batch_iter_count += 1
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
         print("memory used before: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         # TODO: recalculate epoch_iterations and maybe other values?
         train_data = train_data_provider.get_next()
-        # train_set.df = train_data.train_set_df
-        # val_set.df = train_data.val_set_df
+        train_set.df = train_data.train_set_df
+        val_set.df = train_data.val_set_df
+        epoch_iterations = ceil(len(train_set) / batch_size)
         print("memory used after: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
-        # TODO: avoid duplicate code
-        epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
-        if max_epoch_iterations > 0:
-            epoch_iterations = min(epoch_iterations, max_epoch_iterations)
 
         train_loss_avg = train_loss_sum_t.item() / epoch_batch_iter_count
         train_accuracy_avg = train_accuracy_sum_t.item() / epoch_batch_iter_count
@@ -342,13 +321,11 @@ def main2():
     input_dir = args.input_dir
     image_size = args.image_size
     batch_size = args.batch_size
-    batch_iterations = args.batch_iterations
     num_shard_preload = args.num_shard_preload
     num_shard_loaders = args.num_shard_loaders
     num_workers = args.num_workers
     pin_memory = args.pin_memory
     epochs_to_train = args.epochs
-    max_epoch_iterations = args.max_epoch_iterations
 
     p = psutil.Process(os.getpid())
 
@@ -372,10 +349,6 @@ def main2():
     print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
     print(flush=True)
 
-    epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
-    if max_epoch_iterations > 0:
-        epoch_iterations = min(epoch_iterations, max_epoch_iterations)
-
     for epoch in range(epochs_to_train):
         print("processing epoch {}".format(epoch + 1), flush=True)
 
@@ -397,9 +370,7 @@ if __name__ == "__main__":
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--image_size", default=32, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
-    argparser.add_argument("--max_epoch_iterations", default=0, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
-    argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--accuracy_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=2, type=int)
     argparser.add_argument("--num_shard_loaders", default=1, type=int)
@@ -419,4 +390,4 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
 
-    main2()
+    main()
