@@ -54,6 +54,7 @@ def evaluate(model, data_loader, criterion, mapk_topk):
     mapk_sum_t = zero_item_tensor()
     accuracy_top1_sum_t = zero_item_tensor()
     accuracy_top3_sum_t = zero_item_tensor()
+    accuracy_top5_sum_t = zero_item_tensor()
     step_count = 0
 
     with torch.no_grad():
@@ -69,6 +70,7 @@ def evaluate(model, data_loader, criterion, mapk_topk):
             mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
             accuracy_top1_sum_t += accuracy(prediction_logits, categories, topk=1)
             accuracy_top3_sum_t += accuracy(prediction_logits, categories, topk=3)
+            accuracy_top5_sum_t += accuracy(prediction_logits, categories, topk=5)
 
             step_count += 1
 
@@ -76,8 +78,9 @@ def evaluate(model, data_loader, criterion, mapk_topk):
     mapk_avg = mapk_sum_t.item() / step_count
     accuracy_top1_avg = accuracy_top1_sum_t.item() / step_count
     accuracy_top3_avg = accuracy_top3_sum_t.item() / step_count
+    accuracy_top5_avg = accuracy_top5_sum_t.item() / step_count
 
-    return loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg
+    return loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg
 
 
 def create_optimizer(type, model, lr):
@@ -172,6 +175,7 @@ def main():
     print('{"chart": "val_loss", "axis": "epoch"}')
     print('{"chart": "val_accuracy@1", "axis": "epoch"}')
     print('{"chart": "val_accuracy@3", "axis": "epoch"}')
+    print('{"chart": "val_accuracy@5", "axis": "epoch"}')
     print('{"chart": "sgdr_cycle", "axis": "epoch"}')
     print('{"chart": "mapk", "axis": "epoch"}')
     print('{"chart": "loss", "axis": "epoch"}')
@@ -234,7 +238,7 @@ def main():
         train_loss_avg = train_loss_sum_t.item() / epoch_batch_iter_count
         train_mapk_avg = train_mapk_sum_t.item() / epoch_batch_iter_count
 
-        val_loss_avg, val_mapk_avg, val_accuracy_top1_avg, val_accuracy_top3_avg = \
+        val_loss_avg, val_mapk_avg, val_accuracy_top1_avg, val_accuracy_top3_avg, val_accuracy_top5_avg = \
             evaluate(model, val_set_data_loader, criterion, mapk_topk)
 
         # lr_scheduler_plateau.step(val_mapk_avg)
@@ -297,6 +301,7 @@ def main():
         print('{"chart": "val_mapk", "x": %d, "y": %.4f}' % (epoch + 1, val_mapk_avg))
         print('{"chart": "val_accuracy@1", "x": %d, "y": %.4f}' % (epoch + 1, val_accuracy_top1_avg))
         print('{"chart": "val_accuracy@3", "x": %d, "y": %.4f}' % (epoch + 1, val_accuracy_top3_avg))
+        print('{"chart": "val_accuracy@5", "x": %d, "y": %.4f}' % (epoch + 1, val_accuracy_top5_avg))
         print('{"chart": "sgdr_cycle", "x": %d, "y": %d}' % (epoch + 1, sgdr_cycle_count))
         print('{"chart": "loss", "x": %d, "y": %.4f}' % (epoch + 1, train_loss_avg))
         print('{"chart": "mapk", "x": %d, "y": %.4f}' % (epoch + 1, train_mapk_avg))
