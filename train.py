@@ -205,7 +205,7 @@ def main():
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
 
-            # lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
+            lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
 
@@ -237,7 +237,7 @@ def main():
         val_loss_avg, val_mapk_avg, val_accuracy_top1_avg, val_accuracy_top3_avg = \
             evaluate(model, val_set_data_loader, criterion, mapk_topk)
 
-        lr_scheduler_plateau.step(val_mapk_avg)
+        # lr_scheduler_plateau.step(val_mapk_avg)
 
         model_improved_within_sgdr_cycle = val_mapk_avg > sgdr_cycle_val_mapk_best_avg
         if model_improved_within_sgdr_cycle:
