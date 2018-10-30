@@ -170,6 +170,7 @@ def main():
     print('{"chart": "loss", "axis": "epoch"}')
     print('{"chart": "lr_scaled", "axis": "epoch"}')
     print('{"chart": "mem_used", "axis": "epoch"}')
+    print('{"chart": "epoch_time", "axis": "epoch"}')
 
     train_start_time = time.time()
 
@@ -293,6 +294,7 @@ def main():
         print('{"chart": "accuracy", "x": %d, "y": %.4f}' % (epoch + 1, train_accuracy_avg))
         print('{"chart": "lr_scaled", "x": %d, "y": %.4f}' % (epoch + 1, 1000 * get_learning_rate(optimizer)))
         print('{"chart": "mem_used", "x": %d, "y": %.2f}' % (epoch + 1, psutil.virtual_memory().used / 2 ** 30))
+        print('{"chart": "epoch_time", "x": %d, "y": %d}' % (epoch + 1, epoch_duration_time)
 
         sys.stdout.flush()
 
