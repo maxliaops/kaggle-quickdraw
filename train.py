@@ -354,6 +354,7 @@ def main2():
 
     print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
     print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+    print(flush=True)
 
     train_data_provider = \
         TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders)
@@ -361,6 +362,7 @@ def main2():
 
     print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
     print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+    print(flush=True)
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = \
@@ -368,6 +370,7 @@ def main2():
 
     print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
     print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+    print(flush=True)
 
     epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
     if max_epoch_iterations > 0:
