@@ -382,22 +382,8 @@ def main2():
         print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         print(flush=True)
 
-        train_set_data_loader_iter = iter(train_set_data_loader)
-
-        for _ in range(epoch_iterations):
-            for _ in range(batch_iterations):
-                try:
-                    batch = next(train_set_data_loader_iter)
-                except StopIteration:
-                    break
-
-                # images, categories = \
-                #     batch[0].to(device, non_blocking=True), \
-                #     batch[1].to(device, non_blocking=True)
-
-        # TODO: recalculate epoch_iterations and maybe other values?
-        # train_data = train_data_provider.get_next()
-        # train_set.df = train_data.train_set_df
+        for _ in train_set_data_loader:
+            pass
 
 
 if __name__ == "__main__":
