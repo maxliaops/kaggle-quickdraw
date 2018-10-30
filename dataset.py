@@ -65,19 +65,21 @@ class TrainData:
         data = np.load(data_file_name)
         data_category = data["category"]
         data_drawing = data["drawing"]
+        data_image = [draw_strokes(drawing, size=32) for drawing in data_drawing]
 
         print("Loaded {} samples".format(len(data_category)))
 
-        train_categories, val_categories, train_drawing, val_drawing = train_test_split(
+        train_categories, val_categories, train_drawing, val_drawing, train_images, val_images = train_test_split(
             data_category,
             data_drawing,
+            data_image,
             test_size=0.3,
             stratify=data_category,
             random_state=42
         )
 
-        self.train_set_df = {"category": train_categories, "drawing": train_drawing}
-        self.val_set_df = {"category": val_categories, "drawing": val_drawing}
+        self.train_set_df = {"category": train_categories, "drawing": train_drawing, "image": train_images}
+        self.val_set_df = {"category": val_categories, "drawing": val_drawing, "image": val_images}
         self.categories = categories
 
         data.close()
