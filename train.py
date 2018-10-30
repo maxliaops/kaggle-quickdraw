@@ -1,5 +1,6 @@
 import argparse
 import datetime
+import gc
 import glob
 import os
 import sys
@@ -364,6 +365,7 @@ def main2():
         epoch_iterations = min(epoch_iterations, max_epoch_iterations)
 
     for epoch in range(epochs_to_train):
+        gc.collect()
         print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         train_set_data_loader_iter = iter(train_set_data_loader)
 
