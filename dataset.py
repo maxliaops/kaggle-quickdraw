@@ -62,25 +62,31 @@ class TrainData:
         data_file_name = "{}/train_simplified_shards/shard-{}.npz".format(data_dir, shard)
         print("Reading data file '{}'".format(data_file_name), flush=True)
 
-        data = np.load(data_file_name)
-        data_category = data["category"]
-        data_drawing = data["drawing"]
+        data_file = np.load(data_file_name)
+        data_category = data_file["category"]
+        data_drawing = data_file["drawing"]
+
+        image_data_file_name = "{}/train_simplified_shards/shard-{}-image32.npz".format(data_dir, shard)
+        image_data_file = np.load(image_data_file_name)
+        data_image = image_data_file["image"]
 
         print("Loaded {} samples".format(len(data_category)))
 
-        train_categories, val_categories, train_drawing, val_drawing = train_test_split(
+        train_categories, val_categories, train_drawing, val_drawing, train_image, val_image = train_test_split(
             data_category,
             data_drawing,
+            data_image,
             test_size=0.3,
             stratify=data_category,
             random_state=42
         )
 
-        self.train_set_df = {"category": train_categories, "drawing": train_drawing}
-        self.val_set_df = {"category": val_categories, "drawing": val_drawing}
+        self.train_set_df = {"category": train_categories, "drawing": train_drawing, "image": train_image}
+        self.val_set_df = {"category": val_categories, "drawing": val_drawing, "image": val_image}
         self.categories = categories
 
-        data.close()
+        data_file.close()
+        image_data_file.close()
 
         end_time = time.time()
         print("Time to load data of shard {}: {}".format(shard, str(datetime.timedelta(seconds=end_time - start_time))),
