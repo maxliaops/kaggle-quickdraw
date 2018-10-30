@@ -156,7 +156,7 @@ def main():
     batch_count = 0
     epoch_of_last_improval = 0
 
-    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", patience=2)
+    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", patience=2, factor=0.5)
 
     ensemble_model_index = 0
     for model_file_path in glob.glob("{}/model-*.pth".format(output_dir)):
