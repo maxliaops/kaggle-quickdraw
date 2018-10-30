@@ -219,13 +219,11 @@ def main():
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
-        print("memory used before: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         # TODO: recalculate epoch_iterations and maybe other values?
         train_data = train_data_provider.get_next()
         train_set.df = train_data.train_set_df
         val_set.df = train_data.val_set_df
         epoch_iterations = ceil(len(train_set) / batch_size)
-        print("memory used after: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
 
         train_loss_avg = train_loss_sum_t.item() / epoch_batch_iter_count
         train_accuracy_avg = train_accuracy_sum_t.item() / epoch_batch_iter_count
@@ -375,7 +373,7 @@ if __name__ == "__main__":
     argparser.add_argument("--image_size", default=32, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
-    argparser.add_argument("--test_size", default=0.3, type=float)
+    argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--accuracy_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=2, type=int)
     argparser.add_argument("--num_shard_loaders", default=1, type=int)
