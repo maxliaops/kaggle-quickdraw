@@ -100,8 +100,7 @@ class TrainDataset(Dataset):
         drawing = self.df["drawing"][index]
         category = self.df["category"][index]
 
-        # image = self.df["image"][index] if "image" in self.df else draw_strokes(drawing, size=self.image_size)
-        image = np.zeros((32, 32))
+        image = self.df["image"][index] if "image" in self.df else draw_strokes(drawing, size=self.image_size)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
