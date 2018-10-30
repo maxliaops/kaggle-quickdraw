@@ -376,8 +376,9 @@ def main2():
     if max_epoch_iterations > 0:
         epoch_iterations = min(epoch_iterations, max_epoch_iterations)
 
-    for _ in range(epochs_to_train):
-        # gc.collect()
+    for epoch in range(epochs_to_train):
+        print("processing epoch {}".format(epoch + 1), flush=True)
+
         print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
         print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         print(flush=True)
