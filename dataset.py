@@ -12,8 +12,10 @@ from utils import read_categories, draw_strokes
 
 
 class TrainDataProvider:
-    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers):
+    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers, test_size):
         self.data_dir = data_dir
+        self.test_size = test_size
+
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
 
@@ -42,17 +44,17 @@ class TrainDataProvider:
     def request_data(self):
         next_shard = self.shards[self.next_shard_index]
         print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
-        self.requests.append(self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard)))
+        self.requests.append(self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard, self.test_size)))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     @staticmethod
-    def load_data(data_dir, shard):
+    def load_data(data_dir, shard, test_size):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(data_dir, shard)
+        return TrainData(data_dir, shard, test_size)
 
 
 class TrainData:
-    def __init__(self, data_dir, shard):
+    def __init__(self, data_dir, shard, test_size):
         self.shard = shard
 
         start_time = time.time()
@@ -76,7 +78,7 @@ class TrainData:
             data_category,
             data_drawing,
             # data_image,
-            test_size=0.3,
+            test_size=test_size,
             stratify=data_category,
             random_state=42
         )

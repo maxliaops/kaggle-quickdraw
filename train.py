@@ -98,6 +98,7 @@ def main():
     output_dir = args.output_dir
     image_size = args.image_size
     batch_size = args.batch_size
+    test_size = args.test_size
     accuracy_topk = args.accuracy_topk
     num_shard_preload = args.num_shard_preload
     num_shard_loaders = args.num_shard_loaders
@@ -119,7 +120,7 @@ def main():
     max_sgdr_cycles = args.max_sgdr_cycles
 
     train_data_provider = \
-        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders)
+        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders, test_size=test_size)
     train_data = train_data_provider.get_next()
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
@@ -323,6 +324,7 @@ def main2():
     input_dir = args.input_dir
     image_size = args.image_size
     batch_size = args.batch_size
+    test_size = args.test_size
     num_shard_preload = args.num_shard_preload
     num_shard_loaders = args.num_shard_loaders
     num_workers = args.num_workers
@@ -336,7 +338,7 @@ def main2():
     print(flush=True)
 
     train_data_provider = \
-        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders)
+        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders, test_size=test_size)
     train_data = train_data_provider.get_next()
 
     print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
@@ -373,6 +375,7 @@ if __name__ == "__main__":
     argparser.add_argument("--image_size", default=32, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
+    argparser.add_argument("--test_size", default=0.3, type=float)
     argparser.add_argument("--accuracy_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=2, type=int)
     argparser.add_argument("--num_shard_loaders", default=1, type=int)
