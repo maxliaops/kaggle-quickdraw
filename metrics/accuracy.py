@@ -16,4 +16,4 @@ def accuracy(prediction_logits, categories, topk=3):
         matches = torch.eq(categories, predicted_categories[:, k])
         apk += matches.float().sum() / (k + 1)
 
-    return apk
+    return apk / predictions.size(0)
