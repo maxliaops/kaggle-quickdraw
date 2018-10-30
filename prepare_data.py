@@ -173,9 +173,23 @@ def convert_csv_to_npz():
     csv_file_names = glob.glob("/storage/kaggle/quickdraw/train_simplified_shards/*.csv")
 
     with Pool(5) as pool:
-        for _ in pool.map(csv_to_npz, csv_file_names):
-            pass
+        pool.map(csv_to_npz, csv_file_names)
+
+
+def draw_image(data_file_name):
+    data = np.load(data_file_name)
+    data_drawing = data["drawing"]
+    data_image = np.array([draw_strokes(drawing, size=32) for drawing in data_drawing], dtype=np.uint8)
+
+    image_file_name = data_file_name[:-4] + "-image32.npz"
+    np.savez_compressed(image_file_name, image=data_image)
+
+def draw_images():
+    data_file_names = glob.glob("/storage/kaggle/quickdraw/train_simplified_shards/*.npz")
+
+    with Pool(5) as pool:
+        pool.map(draw_image, data_file_names)
 
 
 if __name__ == "__main__":
-    convert_csv_to_npz()
+    draw_images()
