@@ -386,6 +386,8 @@ def main2():
         for _ in train_set_data_loader:
             pass
 
+        time.sleep(30)
+
         train_data = train_data_provider.get_next()
         train_set.df = train_data.train_set_df
 
