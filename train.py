@@ -352,16 +352,22 @@ def main2():
 
     p = psutil.Process(os.getpid())
 
-    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 20), flush=True)
-    print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
+    print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
 
     train_data_provider = \
         TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders)
     train_data = train_data_provider.get_next()
 
+    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
+    print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+
     train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = \
         DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
+
+    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
+    print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
 
     epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
     if max_epoch_iterations > 0:
@@ -369,8 +375,10 @@ def main2():
 
     for epoch in range(epochs_to_train):
         gc.collect()
-        print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 20), flush=True)
+        print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
         print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+        print(flush=True)
+
         train_set_data_loader_iter = iter(train_set_data_loader)
 
         for _ in range(epoch_iterations):
