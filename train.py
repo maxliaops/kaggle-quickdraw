@@ -350,6 +350,9 @@ def main2():
     epochs_to_train = args.epochs
     max_epoch_iterations = args.max_epoch_iterations
 
+    p = psutil.Process(os.getpid())
+
+    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 20), flush=True)
     print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
 
     train_data_provider = \
@@ -366,7 +369,8 @@ def main2():
 
     for epoch in range(epochs_to_train):
         gc.collect()
-        print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+        print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 20), flush=True)
+        print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         train_set_data_loader_iter = iter(train_set_data_loader)
 
         for _ in range(epoch_iterations):
