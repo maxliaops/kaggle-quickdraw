@@ -349,6 +349,8 @@ def main2():
     epochs_to_train = args.epochs
     max_epoch_iterations = args.max_epoch_iterations
 
+    print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+
     train_data_provider = \
         TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders)
     train_data = train_data_provider.get_next()
