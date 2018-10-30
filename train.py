@@ -135,7 +135,7 @@ def main():
 
     epoch_iterations = ceil(len(train_set) / batch_size)
 
-    print("train_set_samples: {}, val_set_samples: {}, samples_per_epoch: {}".format(len(train_set), len(val_set)), flush=True)
+    print("train_set_samples: {}, val_set_samples: {}".format(len(train_set), len(val_set)), flush=True)
     print()
 
     global_val_accuracy_best_avg = float("-inf")
