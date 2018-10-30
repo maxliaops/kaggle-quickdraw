@@ -366,7 +366,7 @@ def main2():
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
     train_set_data_loader = \
-        DataLoader(train_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
+        DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
 
     print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
     print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
