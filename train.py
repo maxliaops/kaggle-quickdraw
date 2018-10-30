@@ -209,7 +209,7 @@ def main():
 
             with torch.no_grad():
                 train_loss_sum_t += loss
-                train_accuracy_sum_t += accuracy(prediction_logits, categories, topk=accuracy_topk)
+                # train_accuracy_sum_t += accuracy(prediction_logits, categories, topk=accuracy_topk)
 
             optimizer.step()
 
