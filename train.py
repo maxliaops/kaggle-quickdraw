@@ -376,7 +376,7 @@ def main2():
     if max_epoch_iterations > 0:
         epoch_iterations = min(epoch_iterations, max_epoch_iterations)
 
-    for epoch in range(epochs_to_train):
+    for _ in range(epochs_to_train):
         # gc.collect()
         print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
         print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
@@ -385,6 +385,8 @@ def main2():
         for _ in train_set_data_loader:
             pass
 
+        train_data = train_data_provider.get_next()
+        train_set.df = train_data.train_set_df
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
