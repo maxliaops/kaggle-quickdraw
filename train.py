@@ -391,9 +391,9 @@ def main2():
                 except StopIteration:
                     break
 
-                images, categories = \
-                    batch[0].to(device, non_blocking=True), \
-                    batch[1].to(device, non_blocking=True)
+                # images, categories = \
+                #     batch[0].to(device, non_blocking=True), \
+                #     batch[1].to(device, non_blocking=True)
 
         # TODO: recalculate epoch_iterations and maybe other values?
         # train_data = train_data_provider.get_next()
