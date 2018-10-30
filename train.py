@@ -234,10 +234,12 @@ def main():
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
+        print("memory used before: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         # TODO: recalculate epoch_iterations and maybe other values?
         train_data = train_data_provider.get_next()
         # train_set.df = train_data.train_set_df
         # val_set.df = train_data.val_set_df
+        print("memory used after: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
         # TODO: avoid duplicate code
         epoch_iterations = ceil(len(train_set) / (batch_size * batch_iterations))
         if max_epoch_iterations > 0:
