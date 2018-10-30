@@ -13,7 +13,7 @@ import torch.backends.cudnn as cudnn
 import torch.nn as nn
 import torch.optim as optim
 from tensorboardX import SummaryWriter
-from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataset, TrainDataProvider
@@ -156,6 +156,8 @@ def main():
     batch_count = 0
     epoch_of_last_improval = 0
 
+    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", patience=2)
+
     ensemble_model_index = 0
     for model_file_path in glob.glob("{}/model-*.pth".format(output_dir)):
         model_file_name = os.path.basename(model_file_path)
@@ -199,7 +201,7 @@ def main():
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
 
-            lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
+            # lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
 
@@ -230,6 +232,8 @@ def main():
 
         val_loss_avg, val_accuracy_avg, val_accuracy_top1_avg = \
             evaluate(model, val_set_data_loader, criterion, accuracy_topk)
+
+        lr_scheduler_plateau.step(val_accuracy_avg)
 
         model_improved_within_sgdr_cycle = val_accuracy_avg > sgdr_cycle_val_accuracy_best_avg
         if model_improved_within_sgdr_cycle:
