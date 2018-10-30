@@ -102,6 +102,7 @@ def main():
     input_dir = args.input_dir
     output_dir = args.output_dir
     image_size = args.image_size
+    use_progressive_image_sizes = args.use_progressive_image_sizes
     batch_size = args.batch_size
     test_size = args.test_size
     mapk_topk = args.mapk_topk
@@ -123,6 +124,9 @@ def main():
     sgdr_cycle_end_prolongation = args.sgdr_cycle_end_prolongation
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
+
+    progressive_image_sizes = [16, 24, 32, 48, 64]
+    progressive_image_epoch_step = 2
 
     train_data_provider = \
         TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders,
@@ -196,6 +200,10 @@ def main():
         epoch_start_time = time.time()
 
         print("memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
+
+        if use_progressive_image_sizes:
+            train_set.image_size = \
+                progressive_image_sizes[min(epoch // progressive_image_epoch_step, len(progressive_image_sizes) - 1)]
 
         model.train()
 
@@ -387,6 +395,7 @@ if __name__ == "__main__":
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--image_size", default=32, type=int)
+    argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
