@@ -125,16 +125,7 @@ def prepare_shards():
 
         print("processing file '{}'".format(csv_file_name), flush=True)
 
-        df = pd.read_csv(
-            csv_file_name,
-            index_col="key_id",
-            usecols=["key_id", "drawing", "word"],
-            converters={
-                "word": lambda word: categories.index(word),
-                "drawing": lambda drawing: eval(drawing)
-            })
-
-        df = df.rename(columns={"word": "category"})
+        df = pd.read_csv(csv_file_name, index_col="key_id")
 
         shard_size = math.ceil(len(df) / num_shards)
         indexes = df.index.values
@@ -195,4 +186,4 @@ def draw_images():
 
 
 if __name__ == "__main__":
-    draw_images()
+    prepare_shards()
