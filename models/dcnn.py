@@ -30,8 +30,8 @@ class SimpleDilatedCnn(nn.Module):
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(1),
             ConvBlock(1, 32, kernel_size=5, padding=2),
-            ConvBlock(32, 64, kernel_size=5, padding=2, dilation=2),
-            ConvBlock(64, 128, kernel_size=3, padding=1, dilation=4),
+            ConvBlock(32, 64, kernel_size=5, padding=4, dilation=2),
+            ConvBlock(64, 128, kernel_size=3, padding=4, dilation=4),
             nn.AvgPool2d(last_layer_size),
             nn.Linear(128, 1024),
             nn.ReLU(inplace=True),
