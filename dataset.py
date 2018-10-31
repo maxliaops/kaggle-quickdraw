@@ -67,6 +67,9 @@ class TrainData:
         with np.load(data_file_name) as data_file:
             data_category = data_file["category"]
             data_drawing = data_file["drawing"]
+            f = data_category < 170
+            data_category = data_category[f]
+            data_drawing = data_drawing[f]
 
         # image_data_file_name = "{}/train_simplified_shards/shard-{}-image32.npz".format(data_dir, shard)
         # image_data_file = np.load(image_data_file_name)
