@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader
 from dataset import TrainDataset, TrainDataProvider
 from metrics import accuracy, mapk
 from metrics.smooth_topk_loss.svm import SmoothSVM
-from models import ResNet34, SimpleCnn, MobileNetV2
+from models import ResNet34, SimpleCnn, SimpleDilatedCnn, MobileNetV2
 from models.drn_wrapper import Drn
 from utils import get_learning_rate, str2bool
 
@@ -33,6 +33,8 @@ def create_model(type, input_size, num_classes):
         model = ResNet34()
     elif type == "cnn":
         model = SimpleCnn(input_size=input_size, num_classes=num_classes)
+    elif type == "dcnn":
+        model = SimpleDilatedCnn(input_size=input_size, num_classes=num_classes)
     elif type == "mobilenetv2":
         model = MobileNetV2(input_size=input_size, n_class=num_classes)
     elif type == "drn":
