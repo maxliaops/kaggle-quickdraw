@@ -73,7 +73,6 @@ class TrainData:
         train_categories, val_categories, train_drawing, val_drawing = train_test_split(
             data_category,
             data_drawing,
-            # data_image,
             test_size=test_size,
             stratify=data_category,
             random_state=42
