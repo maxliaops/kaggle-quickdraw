@@ -144,18 +144,33 @@ def prepare_shards():
 def csv_to_npz(csv_file_name):
     print("reading file '{}'".format(csv_file_name), flush=True)
 
+    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+
     df = pd.read_csv(
         csv_file_name,
         index_col="key_id",
-        converters={"drawing": lambda drawing: np.array(eval(drawing))})
+        converters={
+            "word": lambda word: categories.index(word),
+            "drawing": lambda drawing: np.array(eval(drawing))
+        })
+
+    df = df.rename(columns={"word": "category"})
 
     key_id = np.array(df.index.values, dtype=np.int64)
-    drawing = np.array(df.drawing.values)
+    drawing = np.array(df.drawing.values, dtype=np.object)
     category = np.array(df.category.values, dtype=np.int16)
+    recognized = np.array(df.recognized.values, dtype=np.bool)
+    countrycode = np.array(df.countrycode.values, dtype=np.object)
 
     npz_file_name = csv_file_name[:-4] + ".npz"
     print("writing file '{}'".format(npz_file_name), flush=True)
-    np.savez_compressed(npz_file_name, key_id=key_id, drawing=drawing, category=category)
+    np.savez_compressed(
+        npz_file_name,
+        key_id=key_id,
+        drawing=drawing,
+        category=category,
+        recognized=recognized,
+        countrycode=countrycode)
 
     return None
 
@@ -186,4 +201,4 @@ def draw_images():
 
 
 if __name__ == "__main__":
-    prepare_shards()
+    convert_csv_to_npz()
