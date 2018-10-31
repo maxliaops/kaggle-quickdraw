@@ -71,10 +71,6 @@ class TrainData:
             data_category = data_category[f]
             data_drawing = data_drawing[f]
 
-        # image_data_file_name = "{}/train_simplified_shards/shard-{}-image32.npz".format(data_dir, shard)
-        # image_data_file = np.load(image_data_file_name)
-        # data_image = image_data_file["image"]
-
         print("Loaded {} samples".format(len(data_category)))
 
         train_categories, val_categories, train_drawing, val_drawing = train_test_split(
@@ -89,8 +85,6 @@ class TrainData:
         self.train_set_df = {"category": train_categories, "drawing": train_drawing}
         self.val_set_df = {"category": val_categories, "drawing": val_drawing}
         self.categories = categories
-
-        # image_data_file.close()
 
         end_time = time.time()
         print("Time to load data of shard {}: {}".format(shard, str(datetime.timedelta(seconds=end_time - start_time))),
