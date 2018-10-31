@@ -89,7 +89,6 @@ class TrainData:
         self.val_set_df = {"category": val_categories, "drawing": val_drawing}
         self.categories = categories
 
-        data_file.close()
         # image_data_file.close()
 
         end_time = time.time()
