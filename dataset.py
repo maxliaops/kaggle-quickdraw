@@ -44,7 +44,8 @@ class TrainDataProvider:
     def request_data(self):
         next_shard = self.shards[self.next_shard_index]
         print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
-        self.requests.append(self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard, self.test_size)))
+        self.requests.append(
+            self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard, self.test_size)))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     @staticmethod
@@ -67,16 +68,22 @@ class TrainData:
         with np.load(data_file_name) as data_file:
             data_category = data_file["category"]
             data_drawing = data_file["drawing"]
+            data_recognized = data_file["recognized"]
 
         print("Loaded {} samples".format(len(data_category)))
 
-        train_categories, val_categories, train_drawing, val_drawing = train_test_split(
-            data_category,
-            data_drawing,
-            test_size=test_size,
-            stratify=data_category,
-            random_state=42
-        )
+        train_categories, val_categories, train_drawing, val_drawing, train_recognized, val_recognized = \
+            train_test_split(
+                data_category,
+                data_drawing,
+                data_recognized,
+                test_size=test_size,
+                stratify=data_category,
+                random_state=42
+            )
+
+        train_categories = train_categories[train_recognized]
+        train_drawing = train_drawing[train_recognized]
 
         self.train_set_df = {"category": train_categories, "drawing": train_drawing}
         self.val_set_df = {"category": val_categories, "drawing": val_drawing}
