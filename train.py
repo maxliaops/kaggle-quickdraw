@@ -204,6 +204,9 @@ def main():
         if use_progressive_image_sizes:
             next_image_size = \
                 progressive_image_sizes[min(epoch // progressive_image_epoch_step, len(progressive_image_sizes) - 1)]
+
+            print("changing image size to {}".format(next_image_size), flush=True)
+
             train_set.image_size = next_image_size
             val_set.image_size = next_image_size
 
