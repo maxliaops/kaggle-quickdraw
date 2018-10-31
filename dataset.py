@@ -67,9 +67,6 @@ class TrainData:
         with np.load(data_file_name) as data_file:
             data_category = data_file["category"]
             data_drawing = data_file["drawing"]
-            f = data_category < 170
-            data_category = data_category[f]
-            data_drawing = data_drawing[f]
 
         print("Loaded {} samples".format(len(data_category)))
 
