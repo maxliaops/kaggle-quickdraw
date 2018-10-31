@@ -113,6 +113,7 @@ def main():
     num_workers = args.num_workers
     pin_memory = args.pin_memory
     epochs_to_train = args.epochs
+    lr_scheduler_type = args.lr_scheduler
     lr_min = args.lr_min
     lr_max = args.lr_max
     lr_min_decay = args.lr_min_decay
@@ -224,7 +225,8 @@ def main():
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
 
-            lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
+            if lr_scheduler_type == "cosine_annealing":
+                lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
             optimizer.zero_grad()
 
@@ -256,7 +258,8 @@ def main():
         val_loss_avg, val_mapk_avg, val_accuracy_top1_avg, val_accuracy_top3_avg, val_accuracy_top5_avg = \
             evaluate(model, val_set_data_loader, criterion, mapk_topk)
 
-        # lr_scheduler_plateau.step(val_mapk_avg)
+        if lr_scheduler_type == "reduce_on_plateau":
+            lr_scheduler_plateau.step(val_mapk_avg)
 
         model_improved_within_sgdr_cycle = val_mapk_avg > sgdr_cycle_val_mapk_best_avg
         if model_improved_within_sgdr_cycle:
@@ -411,6 +414,7 @@ if __name__ == "__main__":
     argparser.add_argument("--num_shard_loaders", default=1, type=int)
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
+    argparser.add_argument("--lr_scheduler", default="cosine_annealing")
     argparser.add_argument("--lr_min", default=0.01, type=float)
     argparser.add_argument("--lr_max", default=0.1, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
