@@ -65,10 +65,8 @@ class TrainData:
         print("Reading data file '{}'".format(data_file_name), flush=True)
 
         with np.load(data_file_name) as data_file:
-            data_recognized = data_file["recognized"]
-            data_category = data_file["category"][data_recognized]
-            data_drawing = data_file["drawing"][data_recognized]
-            print("Recognized samples: {}/{}".format(np.sum(data_recognized), len(data_recognized)), flush=True)
+            data_category = data_file["category"]
+            data_drawing = data_file["drawing"]
 
         # image_data_file_name = "{}/train_simplified_shards/shard-{}-image32.npz".format(data_dir, shard)
         # image_data_file = np.load(image_data_file_name)
