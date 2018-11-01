@@ -108,6 +108,7 @@ def main():
     use_dummy_image = args.use_dummy_image
     use_progressive_image_sizes = args.use_progressive_image_sizes
     batch_size = args.batch_size
+    batch_iterations = args.batch_iterations
     test_size = args.test_size
     train_on_unrecognized = args.train_on_unrecognized
     eval_train_mapk = args.eval_train_mapk
@@ -230,7 +231,7 @@ def main():
 
         epoch_batch_iter_count = 0
 
-        for batch in train_set_data_loader:
+        for b, batch in enumerate(train_set_data_loader):
             images, categories = \
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
@@ -238,7 +239,8 @@ def main():
             if lr_scheduler_type == "cosine_annealing":
                 lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
 
-            optimizer.zero_grad()
+            if b % batch_iterations == 0:
+                optimizer.zero_grad()
 
             prediction_logits = model(images)
             loss = criterion(prediction_logits, categories)
@@ -249,7 +251,8 @@ def main():
                 if eval_train_mapk:
                     train_mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
 
-            optimizer.step()
+            if (b + 1) % batch_iterations == 0 or (b + 1) == len(train_set_data_loader):
+                optimizer.step()
 
             sgdr_iterations += 1
             batch_count += 1
@@ -369,6 +372,7 @@ if __name__ == "__main__":
     argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=256, type=int)
+    argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
     argparser.add_argument("--eval_train_mapk", default=True, type=str2bool)
