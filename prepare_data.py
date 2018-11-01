@@ -201,4 +201,4 @@ def draw_images():
 
 
 if __name__ == "__main__":
-    convert_csv_to_npz()
+    draw_images()
