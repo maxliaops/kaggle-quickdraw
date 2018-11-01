@@ -83,10 +83,10 @@ def assemble_strokes(x, y, lens):
 
 
 def draw_strokes(strokes, size=256, line_width=7, padding=3):
-    max_size = 255
-    scale_factor = (max_size - 2 * padding) / max_size
+    draw_size = 256
+    scale_factor = (draw_size - 2 * padding) / draw_size
 
-    image = np.full((max_size, max_size), 255, dtype=np.uint8)
+    image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
 
     for stroke in strokes:
         for i in range(len(stroke[0]) - 1):
@@ -96,6 +96,7 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
             y1 = int(scale_factor * stroke[1][i + 1]) + padding
             cv2.line(image, (x0, y0), (x1, y1), 0, line_width)
 
-    image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
+    if draw_size != size:
+        image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
 
     return image
