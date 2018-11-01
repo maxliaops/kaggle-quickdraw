@@ -104,6 +104,7 @@ def main():
     input_dir = args.input_dir
     output_dir = args.output_dir
     image_size = args.image_size
+    use_dummy_image = args.use_dummy_image
     use_progressive_image_sizes = args.use_progressive_image_sizes
     batch_size = args.batch_size
     test_size = args.test_size
@@ -143,11 +144,11 @@ def main():
 
     train_data = train_data_provider.get_next()
 
-    train_set = TrainDataset(train_data.train_set_df, image_size)
+    train_set = TrainDataset(train_data.train_set_df, image_size, use_dummy_image)
     train_set_data_loader = \
         DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
 
-    val_set = TrainDataset(train_data.val_set_df, image_size)
+    val_set = TrainDataset(train_data.val_set_df, image_size, use_dummy_image)
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
@@ -412,6 +413,7 @@ if __name__ == "__main__":
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--image_size", default=32, type=int)
+    argparser.add_argument("--use_dummy_image", default=False, type=str2bool())
     argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=256, type=int)

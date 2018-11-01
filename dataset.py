@@ -103,10 +103,11 @@ class TrainData:
 
 
 class TrainDataset(Dataset):
-    def __init__(self, df, image_size):
+    def __init__(self, df, image_size, use_dummy_image):
         super().__init__()
         self.df = df
         self.image_size = image_size
+        self.use_dummy_image = use_dummy_image
 
     def __len__(self):
         return len(self.df["drawing"])
@@ -115,7 +116,10 @@ class TrainDataset(Dataset):
         drawing = self.df["drawing"][index]
         category = self.df["category"][index]
 
-        image = self.df["image"][index] if "image" in self.df else draw_strokes(drawing, size=self.image_size)
+        if self.use_dummy_image:
+            image = np.zeros((self.image_size, self.image_size))
+        else:
+            image = self.df["image"][index] if "image" in self.df else draw_strokes(drawing, size=self.image_size)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
