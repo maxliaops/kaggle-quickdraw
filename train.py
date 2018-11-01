@@ -357,57 +357,6 @@ def main():
     # train_data_provider.shutdown()
 
 
-def main2():
-    args = argparser.parse_args()
-    input_dir = args.input_dir
-    image_size = args.image_size
-    batch_size = args.batch_size
-    test_size = args.test_size
-    num_shard_preload = args.num_shard_preload
-    num_shard_loaders = args.num_shard_loaders
-    num_workers = args.num_workers
-    pin_memory = args.pin_memory
-    epochs_to_train = args.epochs
-
-    p = psutil.Process(os.getpid())
-
-    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
-    print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
-    print(flush=True)
-
-    train_data_provider = \
-        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders,
-                          test_size=test_size)
-    train_data = train_data_provider.get_next()
-
-    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
-    print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
-    print(flush=True)
-
-    train_set = TrainDataset(train_data.train_set_df, image_size)
-    train_set_data_loader = \
-        DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
-
-    print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
-    print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
-    print(flush=True)
-
-    for epoch in range(epochs_to_train):
-        print("processing epoch {}".format(epoch + 1), flush=True)
-
-        print("process memory used: {:.2f} GB".format(p.memory_info().rss / 2 ** 30), flush=True)
-        print("global memory used: {:.2f} GB".format(psutil.virtual_memory().used / 2 ** 30), flush=True)
-        print(flush=True)
-
-        for _ in train_set_data_loader:
-            pass
-
-        time.sleep(30)
-
-        train_data = train_data_provider.get_next()
-        train_set.df = train_data.train_set_df
-
-
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
