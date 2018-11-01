@@ -8,7 +8,7 @@ class ResNet34(nn.Module):
         super().__init__()
 
         last_layer_size = input_size
-        for _ in range(5):
+        for _ in range(4):
             last_layer_size //= 2
 
         self.bn = nn.BatchNorm2d(1)
@@ -26,7 +26,7 @@ class ResNet34(nn.Module):
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
-        x = self.resnet.maxpool(x)
+        # x = self.resnet.maxpool(x)
 
         x = self.resnet.layer1(x)
         x = self.resnet.layer2(x)
