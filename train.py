@@ -114,6 +114,7 @@ def main():
     pin_memory = args.pin_memory
     epochs_to_train = args.epochs
     lr_scheduler_type = args.lr_scheduler
+    lr_patience = args.lr_patience
     lr_min = args.lr_min
     lr_max = args.lr_max
     lr_min_decay = args.lr_min_decay
@@ -169,7 +170,7 @@ def main():
     batch_count = 0
     epoch_of_last_improval = 0
 
-    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=2, factor=0.5)
+    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.5)
 
     ensemble_model_index = 0
     for model_file_path in glob.glob("{}/model-*.pth".format(output_dir)):
@@ -415,18 +416,19 @@ if __name__ == "__main__":
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
     argparser.add_argument("--lr_scheduler", default="cosine_annealing")
+    argparser.add_argument("--lr_patience", default=1, type=int)
     argparser.add_argument("--lr_min", default=0.01, type=float)
-    argparser.add_argument("--lr_max", default=0.1, type=float)
+    argparser.add_argument("--lr_max", default=0.3, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
     argparser.add_argument("--lr_max_decay", default=1.0, type=float)
     argparser.add_argument("--model", default="cnn")
-    argparser.add_argument("--patience", default=10, type=int)
+    argparser.add_argument("--patience", default=5, type=int)
     argparser.add_argument("--optimizer", default="sgd")
     argparser.add_argument("--loss", default="cce")
     argparser.add_argument("--sgdr_cycle_epochs", default=10, type=int)
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=0, type=int)
-    argparser.add_argument("--sgdr_cycle_end_patience", default=0, type=int)
-    argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
+    argparser.add_argument("--sgdr_cycle_end_patience", default=1, type=int)
+    argparser.add_argument("--max_sgdr_cycles", default=None, type=int)
 
     main()
