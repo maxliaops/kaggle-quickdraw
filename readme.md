@@ -14,3 +14,4 @@
 * mmap numpy images
 * https://www.kaggle.com/c/quickdraw-doodle-recognition/discussion/68006
 * at batch normalization as first layer in resnet/drn models
+* train first with cce loss, then with smooth_topk loss
