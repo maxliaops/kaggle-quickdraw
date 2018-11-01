@@ -18,8 +18,7 @@ from torch.utils.data import DataLoader
 from dataset import TrainDataset, TrainDataProvider
 from metrics import accuracy, mapk
 from metrics.smooth_topk_loss.svm import SmoothSVM
-from models import ResNet34, SimpleCnn, SimpleDilatedCnn, MobileNetV2
-from models.drn_wrapper import Drn
+from models import ResNet34, SimpleCnn, SimpleDilatedCnn, MobileNetV2, Drn, SeResNext
 from utils import get_learning_rate, str2bool
 
 cudnn.enabled = True
@@ -31,6 +30,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def create_model(type, input_size, num_classes):
     if type == "resnet":
         model = ResNet34(input_size=input_size, num_classes=num_classes)
+    elif type == "seresnext":
+        model = SeResNext(input_size=input_size, num_classes=num_classes)
     elif type == "cnn":
         model = SimpleCnn(input_size=input_size, num_classes=num_classes)
     elif type == "dcnn":

@@ -23,6 +23,7 @@ class Drn(nn.Module):
     def forward(self, x):
         x = self.bn(x)
         x = self.expand_channels(x)
+
         x = self.drn.layer0(x)
         x = self.drn.layer1(x)
         x = self.drn.layer2(x)
