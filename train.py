@@ -109,6 +109,7 @@ def main():
     batch_size = args.batch_size
     test_size = args.test_size
     train_on_unrecognized = args.train_on_unrecognized
+    eval_train_mapk = args.eval_train_mapk
     mapk_topk = args.mapk_topk
     num_shard_preload = args.num_shard_preload
     num_shard_loaders = args.num_shard_loaders
@@ -244,7 +245,8 @@ def main():
 
             with torch.no_grad():
                 train_loss_sum_t += loss
-                # train_mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
+                if eval_train_mapk:
+                    train_mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
 
             optimizer.step()
 
@@ -368,6 +370,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_size", default=256, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
+    argparser.add_argument("--eval_train_mapk", default=True, type=str2bool)
     argparser.add_argument("--mapk_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=1, type=int)
     argparser.add_argument("--num_shard_loaders", default=1, type=int)
