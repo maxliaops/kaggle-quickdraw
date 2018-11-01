@@ -26,7 +26,7 @@ class SimpleCnn(nn.Module):
     def __init__(self, input_size, num_classes):
         super().__init__()
 
-        last_layer_size = (((input_size // 2) // 2) // 2) // 2
+        pool_size = ((input_size // 2) // 2) // 2
 
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(1),
@@ -37,10 +37,9 @@ class SimpleCnn(nn.Module):
             ConvBlock(64, 128, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(128, 256, kernel_size=3, padding=1),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            # nn.Upsample(size=last_layer_size, mode="bilinear", align_corners=False),
+            nn.AvgPool2d(kernel_size=pool_size),
             Flatten(),
-            nn.Linear(256 * last_layer_size ** 2, 1024),
+            nn.Linear(256, 1024),
             nn.ReLU(inplace=True),
             nn.BatchNorm1d(1024),
             nn.Dropout(0.4),
