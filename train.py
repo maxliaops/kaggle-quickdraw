@@ -107,6 +107,7 @@ def main():
     use_progressive_image_sizes = args.use_progressive_image_sizes
     batch_size = args.batch_size
     test_size = args.test_size
+    train_on_unrecognized = args.train_on_unrecognized
     mapk_topk = args.mapk_topk
     num_shard_preload = args.num_shard_preload
     num_shard_loaders = args.num_shard_loaders
@@ -132,9 +133,14 @@ def main():
     progressive_image_sizes = [16, 24, 32, 48, 64]
     progressive_image_epoch_step = 2
 
-    train_data_provider = \
-        TrainDataProvider(input_dir, 50, num_shard_preload=num_shard_preload, num_workers=num_shard_loaders,
-                          test_size=test_size)
+    train_data_provider = TrainDataProvider(
+        input_dir,
+        50,
+        num_shard_preload=num_shard_preload,
+        num_workers=num_shard_loaders,
+        test_size=test_size,
+        train_on_unrecognized=train_on_unrecognized)
+
     train_data = train_data_provider.get_next()
 
     train_set = TrainDataset(train_data.train_set_df, image_size)
@@ -410,6 +416,7 @@ if __name__ == "__main__":
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=1024, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
+    argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
     argparser.add_argument("--mapk_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=1, type=int)
     argparser.add_argument("--num_shard_loaders", default=1, type=int)

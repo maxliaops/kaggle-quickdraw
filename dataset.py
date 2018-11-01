@@ -12,9 +12,10 @@ from utils import read_categories, draw_strokes
 
 
 class TrainDataProvider:
-    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers, test_size):
+    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers, test_size, train_on_unrecognized):
         self.data_dir = data_dir
         self.test_size = test_size
+        self.train_on_unrecognized = train_on_unrecognized
 
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
@@ -44,18 +45,24 @@ class TrainDataProvider:
     def request_data(self):
         next_shard = self.shards[self.next_shard_index]
         print("[{}] Placing request for shard {}".format(mp.current_process().name, next_shard), flush=True)
-        self.requests.append(
-            self.pool.apply_async(TrainDataProvider.load_data, (self.data_dir, next_shard, self.test_size)))
+        self.requests.append(self.pool.apply_async(
+            TrainDataProvider.load_data,
+            (
+                self.data_dir,
+                next_shard,
+                self.test_size,
+                self.train_on_unrecognized
+            )))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     @staticmethod
-    def load_data(data_dir, shard, test_size):
+    def load_data(data_dir, shard, test_size, train_on_unrecognized):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(data_dir, shard, test_size)
+        return TrainData(data_dir, shard, test_size, train_on_unrecognized)
 
 
 class TrainData:
-    def __init__(self, data_dir, shard, test_size):
+    def __init__(self, data_dir, shard, test_size, train_on_unrecognized):
         self.shard = shard
 
         start_time = time.time()
@@ -82,8 +89,9 @@ class TrainData:
                 random_state=42
             )
 
-        train_categories = train_categories[train_recognized]
-        train_drawing = train_drawing[train_recognized]
+        if not train_on_unrecognized:
+            train_categories = train_categories[train_recognized]
+            train_drawing = train_drawing[train_recognized]
 
         self.train_set_df = {"category": train_categories, "drawing": train_drawing}
         self.val_set_df = {"category": val_categories, "drawing": val_drawing}
