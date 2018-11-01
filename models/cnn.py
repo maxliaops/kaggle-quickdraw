@@ -39,7 +39,7 @@ class SimpleCnn(nn.Module):
             ConvBlock(64, 128, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(128, 256, kernel_size=3, padding=1),
-            nn.AvgPool2d(kernel_size=pool_size),
+            nn.AvgPool2d(kernel_size=last_layer_size),
             Flatten(),
             nn.Linear(256, 1024),
             nn.ReLU(inplace=True),
