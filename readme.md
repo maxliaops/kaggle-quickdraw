@@ -13,3 +13,4 @@
 * normalize batch
 * mmap numpy images
 * https://www.kaggle.com/c/quickdraw-doodle-recognition/discussion/68006
+* at batch normalization as first layer in resnet/drn models
