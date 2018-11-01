@@ -26,7 +26,9 @@ class SimpleCnn(nn.Module):
     def __init__(self, input_size, num_classes):
         super().__init__()
 
-        pool_size = ((input_size // 2) // 2) // 2
+        last_layer_size = input_size
+        for _ in range(3):
+            last_layer_size //= 2
 
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(1),
