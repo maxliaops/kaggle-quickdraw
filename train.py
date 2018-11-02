@@ -241,7 +241,7 @@ def main():
 
         epoch_batch_iter_count = 0
 
-        for b, batch in tqdm(enumerate(train_set_data_loader)):
+        for b, batch in tqdm(enumerate(train_set_data_loader), total=len(train_set_data_loader)):
             images, categories = \
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
