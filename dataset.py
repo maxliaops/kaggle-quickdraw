@@ -73,9 +73,9 @@ class TrainData:
         print("Reading data file '{}'".format(data_file_name), flush=True)
 
         with np.load(data_file_name) as data_file:
-            data_category = data_file["category"][:50000]
-            data_drawing = data_file["drawing"][:50000]
-            data_recognized = data_file["recognized"][:50000]
+            data_category = data_file["category"]
+            data_drawing = data_file["drawing"]
+            data_recognized = data_file["recognized"]
 
         print("Loaded {} samples".format(len(data_category)))
 
