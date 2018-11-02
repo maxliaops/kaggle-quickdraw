@@ -10,13 +10,6 @@ class SeNet(nn.Module):
     def __init__(self, type, input_size, num_classes):
         super().__init__()
 
-        last_layer_size = input_size
-        for _ in range(5):
-            last_layer_size //= 2
-
-        self.bn = nn.BatchNorm2d(1)
-        self.expand_channels = ExpandChannels2d(3)
-
         if type == "seresnext":
             self.senet = se_resnext50_32x4d(pretrained="imagenet")
 
@@ -28,11 +21,20 @@ class SeNet(nn.Module):
             self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
 
             # self.layer0 = self.senet.layer0
+            num_scale_downs = 4
         elif type == "senet":
             self.senet = senet154(pretrained="imagenet")
             self.layer0 = self.senet.layer0
+            num_scale_downs = 5
         else:
             raise Exception("Unsupported senet model type: '{}".format(type))
+
+        last_layer_size = input_size
+        for _ in range(num_scale_downs):
+            last_layer_size //= 2
+
+        self.bn = nn.BatchNorm2d(1)
+        self.expand_channels = ExpandChannels2d(3)
 
         self.avg_pool = nn.AvgPool2d(last_layer_size, stride=1)
         self.dropout = nn.Dropout(0.2)
