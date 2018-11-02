@@ -88,6 +88,16 @@ def evaluate(model, data_loader, criterion, mapk_topk):
     return loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg
 
 
+def create_criterion(loss_type, num_classes):
+    if loss_type == "cce":
+        criterion = nn.CrossEntropyLoss()
+    elif loss_type == "topk_svm":
+        criterion = SmoothSVM(n_classes=num_classes, k=3, tau=1., alpha=1.)
+    else:
+        raise Exception("Unsupported loss type: '{}".format(loss_type))
+    return criterion
+
+
 def create_optimizer(type, model, lr):
     if type == "adam":
         return optim.Adam(model.parameters(), lr=lr)
@@ -128,6 +138,8 @@ def main():
     lr_max_decay = args.lr_max_decay
     optimizer_type = args.optimizer
     loss_type = args.loss
+    loss2_type = args.loss2
+    loss2_start_sgdr_cycle = args.loss2_start_sgdr_cycle
     model_type = args.model
     patience = args.patience
     sgdr_cycle_epochs = args.sgdr_cycle_epochs
@@ -205,12 +217,7 @@ def main():
 
     train_start_time = time.time()
 
-    if loss_type == "cce":
-        criterion = nn.CrossEntropyLoss()
-    elif loss_type == "topk_svm":
-        criterion = SmoothSVM(n_classes=len(train_data.categories), k=mapk_topk, tau=1., alpha=1.)
-    else:
-        raise Exception("Unsupported loss type: '{}".format(loss_type))
+    criterion = create_criterion(loss_type, len(train_data.categories))
 
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
@@ -306,6 +313,8 @@ def main():
 
             optimizer = create_optimizer(optimizer_type, model, new_lr_max)
             lr_scheduler = CosineAnnealingLR(optimizer, T_max=current_sgdr_cycle_epochs, eta_min=new_lr_min)
+            if loss2_type is not None and sgdr_cycle_count >= loss2_start_sgdr_cycle:
+                criterion = create_criterion(loss2_type, len(train_data.categories))
 
         optim_summary_writer.add_scalar("sgdr_cycle", sgdr_cycle_count, epoch + 1)
 
@@ -393,6 +402,8 @@ if __name__ == "__main__":
     argparser.add_argument("--patience", default=3, type=int)
     argparser.add_argument("--optimizer", default="sgd")
     argparser.add_argument("--loss", default="cce")
+    argparser.add_argument("--loss2", default=None)
+    argparser.add_argument("--loss2_start_sgdr_cycle", default=None)
     argparser.add_argument("--sgdr_cycle_epochs", default=5, type=int)
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=0, type=int)
