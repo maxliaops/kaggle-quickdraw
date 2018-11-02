@@ -1,11 +1,11 @@
 from torch import nn
 
-from models.senet import se_resnext50_32x4d
+from models.senet import se_resnext50_32x4d, senet154
 from .common import ExpandChannels2d
 
 
-class SeResNext(nn.Module):
-    def __init__(self, input_size, num_classes):
+class SeNet(nn.Module):
+    def __init__(self, type, input_size, num_classes):
         super().__init__()
 
         last_layer_size = input_size
@@ -15,15 +15,12 @@ class SeResNext(nn.Module):
         self.bn = nn.BatchNorm2d(1)
         self.expand_channels = ExpandChannels2d(3)
 
-        self.senet = se_resnext50_32x4d(pretrained="imagenet")
-
-        # layer0_modules = [
-        #     ('conv1', self.senet.layer0.conv1),
-        #     ('bn1', self.senet.layer0.bn1),
-        #     ('relu1', self.senet.layer0.relu1),
-        # ]
-
-        # self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
+        if type == "seresnext":
+            self.senet = se_resnext50_32x4d(pretrained="imagenet")
+        elif type == "senet":
+            self.senet = senet154(pretrained="imagenet")
+        else:
+            raise Exception("Unsupported senet model type: '{}".format(type))
 
         self.avg_pool = nn.AvgPool2d(last_layer_size, stride=1)
         self.dropout = nn.Dropout(0.2)

@@ -3,7 +3,7 @@ from torchvision.models import resnet34
 from .common import ExpandChannels2d
 
 
-class ResNet34(nn.Module):
+class ResNet(nn.Module):
     def __init__(self, input_size, num_classes):
         super().__init__()
 
