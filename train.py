@@ -30,7 +30,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def create_model(type, input_size, num_classes):
     if type == "resnet":
         model = ResNet(input_size=input_size, num_classes=num_classes)
-    elif type in ["seresnext50", "seresnext101", "seresnet50", "seresnet101", "senet154"]:
+    elif type in ["seresnext50", "seresnext101", "seresnet50", "seresnet101", "seresnet152", "senet154"]:
         model = SeNet(type=type, input_size=input_size, num_classes=num_classes)
     elif type == "cnn":
         model = SimpleCnn(input_size=input_size, num_classes=num_classes)
