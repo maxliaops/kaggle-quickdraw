@@ -7,6 +7,7 @@ import time
 from math import ceil
 
 import psutil
+from tqdm import tqdm
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
@@ -240,7 +241,7 @@ def main():
 
         epoch_batch_iter_count = 0
 
-        for b, batch in enumerate(train_set_data_loader):
+        for b, batch in tqdm(enumerate(train_set_data_loader)):
             images, categories = \
                 batch[0].to(device, non_blocking=True), \
                 batch[1].to(device, non_blocking=True)
