@@ -16,3 +16,16 @@
 * at batch normalization as first layer in resnet/drn models
 * train first with cce loss, then with smooth_topk loss
 * remove the first maxpool layer from resnet/senet models
+* use attention
+* use hypercolumns
+* http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
+* papers
+  * https://arxiv.org/pdf/1704.03477.pdf
+  * https://arxiv.org/pdf/1706.03762.pdf
+  * https://arxiv.org/pdf/1802.07595.pdf
+  * https://arxiv.org/pdf/1806.05594.pdf
+  * http://openaccess.thecvf.com/content_cvpr_2018/CameraReady/2763.pdf
+  * https://arxiv.org/pdf/1501.07873.pdf
+  * https://arxiv.org/pdf/1803.00942.pdf
+  * https://arxiv.org/pdf/1804.00021.pdf
+  * http://cybertron.cg.tu-berlin.de/eitz/pdf/2012_siggraph_classifysketch.pdf
