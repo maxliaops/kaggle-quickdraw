@@ -13,15 +13,15 @@ class SeNet(nn.Module):
         if type == "seresnext":
             self.senet = se_resnext50_32x4d(pretrained="imagenet")
 
-            layer0_modules = [
-                ('conv1', self.senet.layer0.conv1),
-                ('bn1', self.senet.layer0.bn1),
-                ('relu1', self.senet.layer0.relu1),
-            ]
-            self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
+            # layer0_modules = [
+            #     ('conv1', self.senet.layer0.conv1),
+            #     ('bn1', self.senet.layer0.bn1),
+            #     ('relu1', self.senet.layer0.relu1),
+            # ]
+            # self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
 
-            # self.layer0 = self.senet.layer0
-            num_scale_downs = 4
+            self.layer0 = self.senet.layer0
+            num_scale_downs = 5
         elif type == "senet":
             self.senet = senet154(pretrained="imagenet")
             self.layer0 = self.senet.layer0
