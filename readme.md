@@ -13,11 +13,13 @@
 * normalize batch
 * mmap numpy images
 * https://www.kaggle.com/c/quickdraw-doodle-recognition/discussion/68006
-* at batch normalization as first layer in resnet/drn models
+* add batch normalization as first layer in resnet/drn models
+* train x classifiers on disjoint category groups, then classify with every classifier and pick the most discriminative one
 * train first with cce loss, then with smooth_topk loss
 * remove the first maxpool layer from resnet/senet models
 * use attention
 * use hypercolumns
+* use drop connect
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
 * papers
   * https://arxiv.org/pdf/1704.03477.pdf
@@ -29,3 +31,4 @@
   * https://arxiv.org/pdf/1803.00942.pdf
   * https://arxiv.org/pdf/1804.00021.pdf
   * http://cybertron.cg.tu-berlin.de/eitz/pdf/2012_siggraph_classifysketch.pdf
+  * https://arxiv.org/pdf/1511.04534.pdf

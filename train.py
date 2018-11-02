@@ -84,8 +84,9 @@ def evaluate(model, data_loader, criterion, mapk_topk):
     accuracy_top1_avg = accuracy_top1_sum_t.item() / step_count
     accuracy_top3_avg = accuracy_top3_sum_t.item() / step_count
     accuracy_top5_avg = accuracy_top5_sum_t.item() / step_count
+    accuracy_top10_avg = accuracy_top10_sum_t.item() / step_count
 
-    return loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_sum_t
+    return loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg
 
 
 def create_criterion(loss_type, num_classes):
