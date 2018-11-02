@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from torch import nn
 
 from models.senet import se_resnext50_32x4d, senet154
@@ -17,8 +19,17 @@ class SeNet(nn.Module):
 
         if type == "seresnext":
             self.senet = se_resnext50_32x4d(pretrained="imagenet")
+
+            layer0_modules = [
+                ('conv1', self.senet.layer0.conv1),
+                ('bn1', self.senet.layer0.bn1),
+                ('relu1', self.senet.layer0.relu1),
+            ]
+
+            self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
         elif type == "senet":
             self.senet = senet154(pretrained="imagenet")
+            self.layer0 = self.senet.layer0
         else:
             raise Exception("Unsupported senet model type: '{}".format(type))
 
@@ -27,7 +38,7 @@ class SeNet(nn.Module):
         self.last_linear = nn.Linear(2048, num_classes)
 
     def features(self, x):
-        x = self.senet.layer0(x)
+        x = self.layer0(x)
         x = self.senet.layer1(x)
         x = self.senet.layer2(x)
         x = self.senet.layer3(x)
