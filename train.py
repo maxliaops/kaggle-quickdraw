@@ -386,7 +386,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
-    argparser.add_argument("--eval_train_mapk", default=False, type=str2bool)
+    argparser.add_argument("--eval_train_mapk", default=True, type=str2bool)
     argparser.add_argument("--mapk_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=1, type=int)
     argparser.add_argument("--num_shard_loaders", default=1, type=int)
