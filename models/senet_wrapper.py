@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from torch import nn
 
-from models.senet import se_resnext50_32x4d, senet154
+from models.senet import se_resnet50, se_resnet101, se_resnext50_32x4d, se_resnext101_32x4d, senet154
 from .common import ExpandChannels2d
 
 
@@ -10,7 +10,7 @@ class SeNet(nn.Module):
     def __init__(self, type, input_size, num_classes):
         super().__init__()
 
-        if type == "seresnext":
+        if type == "seresnext50":
             self.senet = se_resnext50_32x4d(pretrained="imagenet")
 
             # layer0_modules = [
@@ -22,7 +22,19 @@ class SeNet(nn.Module):
 
             self.layer0 = self.senet.layer0
             num_scale_downs = 5
-        elif type == "senet":
+        elif type == "seresnext101":
+            self.senet = se_resnext101_32x4d(pretrained="imagenet")
+            self.layer0 = self.senet.layer0
+            num_scale_downs = 5
+        elif type == "seresnet50":
+            self.senet = se_resnet50(pretrained="imagenet")
+            self.layer0 = self.senet.layer0
+            num_scale_downs = 5
+        elif type == "seresnet101":
+            self.senet = se_resnet101(pretrained="imagenet")
+            self.layer0 = self.senet.layer0
+            num_scale_downs = 5
+        elif type == "senet154":
             self.senet = senet154(pretrained="imagenet")
             self.layer0 = self.senet.layer0
             num_scale_downs = 5
