@@ -12,10 +12,11 @@ from utils import read_categories, draw_strokes
 
 
 class TrainDataProvider:
-    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers, test_size, train_on_unrecognized):
+    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers, test_size, train_on_unrecognized, num_categories_restriction):
         self.data_dir = data_dir
         self.test_size = test_size
         self.train_on_unrecognized = train_on_unrecognized
+        self.num_categories_restriction = num_categories_restriction
 
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
@@ -51,23 +52,22 @@ class TrainDataProvider:
                 self.data_dir,
                 next_shard,
                 self.test_size,
-                self.train_on_unrecognized
+                self.train_on_unrecognized,
+                self.num_categories_restriction
             )))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     @staticmethod
-    def load_data(data_dir, shard, test_size, train_on_unrecognized):
+    def load_data(data_dir, shard, test_size, train_on_unrecognized, num_categories_restriction):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(data_dir, shard, test_size, train_on_unrecognized)
+        return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_categories_restriction)
 
 
 class TrainData:
-    def __init__(self, data_dir, shard, test_size, train_on_unrecognized):
+    def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_categories_restriction):
         self.shard = shard
 
         start_time = time.time()
-
-        categories = read_categories("{}/categories.txt".format(data_dir))
 
         data_file_name = "{}/train_simplified_shards/shard-{}.npz".format(data_dir, shard)
         print("Reading data file '{}'".format(data_file_name), flush=True)
@@ -77,9 +77,17 @@ class TrainData:
             data_drawing = data_file["drawing"]
             data_recognized = data_file["recognized"]
 
-        print("Loaded {} samples".format(len(data_category)))
+        print("Loaded {} samples".format(len(data_drawing)))
 
-        train_categories, val_categories, train_drawing, val_drawing, train_recognized, val_recognized = \
+        categories = read_categories("{}/categories.txt".format(data_dir))
+        if num_categories_restriction is not None:
+            categories = categories[:num_categories_restriction]
+            category_filter = data_category < num_categories_restriction
+            data_category = data_category[category_filter]
+            data_drawing = data_drawing[category_filter]
+            data_recognized = data_recognized[category_filter]
+
+        train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
             train_test_split(
                 data_category,
                 data_drawing,

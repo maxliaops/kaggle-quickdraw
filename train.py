@@ -121,6 +121,7 @@ def main():
     batch_iterations = args.batch_iterations
     test_size = args.test_size
     train_on_unrecognized = args.train_on_unrecognized
+    num_categories_restriction = args.num_categories
     eval_train_mapk = args.eval_train_mapk
     mapk_topk = args.mapk_topk
     num_shard_preload = args.num_shard_preload
@@ -155,7 +156,8 @@ def main():
         num_shard_preload=num_shard_preload,
         num_workers=num_shard_loaders,
         test_size=test_size,
-        train_on_unrecognized=train_on_unrecognized)
+        train_on_unrecognized=train_on_unrecognized,
+        num_categories_restriction=num_categories_restriction)
 
     train_data = train_data_provider.get_next()
 
@@ -385,6 +387,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
+    argparser.add_argument("--num_categories", default=None, type=int)
     argparser.add_argument("--eval_train_mapk", default=False, type=str2bool)
     argparser.add_argument("--mapk_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=1, type=int)
