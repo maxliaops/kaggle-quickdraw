@@ -1,4 +1,5 @@
 import datetime
+import math
 import multiprocessing as mp
 import time
 
@@ -12,11 +13,21 @@ from utils import read_categories, draw_strokes
 
 
 class TrainDataProvider:
-    def __init__(self, data_dir, num_shards, num_shard_preload, num_workers, test_size, train_on_unrecognized, num_categories_restriction):
+    def __init__(
+            self,
+            data_dir,
+            num_shards,
+            num_shard_preload,
+            num_workers,
+            test_size,
+            train_on_unrecognized,
+            num_category_shards,
+            category_shard):
         self.data_dir = data_dir
         self.test_size = test_size
         self.train_on_unrecognized = train_on_unrecognized
-        self.num_categories_restriction = num_categories_restriction
+        self.num_category_shards = num_category_shards
+        self.category_shard = category_shard
 
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
@@ -53,18 +64,25 @@ class TrainDataProvider:
                 next_shard,
                 self.test_size,
                 self.train_on_unrecognized,
-                self.num_categories_restriction
+                self.num_category_shards,
+                self.category_shard
             )))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
     @staticmethod
-    def load_data(data_dir, shard, test_size, train_on_unrecognized, num_categories_restriction):
+    def load_data(
+            data_dir,
+            shard,
+            test_size,
+            train_on_unrecognized,
+            num_category_shards,
+            category_shard):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_categories_restriction)
+        return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard)
 
 
 class TrainData:
-    def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_categories_restriction):
+    def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard):
         self.shard = shard
 
         start_time = time.time()
@@ -80,9 +98,14 @@ class TrainData:
         print("Loaded {} samples".format(len(data_drawing)))
 
         categories = read_categories("{}/categories.txt".format(data_dir))
-        if num_categories_restriction is not None:
-            categories = categories[:num_categories_restriction]
-            category_filter = data_category < num_categories_restriction
+        if num_category_shards != 1:
+            category_shard_size = math.ceil(len(categories) / num_category_shards)
+            min_category = category_shard * category_shard_size
+            max_category = min((category_shard + 1) * category_shard_size, len(categories))
+            categories = range(min_category, max_category)
+            print("Using the category range [{},{})".format(min_category, max_category))
+
+            category_filter = data_category >= min_category & data_category < max_category
             data_category = data_category[category_filter]
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
