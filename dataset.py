@@ -104,7 +104,7 @@ class TrainData:
             categories = range(min_category, max_category)
             print("Using the category range [{},{})".format(min_category, max_category))
 
-            category_filter = data_category >= min_category & data_category < max_category
+            category_filter = (data_category >= min_category) & (data_category < max_category)
             data_category = data_category[category_filter]
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
