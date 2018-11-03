@@ -409,7 +409,7 @@ if __name__ == "__main__":
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
     argparser.add_argument("--lr_max_decay", default=1.0, type=float)
     argparser.add_argument("--model", default="cnn")
-    argparser.add_argument("--patience", default=3, type=int)
+    argparser.add_argument("--patience", default=8, type=int)
     argparser.add_argument("--optimizer", default="sgd")
     argparser.add_argument("--loss", default="cce")
     argparser.add_argument("--loss2", default=None)
@@ -418,6 +418,6 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=0, type=int)
     argparser.add_argument("--sgdr_cycle_end_patience", default=1, type=int)
-    argparser.add_argument("--max_sgdr_cycles", default=1, type=int)
+    argparser.add_argument("--max_sgdr_cycles", default=None, type=int)
 
     main()
