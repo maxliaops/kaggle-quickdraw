@@ -81,6 +81,11 @@ class TrainDataProvider:
         return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard)
 
 
+def contains_sorted(l, x):
+    i = bisect_left(l, x)
+    return i != len(l) and l[i] == x
+
+
 class TrainData:
     def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard):
         self.shard = shard
@@ -129,9 +134,9 @@ class TrainData:
                             "tennis racquet", "The Eiffel Tower", "The Mona Lisa", "tooth",
                             "traffic light", "triangle", "t-shirt", "umbrella", "vase",
                             "whale", "windmill", "wine bottle", "wine glass", "wristwatch"]
-        cte = sorted([words_to_exclude.index(w) for w in words_to_exclude])
+        categories_to_exclude = sorted([words_to_exclude.index(w) for w in words_to_exclude])
 
-        category_filter = np.array([cte[bisect_left(cte, dc)] != dc for dc in data_category])
+        category_filter = np.array([not contains_sorted(categories_to_exclude, dc) for dc in data_category])
         data_category = data_category[category_filter]
         data_drawing = data_drawing[category_filter]
         data_recognized = data_recognized[category_filter]
