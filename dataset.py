@@ -1,7 +1,6 @@
 import datetime
 import multiprocessing as mp
 import time
-from bisect import bisect_left
 
 import numpy as np
 import torch
@@ -81,11 +80,6 @@ class TrainDataProvider:
         return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard)
 
 
-def contains_sorted(l, x):
-    i = bisect_left(l, x)
-    return i != len(l) and l[i] == x
-
-
 class TrainData:
     def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard):
         self.shard = shard
@@ -115,28 +109,31 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
-        words_to_exclude = ["alarm clock", "angel", "anvil", "apple", "bandage",
-                            "baseball bat", "bee", "binoculars", "book", "bowtie", "butterfly",
-                            "cactus", "camel", "camera", "carrot", "castle", "chair", "clock",
-                            "computer", "crab", "crown", "cruise ship", "diamond", "donut",
-                            "drill", "ear", "envelope", "eye", "eyeglasses", "fish",
-                            "flashlight", "flower", "fork", "giraffe", "hand", "harp",
-                            "headphones", "helicopter", "hourglass", "house plant",
-                            "ice cream", "jacket", "jail", "key", "ladder", "lighthouse",
-                            "lightning", "lollipop", "megaphone", "mountain", "mushroom",
-                            "octopus", "palm tree", "pants", "paper clip", "parachute",
-                            "pineapple", "popsicle", "postcard", "power outlet", "rain",
-                            "rainbow", "rhinoceros", "rollerskates", "sailboat", "saw",
-                            "scissors", "scorpion", "see saw", "sink", "skateboard", "skull",
-                            "snail", "snorkel", "snowflake", "snowman", "sock", "stairs",
-                            "star", "stethoscope", "stitches", "stop sign", "strawberry",
-                            "sun", "swing set", "sword", "teapot", "television",
-                            "tennis racquet", "The Eiffel Tower", "The Mona Lisa", "tooth",
-                            "traffic light", "triangle", "t-shirt", "umbrella", "vase",
-                            "whale", "windmill", "wine bottle", "wine glass", "wristwatch"]
-        categories_to_exclude = sorted([words_to_exclude.index(w) for w in words_to_exclude])
+        categories_to_exclude = [
+            "alarm clock", "angel", "anvil", "apple", "bandage",
+            "baseball bat", "bee", "binoculars", "book", "bowtie", "butterfly",
+            "cactus", "camel", "camera", "carrot", "castle", "chair", "clock",
+            "computer", "crab", "crown", "cruise ship", "diamond", "donut",
+            "drill", "ear", "envelope", "eye", "eyeglasses", "fish",
+            "flashlight", "flower", "fork", "giraffe", "hand", "harp",
+            "headphones", "helicopter", "hourglass", "house plant",
+            "ice cream", "jacket", "jail", "key", "ladder", "lighthouse",
+            "lightning", "lollipop", "megaphone", "mountain", "mushroom",
+            "octopus", "palm tree", "pants", "paper clip", "parachute",
+            "pineapple", "popsicle", "postcard", "power outlet", "rain",
+            "rainbow", "rhinoceros", "rollerskates", "sailboat", "saw",
+            "scissors", "scorpion", "see saw", "sink", "skateboard", "skull",
+            "snail", "snorkel", "snowflake", "snowman", "sock", "stairs",
+            "star", "stethoscope", "stitches", "stop sign", "strawberry",
+            "sun", "swing set", "sword", "teapot", "television",
+            "tennis racquet", "The Eiffel Tower", "The Mona Lisa", "tooth",
+            "traffic light", "triangle", "t-shirt", "umbrella", "vase",
+            "whale", "windmill", "wine bottle", "wine glass", "wristwatch"
+        ]
 
-        category_filter = np.array([not contains_sorted(categories_to_exclude, dc) for dc in data_category])
+        categories_mask = np.array([c not in categories_to_exclude for c in categories])
+
+        category_filter = np.array([categories_mask[dc] for dc in data_category])
         data_category = data_category[category_filter]
         data_drawing = data_drawing[category_filter]
         data_recognized = data_recognized[category_filter]
