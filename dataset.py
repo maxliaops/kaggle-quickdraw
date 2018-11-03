@@ -101,7 +101,7 @@ class TrainData:
             category_shard_size = len(categories) // num_category_shards
             min_category = category_shard * category_shard_size
             max_category = min(min_category + category_shard_size, len(categories))
-            categories = range(min_category, max_category)
+            categories = categories[min_category:max_category]
             print("Using the category range [{},{})".format(min_category, max_category))
 
             category_filter = (data_category >= min_category) & (data_category < max_category)
