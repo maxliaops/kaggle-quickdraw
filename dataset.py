@@ -1,5 +1,4 @@
 import datetime
-import math
 import multiprocessing as mp
 import time
 
@@ -99,9 +98,9 @@ class TrainData:
 
         categories = read_categories("{}/categories.txt".format(data_dir))
         if num_category_shards != 1:
-            category_shard_size = math.ceil(len(categories) / num_category_shards)
+            category_shard_size = len(categories) // num_category_shards
             min_category = category_shard * category_shard_size
-            max_category = min((category_shard + 1) * category_shard_size, len(categories))
+            max_category = min(min_category + category_shard_size, len(categories))
             categories = range(min_category, max_category)
             print("Using the category range [{},{})".format(min_category, max_category))
 
