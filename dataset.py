@@ -109,6 +109,32 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
+        words_to_exclude = ["alarm clock", "angel", "anvil", "apple", "bandage",
+                                 "baseball bat", "bee", "binoculars", "book", "bowtie", "butterfly",
+                                 "cactus", "camel", "camera", "carrot", "castle", "chair", "clock",
+                                 "computer", "crab", "crown", "cruise ship", "diamond", "donut",
+                                 "drill", "ear", "envelope", "eye", "eyeglasses", "fish",
+                                 "flashlight", "flower", "fork", "giraffe", "hand", "harp",
+                                 "headphones", "helicopter", "hourglass", "house plant",
+                                 "ice cream", "jacket", "jail", "key", "ladder", "lighthouse",
+                                 "lightning", "lollipop", "megaphone", "mountain", "mushroom",
+                                 "octopus", "palm tree", "pants", "paper clip", "parachute",
+                                 "pineapple", "popsicle", "postcard", "power outlet", "rain",
+                                 "rainbow", "rhinoceros", "rollerskates", "sailboat", "saw",
+                                 "scissors", "scorpion", "see saw", "sink", "skateboard", "skull",
+                                 "snail", "snorkel", "snowflake", "snowman", "sock", "stairs",
+                                 "star", "stethoscope", "stitches", "stop sign", "strawberry",
+                                 "sun", "swing set", "sword", "teapot", "television",
+                                 "tennis racquet", "The Eiffel Tower", "The Mona Lisa", "tooth",
+                                 "traffic light", "triangle", "t-shirt", "umbrella", "vase",
+                                 "whale", "windmill", "wine bottle", "wine glass", "wristwatch"]
+        categories_to_exclude = [words_to_exclude.index(w) for w in words_to_exclude]
+
+        category_filter = np.array([dc not in categories_to_exclude for dc in data_category])
+        data_category = data_category[category_filter]
+        data_drawing = data_drawing[category_filter]
+        data_recognized = data_recognized[category_filter]
+
         train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
             train_test_split(
                 data_category,
