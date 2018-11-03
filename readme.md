@@ -20,6 +20,7 @@
 * use attention
 * use hypercolumns
 * use drop connect
+* train on category subset and add "other" category for samples on in complementary category set
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
 * papers
   * https://arxiv.org/pdf/1704.03477.pdf
