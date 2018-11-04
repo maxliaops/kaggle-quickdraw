@@ -149,7 +149,7 @@ def main():
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
 
-    progressive_image_sizes = [32, 48, 64, 80, 96, 112, 128]
+    progressive_image_sizes = list(range(32, image_size + 1, 16))
     progressive_image_epoch_step = 5
 
     train_data_provider = TrainDataProvider(
