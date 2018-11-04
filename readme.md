@@ -21,6 +21,7 @@
 * use hypercolumns
 * use cv2.polylines?
 * stratify mini-batches
+* combine lr-plateau scheduling with sgdr
 * use drop connect
 * train on category subset and add "other" category for samples on in complementary category set
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
