@@ -26,7 +26,7 @@ class ConvBlock(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
-        out = self.se_module(out) + residual
+        out = self.se(out) + residual
         out = self.relu(out)
 
         return out
