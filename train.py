@@ -393,7 +393,7 @@ if __name__ == "__main__":
     argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
     argparser.add_argument("--progressive_image_size_min", default=32, type=int)
     argparser.add_argument("--progressive_image_size_step", default=16, type=int)
-    argparser.add_argument("--progressive_image_epoch_step", default=5, type=int)
+    argparser.add_argument("--progressive_image_epoch_step", default=7, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=256, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
