@@ -7,7 +7,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
-from utils import read_categories, draw_strokes
+from utils import read_categories, draw_strokes, draw_temporal_strokes
 
 
 class TrainDataProvider:
@@ -180,7 +180,8 @@ class TrainDataset(Dataset):
         elif "image" in self.df:
             image = self.df["image"][index]
         else:
-            image = draw_strokes(drawing, size=self.image_size)
+            # image = draw_strokes(drawing, size=self.image_size)
+            image = draw_temporal_strokes(drawing, size=self.image_size)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
