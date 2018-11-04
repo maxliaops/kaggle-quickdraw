@@ -10,11 +10,11 @@ class ConvBlock(nn.Module):
         super().__init__()
         self.delegate = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
-            nn.ELU(inplace=True),
+            nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels),
             nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
             # ChannelSEBlock(out_channels),
-            nn.ELU(inplace=True),
+            nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels)
         )
 
@@ -27,7 +27,7 @@ class SimpleCnn(nn.Module):
         super().__init__()
 
         last_layer_size = input_size
-        for _ in range(3):
+        for _ in range(4):
             last_layer_size //= 2
 
         self.delegate = nn.Sequential(
@@ -39,10 +39,12 @@ class SimpleCnn(nn.Module):
             ConvBlock(128, 256, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(256, 512, kernel_size=3, padding=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            ConvBlock(512, 512, kernel_size=3, padding=1),
             nn.AvgPool2d(kernel_size=last_layer_size),
             Flatten(),
             nn.Linear(512, 1024),
-            nn.ELU(inplace=True),
+            nn.ReLU(inplace=True),
             nn.BatchNorm1d(1024),
             # nn.Dropout(0.2),
             nn.Linear(1024, num_classes)
