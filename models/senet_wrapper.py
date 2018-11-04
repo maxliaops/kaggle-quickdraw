@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from torch import nn
 
 from models.senet import se_resnet50, se_resnet101, se_resnet152, se_resnext50_32x4d, se_resnext101_32x4d, senet154
@@ -7,7 +5,7 @@ from .common import ExpandChannels2d
 
 
 class SeNet(nn.Module):
-    def __init__(self, type, input_size, num_classes):
+    def __init__(self, type, num_classes):
         super().__init__()
 
         if type == "seresnext50":
@@ -21,38 +19,28 @@ class SeNet(nn.Module):
             # self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
 
             self.layer0 = self.senet.layer0
-            num_scale_downs = 5
         elif type == "seresnext101":
             self.senet = se_resnext101_32x4d(pretrained="imagenet")
             self.layer0 = self.senet.layer0
-            num_scale_downs = 5
         elif type == "seresnet50":
             self.senet = se_resnet50(pretrained="imagenet")
             self.layer0 = self.senet.layer0
-            num_scale_downs = 5
         elif type == "seresnet101":
             self.senet = se_resnet101(pretrained="imagenet")
             self.layer0 = self.senet.layer0
-            num_scale_downs = 5
         elif type == "seresnet152":
             self.senet = se_resnet152(pretrained="imagenet")
             self.layer0 = self.senet.layer0
-            num_scale_downs = 5
         elif type == "senet154":
             self.senet = senet154(pretrained="imagenet")
             self.layer0 = self.senet.layer0
-            num_scale_downs = 5
         else:
             raise Exception("Unsupported senet model type: '{}".format(type))
-
-        last_layer_size = input_size
-        for _ in range(num_scale_downs):
-            last_layer_size //= 2
 
         self.bn = nn.BatchNorm2d(1)
         self.expand_channels = ExpandChannels2d(3)
 
-        self.avg_pool = nn.AvgPool2d(last_layer_size, stride=1)
+        self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)
         self.dropout = nn.Dropout(0.2)
         self.last_linear = nn.Linear(2048, num_classes)
 

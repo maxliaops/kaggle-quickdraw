@@ -29,15 +29,15 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def create_model(type, input_size, num_classes):
     if type == "resnet":
-        model = ResNet(input_size=input_size, num_classes=num_classes)
+        model = ResNet(num_classes=num_classes)
     elif type in ["seresnext50", "seresnext101", "seresnet50", "seresnet101", "seresnet152", "senet154"]:
-        model = SeNet(type=type, input_size=input_size, num_classes=num_classes)
+        model = SeNet(type=type, num_classes=num_classes)
     elif type == "cnn":
-        model = SimpleCnn(input_size=input_size, num_classes=num_classes)
+        model = SimpleCnn(num_classes=num_classes)
     elif type == "mobilenetv2":
         model = MobileNetV2(input_size=input_size, n_class=num_classes)
     elif type == "drn":
-        model = Drn(input_size=input_size, num_classes=num_classes)
+        model = Drn(num_classes=num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 

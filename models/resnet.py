@@ -1,22 +1,19 @@
 import torch.nn as nn
 from torchvision.models import resnet34
+
 from .common import ExpandChannels2d
 
 
 class ResNet(nn.Module):
-    def __init__(self, input_size, num_classes):
+    def __init__(self, num_classes):
         super().__init__()
-
-        last_layer_size = input_size
-        for _ in range(5):
-            last_layer_size //= 2
 
         self.bn = nn.BatchNorm2d(1)
         self.expand_channels = ExpandChannels2d(3)
 
         self.resnet = resnet34(pretrained=True)
 
-        self.avgpool = nn.AvgPool2d(last_layer_size, stride=1)
+        self.avgpool = nn.AdaptiveAvgPool2d(output_size=1)
         self.fc = nn.Linear(512, num_classes)
 
     def forward(self, x):

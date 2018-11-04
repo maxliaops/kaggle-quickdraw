@@ -2,7 +2,6 @@ import math
 
 import torch.nn as nn
 
-from models.se_blocks import ChannelSEBlock
 from .common import Flatten
 
 
@@ -24,12 +23,8 @@ class ConvBlock(nn.Module):
 
 
 class SimpleCnn(nn.Module):
-    def __init__(self, input_size, num_classes):
+    def __init__(self, num_classes):
         super().__init__()
-
-        last_layer_size = input_size
-        for _ in range(3):
-            last_layer_size //= 2
 
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(6),
@@ -40,7 +35,7 @@ class SimpleCnn(nn.Module):
             ConvBlock(64, 128, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(128, 256, kernel_size=3, padding=1),
-            nn.AvgPool2d(kernel_size=last_layer_size),
+            nn.AdaptiveAvgPool2d(output_size=1),
             Flatten(),
             nn.Linear(256, 512),
             nn.ReLU(inplace=True),
