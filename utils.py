@@ -141,7 +141,7 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
     stroke_partitions = partition_strokes(strokes, 3)
     for stroke_partition in stroke_partitions:
         image = image.copy()
-        images.append(images)
+        images.append(image)
 
         for s, stroke in enumerate(stroke_partition):
             stroke_color = stroke_colors[s % len(stroke_colors)]
