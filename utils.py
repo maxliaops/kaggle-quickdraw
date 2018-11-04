@@ -139,12 +139,14 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
     image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
 
     stroke_partitions = partition_strokes(strokes, 3)
+    stroke_color_index = 0
     for stroke_partition in stroke_partitions:
         image = image.copy()
         images.append(image)
 
-        for s, stroke in enumerate(stroke_partition):
-            stroke_color = stroke_colors[s % len(stroke_colors)]
+        for stroke in stroke_partition:
+            stroke_color = stroke_colors[stroke_color_index % len(stroke_colors)]
+            stroke_color_index += 1
             for i in range(len(stroke[0]) - 1):
                 x0 = int(scale_factor * stroke[0][i]) + padding
                 y0 = int(scale_factor * stroke[1][i]) + padding
