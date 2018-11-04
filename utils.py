@@ -105,7 +105,7 @@ def partition_strokes(strokes, num_partitions):
     return partitions
 
 
-def draw_strokes(strokes, size=256, line_width=7, padding=3):
+def draw_strokes(strokes, size=256, line_width=7, padding=3, fliplr=False):
     draw_size = 256
     scale_factor = (draw_size - 2 * padding) / draw_size
 
@@ -120,6 +120,9 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
             y0 = int(scale_factor * stroke[1][i]) + padding
             x1 = int(scale_factor * stroke[0][i + 1]) + padding
             y1 = int(scale_factor * stroke[1][i + 1]) + padding
+            if fliplr:
+                x0 = draw_size - x0
+                x1 = draw_size - x1
             cv2.line(image, (x0, y0), (x1, y1), stroke_color, line_width)
 
     if draw_size != size:
@@ -135,7 +138,7 @@ def merge_stroke_drawings(drawings):
     return merged_drawing
 
 
-def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
+def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3, fliplr=False):
     draw_size = 256
     scale_factor = (draw_size - 2 * padding) / draw_size
 
@@ -157,6 +160,9 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
                 y0 = int(scale_factor * stroke[1][i]) + padding
                 x1 = int(scale_factor * stroke[0][i + 1]) + padding
                 y1 = int(scale_factor * stroke[1][i + 1]) + padding
+                if fliplr:
+                    x0 = draw_size - x0
+                    x1 = draw_size - x1
                 cv2.line(image, (x0, y0), (x1, y1), stroke_color, line_width)
 
     if draw_size != size:
