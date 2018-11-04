@@ -1,4 +1,5 @@
 import argparse
+import math
 
 import cv2
 import numpy as np
@@ -82,6 +83,28 @@ def assemble_strokes(x, y, lens):
     return strokes
 
 
+def partition_strokes(strokes, num_partitions):
+    total_num_points = sum([len(s[0]) for s in strokes])
+    partition_num_points = math.ceil(total_num_points / num_partitions)
+
+    partitions = []
+
+    current_partition = []
+    current_partition_points = 0
+    for s, stroke in enumerate(strokes):
+        current_partition.append(stroke)
+        current_partition_points += len(stroke[0])
+        if current_partition_points >= partition_num_points or s == len(strokes) - 1:
+            partitions.append(current_partition)
+            current_partition = []
+            current_partition_points = 0
+
+    for _ in range(len(partitions), num_partitions):
+        partitions.append([])
+
+    return partitions
+
+
 def draw_strokes(strokes, size=256, line_width=7, padding=3):
     draw_size = 256
     scale_factor = (draw_size - 2 * padding) / draw_size
@@ -103,3 +126,33 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
         image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
 
     return image
+
+
+def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
+    draw_size = 256
+    scale_factor = (draw_size - 2 * padding) / draw_size
+
+    stroke_colors = range(0, 240, 40)
+
+    images = []
+
+    image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
+
+    stroke_partitions = partition_strokes(strokes, 3)
+    for stroke_partition in stroke_partitions:
+        image = image.copy()
+        images.append(images)
+
+        for s, stroke in enumerate(stroke_partition):
+            stroke_color = stroke_colors[s % len(stroke_colors)]
+            for i in range(len(stroke[0]) - 1):
+                x0 = int(scale_factor * stroke[0][i]) + padding
+                y0 = int(scale_factor * stroke[1][i]) + padding
+                x1 = int(scale_factor * stroke[0][i + 1]) + padding
+                y1 = int(scale_factor * stroke[1][i + 1]) + padding
+                cv2.line(image, (x0, y0), (x1, y1), stroke_color, line_width)
+
+    if draw_size != size:
+        images = [cv2.resize(i, (size, size), interpolation=cv2.INTER_AREA) for i in images]
+
+    return np.array(images)
