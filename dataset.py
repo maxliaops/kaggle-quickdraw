@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
-from torchvision.transforms.functional import normalize
 
 from utils import read_categories, draw_strokes
 
@@ -178,20 +177,23 @@ class TrainDataset(Dataset):
 
         if self.use_dummy_image:
             image = np.zeros((self.image_size, self.image_size))
+        elif "image" in self.df:
+            image = self.df["image"][index]
         else:
-            image = self.df["image"][index] if "image" in self.df else draw_strokes(drawing, size=self.image_size)
+            image = draw_strokes(drawing, size=self.image_size)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
 
-        image_mean = 0.0
-        image_stdev = 1.0
-        image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
+        # image_mean = 0.0
+        # image_stdev = 1.0
+        # image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
 
         return image, category
 
     def image_to_tensor(self, image):
-        image = np.expand_dims(image, 0)
+        if len(image.shape) == 2:
+            image = np.expand_dims(image, 0)
         return torch.from_numpy((image / 255.)).float()
 
     def category_to_tensor(self, category):
