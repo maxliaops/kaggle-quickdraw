@@ -82,8 +82,8 @@ def assemble_strokes(x, y, lens):
     return strokes
 
 
-def draw_strokes(strokes, size=256, line_width=7, padding=3):
-    draw_size = 256
+def draw_strokes(strokes, size=256, line_width=3, padding=1):
+    draw_size = size
     scale_factor = (draw_size - 2 * padding) / draw_size
 
     image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
