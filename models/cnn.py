@@ -27,7 +27,7 @@ class SimpleCnn(nn.Module):
         super().__init__()
 
         last_layer_size = input_size
-        for _ in range(4):
+        for _ in range(3):
             last_layer_size //= 2
 
         self.delegate = nn.Sequential(
@@ -39,8 +39,6 @@ class SimpleCnn(nn.Module):
             ConvBlock(128, 256, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(256, 512, kernel_size=3, padding=1),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            ConvBlock(512, 512, kernel_size=3, padding=1),
             nn.AvgPool2d(kernel_size=last_layer_size),
             Flatten(),
             nn.Linear(512, 1024),
