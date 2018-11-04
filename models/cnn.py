@@ -1,6 +1,7 @@
 import math
 
 import torch.nn as nn
+from torchvision.models.resnet import BasicBlock
 
 from models.se_blocks import ChannelSEBlock
 from .common import Flatten
@@ -33,13 +34,13 @@ class SimpleCnn(nn.Module):
 
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(1),
-            ConvBlock(1, 64, kernel_size=3, padding=1),
+            BasicBlock(1, 64),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            ConvBlock(64, 128, kernel_size=3, padding=1),
+            BasicBlock(64, 128),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            ConvBlock(128, 256, kernel_size=3, padding=1),
+            BasicBlock(128, 256),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            ConvBlock(256, 512, kernel_size=3, padding=1),
+            BasicBlock(256, 512),
             nn.AvgPool2d(kernel_size=last_layer_size),
             Flatten(),
             nn.Linear(512, 1024),
