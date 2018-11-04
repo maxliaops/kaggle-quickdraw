@@ -128,6 +128,13 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
     return image
 
 
+def merge_stroke_drawings(drawings):
+    merged_drawing = np.full(drawings[0].shape, 255, dtype=np.uint8)
+    for drawing in drawings:
+        merged_drawing[drawing != 255] = drawing[drawing != 255]
+    return merged_drawing
+
+
 def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
     draw_size = 256
     scale_factor = (draw_size - 2 * padding) / draw_size
@@ -155,8 +162,8 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
     if draw_size != size:
         images = [cv2.resize(i, (size, size), interpolation=cv2.INTER_AREA) for i in images]
 
-    images.append(np.average([images[0], images[1]], axis=0).astype(np.uint8))
-    images.append(np.average([images[1], images[2]], axis=0).astype(np.uint8))
-    images.append(np.average([images[0], images[1], images[2]], axis=0).astype(np.uint8))
+    images.append(merge_stroke_drawings([images[0], images[1]]))
+    images.append(merge_stroke_drawings([images[1], images[2]]))
+    images.append(merge_stroke_drawings([images[0], images[1], images[2]]))
 
     return np.array(images)
