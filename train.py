@@ -166,11 +166,11 @@ def main():
 
     train_data = train_data_provider.get_next()
 
-    train_set = TrainDataset(train_data.train_set_df, image_size, use_dummy_image)
+    train_set = TrainDataset(train_data.train_set_df, image_size, True, use_dummy_image)
     train_set_data_loader = \
         DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
 
-    val_set = TrainDataset(train_data.val_set_df, image_size, use_dummy_image)
+    val_set = TrainDataset(train_data.val_set_df, image_size, False, use_dummy_image)
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
