@@ -42,7 +42,7 @@ class SimpleCnn(nn.Module):
             nn.AvgPool2d(kernel_size=last_layer_size),
             Flatten(),
             nn.Linear(512, 1024),
-            nn.ReLU(inplace=True),
+            nn.ELU(inplace=True),
             nn.BatchNorm1d(1024),
             # nn.Dropout(0.2),
             nn.Linear(1024, num_classes)
