@@ -44,7 +44,7 @@ class SimpleCnn(nn.Module):
             nn.Linear(512, 1024),
             nn.ReLU(inplace=True),
             nn.BatchNorm1d(1024),
-            nn.Dropout(0.4),
+            nn.Dropout(0.8),
             nn.Linear(1024, num_classes)
         )
 
