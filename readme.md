@@ -15,10 +15,11 @@
 * https://www.kaggle.com/c/quickdraw-doodle-recognition/discussion/68006
 * add batch normalization as first layer in resnet/drn models
 * train x classifiers on disjoint category groups, then classify with every classifier and pick the most discriminative one
-* train first with cce loss, then with smooth_topk loss
+* train first with cce loss, then with smooth_topk loss (tune smooth_topk loss parameters)
 * remove the first maxpool layer from resnet/senet models
 * use attention
 * use hypercolumns
+* add simple augmentation (fliplr + scaling) which can be implemented while drawing strokes
 * use cv2.polylines?
 * stratify mini-batches
 * combine lr-plateau scheduling with sgdr
