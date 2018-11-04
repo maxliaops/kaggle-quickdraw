@@ -362,7 +362,7 @@ def main():
 
         sys.stdout.flush()
 
-        if sgdr_reset and epoch - epoch_of_last_improval >= patience:
+        if (sgdr_reset or lr_scheduler_type == "reduce_on_plateau") and epoch - epoch_of_last_improval >= patience:
             print("early abort due to lack of improval", flush=True)
             break
 
