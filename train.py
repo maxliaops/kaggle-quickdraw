@@ -118,6 +118,9 @@ def main():
     image_size = args.image_size
     use_dummy_image = args.use_dummy_image
     use_progressive_image_sizes = args.use_progressive_image_sizes
+    progressive_image_size_min = args.progressive_image_size_min
+    progressive_image_size_step = args.progressive_image_size_step
+    progressive_image_epoch_step = args.progressive_image_epoch_step
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
     test_size = args.test_size
@@ -149,8 +152,7 @@ def main():
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
 
-    progressive_image_sizes = list(range(32, image_size + 1, 16))
-    progressive_image_epoch_step = 5
+    progressive_image_sizes = list(range(progressive_image_size_min, image_size + 1, progressive_image_size_step))
 
     train_data_provider = TrainDataProvider(
         input_dir,
@@ -387,6 +389,9 @@ if __name__ == "__main__":
     argparser.add_argument("--image_size", default=64, type=int)
     argparser.add_argument("--use_dummy_image", default=False, type=str2bool)
     argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
+    argparser.add_argument("--progressive_image_size_min", default=32, type=int)
+    argparser.add_argument("--progressive_image_size_step", default=16, type=int)
+    argparser.add_argument("--progressive_image_epoch_step", default=5, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=256, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
