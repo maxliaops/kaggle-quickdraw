@@ -23,6 +23,7 @@
 * stratify mini-batches
 * combine lr-plateau scheduling with sgdr
 * use drop connect
+* use fully convolutional model with progressive image resizing
 * train on category subset and add "other" category for samples on in complementary category set
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
 * papers
@@ -36,3 +37,4 @@
   * https://arxiv.org/pdf/1804.00021.pdf
   * http://cybertron.cg.tu-berlin.de/eitz/pdf/2012_siggraph_classifysketch.pdf
   * https://arxiv.org/pdf/1511.04534.pdf
+  * https://arxiv.org/pdf/1405.3080.pdf
