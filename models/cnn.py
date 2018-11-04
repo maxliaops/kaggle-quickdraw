@@ -6,13 +6,13 @@ from .common import Flatten
 
 
 class ConvBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, padding, dilation=1, stride2=1):
+    def __init__(self, in_channels, out_channels, kernel_size, padding, dilation=1):
         super().__init__()
         self.delegate = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels),
-            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation, stride=stride2),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
             # ChannelSEBlock(out_channels),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels)
@@ -32,9 +32,12 @@ class SimpleCnn(nn.Module):
 
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(1),
-            ConvBlock(1, 64, kernel_size=3, padding=1, stride2=2),
-            ConvBlock(64, 128, kernel_size=3, padding=1, stride2=2),
-            ConvBlock(128, 256, kernel_size=3, padding=1, stride2=2),
+            ConvBlock(1, 64, kernel_size=3, padding=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            ConvBlock(64, 128, kernel_size=3, padding=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            ConvBlock(128, 256, kernel_size=3, padding=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(256, 512, kernel_size=3, padding=1),
             nn.AvgPool2d(kernel_size=last_layer_size),
             Flatten(),
