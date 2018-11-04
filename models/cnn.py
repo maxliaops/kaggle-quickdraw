@@ -2,6 +2,7 @@ import math
 
 import torch.nn as nn
 
+from models.se_blocks import ChannelSEBlock
 from .common import Flatten
 
 
@@ -13,7 +14,7 @@ class ConvBlock(nn.Module):
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels),
             nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
-            # ChannelSEBlock(out_channels),
+            ChannelSEBlock(out_channels),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels)
         )
@@ -28,20 +29,20 @@ class SimpleCnn(nn.Module):
 
         self.delegate = nn.Sequential(
             nn.BatchNorm2d(6),
-            ConvBlock(6, 32, kernel_size=3, padding=1),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            ConvBlock(32, 64, kernel_size=3, padding=1),
+            ConvBlock(6, 64, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(64, 128, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(128, 256, kernel_size=3, padding=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            ConvBlock(256, 512, kernel_size=3, padding=1),
             nn.AdaptiveAvgPool2d(output_size=1),
             Flatten(),
-            nn.Linear(256, 512),
+            nn.Linear(512, 1024),
             nn.ReLU(inplace=True),
-            nn.BatchNorm1d(512),
+            nn.BatchNorm1d(1024),
             # nn.Dropout(0.2),
-            nn.Linear(512, num_classes)
+            nn.Linear(1024, num_classes)
         )
 
         for m in self.modules():
