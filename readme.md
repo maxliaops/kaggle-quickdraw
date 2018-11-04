@@ -22,6 +22,7 @@
 * use cv2.polylines?
 * stratify mini-batches
 * combine lr-plateau scheduling with sgdr
+* augment the number of feature maps in the cnn model and add se/scse block
 * use drop connect
 * use fully convolutional model with progressive image resizing
 * train on category subset and add "other" category for samples on in complementary category set
