@@ -6,13 +6,13 @@ from .common import Flatten
 
 
 class ConvBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, padding):
+    def __init__(self, in_channels, out_channels, kernel_size, padding, dilation=1):
         super().__init__()
         self.delegate = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding),
+            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels),
-            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
             # ChannelSEBlock(out_channels),
             nn.ReLU(inplace=True),
             nn.BatchNorm2d(out_channels)
