@@ -88,13 +88,16 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
 
     image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
 
+    stroke_colors = range(0, 240, 40)
+
     for stroke in strokes:
         for i in range(len(stroke[0]) - 1):
+            stroke_color = stroke_colors[i % len(stroke_colors)]
             x0 = int(scale_factor * stroke[0][i]) + padding
             y0 = int(scale_factor * stroke[1][i]) + padding
             x1 = int(scale_factor * stroke[0][i + 1]) + padding
             y1 = int(scale_factor * stroke[1][i + 1]) + padding
-            cv2.line(image, (x0, y0), (x1, y1), 0, line_width)
+            cv2.line(image, (x0, y0), (x1, y1), stroke_color, line_width)
 
     if draw_size != size:
         image = cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
