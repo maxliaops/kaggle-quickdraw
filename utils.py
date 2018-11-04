@@ -90,9 +90,9 @@ def draw_strokes(strokes, size=256, line_width=7, padding=3):
 
     stroke_colors = range(0, 240, 40)
 
-    for stroke in strokes:
+    for s, stroke in enumerate(strokes):
+        stroke_color = stroke_colors[s % len(stroke_colors)]
         for i in range(len(stroke[0]) - 1):
-            stroke_color = stroke_colors[i % len(stroke_colors)]
             x0 = int(scale_factor * stroke[0][i]) + padding
             y0 = int(scale_factor * stroke[1][i]) + padding
             x1 = int(scale_factor * stroke[0][i + 1]) + padding
