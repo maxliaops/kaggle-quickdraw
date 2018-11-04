@@ -27,7 +27,7 @@ class SimpleCnn(nn.Module):
         super().__init__()
 
         last_layer_size = input_size
-        for _ in range(3):
+        for _ in range(2):
             last_layer_size //= 2
 
         self.delegate = nn.Sequential(
