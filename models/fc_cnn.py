@@ -2,6 +2,7 @@ import math
 
 import torch.nn as nn
 
+from models.common import Flatten
 from models.se_blocks import ChannelSEBlock
 
 
@@ -36,7 +37,8 @@ class FcCnn(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(256, 512, kernel_size=3, padding=1),
             nn.AdaptiveAvgPool2d(output_size=1),
-            nn.Conv2d(512, num_classes, kernel_size=1)
+            nn.Conv2d(512, num_classes, kernel_size=1),
+            Flatten()
         )
 
         for m in self.modules():
