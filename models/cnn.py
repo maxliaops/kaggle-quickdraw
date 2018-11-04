@@ -9,27 +9,18 @@ from .common import Flatten
 class ConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, padding, dilation=1):
         super().__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation)
-        self.relu = nn.ReLU(inplace=True)
-        self.bn1 = nn.BatchNorm2d(out_channels)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation)
-        self.se = ChannelSEBlock(out_channels)
-        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.delegate = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(out_channels),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, dilation=dilation),
+            ChannelSEBlock(out_channels),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(out_channels)
+        )
 
     def forward(self, x):
-        residual = x
-
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
-
-        out = self.conv2(out)
-        out = self.bn2(out)
-
-        out = self.se_module(out) + residual
-        out = self.relu(out)
-
-        return out
+        return self.delegate(x)
 
 
 class SimpleCnn(nn.Module):
