@@ -136,12 +136,10 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
 
     images = []
 
-    image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
-
     stroke_partitions = partition_strokes(strokes, 3)
     stroke_color_index = 0
     for stroke_partition in stroke_partitions:
-        image = image.copy()
+        image = np.full((draw_size, draw_size), 255, dtype=np.uint8)
         images.append(image)
 
         for stroke in stroke_partition:
@@ -156,5 +154,9 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3):
 
     if draw_size != size:
         images = [cv2.resize(i, (size, size), interpolation=cv2.INTER_AREA) for i in images]
+
+    images.append(np.average([images[0], images[1]], axis=0).astype(np.uint8))
+    images.append(np.average([images[1], images[2]], axis=0).astype(np.uint8))
+    images.append(np.average([images[0], images[1], images[2]], axis=0).astype(np.uint8))
 
     return np.array(images)

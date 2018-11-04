@@ -32,8 +32,8 @@ class SimpleCnn(nn.Module):
             last_layer_size //= 2
 
         self.delegate = nn.Sequential(
-            nn.BatchNorm2d(3),
-            ConvBlock(3, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(6),
+            ConvBlock(6, 32, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(32, 64, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
