@@ -3,6 +3,7 @@ import multiprocessing as mp
 import time
 
 import numpy as np
+import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
@@ -214,3 +215,33 @@ class TrainDataset(Dataset):
 
     def category_to_tensor(self, category):
         return torch.tensor(category.item()).long()
+
+
+class TestData:
+    def __init__(self, data_dir):
+        self.df = pd.read_csv(
+            "{}/test_simplified.csv".format(data_dir),
+            index_col="key_id",
+            converters={ "drawing": lambda drawing: eval(drawing) })
+
+
+class TestDataset(Dataset):
+    def __init__(self, df, image_size, use_extended_stroke_channels):
+        super().__init__()
+        self.df = df
+        self.image_size = image_size
+        self.use_extended_stroke_channels = use_extended_stroke_channels
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, index):
+        drawing = self.df.iloc[index].drawing
+
+        image = draw_temporal_strokes(
+            drawing,
+            size=self.image_size,
+            padding=3,
+            extended_channels=self.use_extended_stroke_channels)
+
+        return image
