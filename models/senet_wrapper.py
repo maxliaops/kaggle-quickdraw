@@ -37,8 +37,8 @@ class SeNet(nn.Module):
         else:
             raise Exception("Unsupported senet model type: '{}".format(type))
 
-        self.bn = nn.BatchNorm2d(1)
         self.expand_channels = ExpandChannels2d(3)
+        self.bn = nn.BatchNorm2d(3)
 
         self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)
         self.dropout = nn.Dropout(0.2)
@@ -61,8 +61,8 @@ class SeNet(nn.Module):
         return x
 
     def forward(self, x):
-        x = self.bn(x)
         x = self.expand_channels(x)
+        x = self.bn(x)
         x = self.features(x)
         x = self.logits(x)
         return x

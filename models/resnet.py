@@ -8,8 +8,8 @@ class ResNet(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
 
-        self.bn = nn.BatchNorm2d(1)
         self.expand_channels = ExpandChannels2d(3)
+        self.bn = nn.BatchNorm2d(3)
 
         self.resnet = resnet34(pretrained=True)
 
@@ -17,8 +17,8 @@ class ResNet(nn.Module):
         self.fc = nn.Linear(512, num_classes)
 
     def forward(self, x):
-        x = self.bn(x)
         x = self.expand_channels(x)
+        x = self.bn(x)
 
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
