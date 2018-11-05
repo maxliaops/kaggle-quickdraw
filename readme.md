@@ -19,6 +19,7 @@
 * remove the first maxpool layer from resnet/senet models
 * use attention
 * use hypercolumns
+* add swa
 * add residual connections
 * add simple augmentation (fliplr + scaling) which can be implemented while drawing strokes
 * use cv2.polylines?
@@ -29,15 +30,17 @@
 * use fully convolutional model with progressive image resizing
 * train on category subset and add "other" category for samples on in complementary category set
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
-* papers
-  * https://arxiv.org/pdf/1704.03477.pdf
-  * https://arxiv.org/pdf/1706.03762.pdf
-  * https://arxiv.org/pdf/1802.07595.pdf
-  * https://arxiv.org/pdf/1806.05594.pdf
-  * http://openaccess.thecvf.com/content_cvpr_2018/CameraReady/2763.pdf
-  * https://arxiv.org/pdf/1501.07873.pdf
-  * https://arxiv.org/pdf/1803.00942.pdf
-  * https://arxiv.org/pdf/1804.00021.pdf
-  * http://cybertron.cg.tu-berlin.de/eitz/pdf/2012_siggraph_classifysketch.pdf
-  * https://arxiv.org/pdf/1511.04534.pdf
-  * https://arxiv.org/pdf/1405.3080.pdf
+
+### Papers
+
+* https://arxiv.org/pdf/1704.03477.pdf
+* https://arxiv.org/pdf/1706.03762.pdf
+* https://arxiv.org/pdf/1802.07595.pdf
+* https://arxiv.org/pdf/1806.05594.pdf
+* http://openaccess.thecvf.com/content_cvpr_2018/CameraReady/2763.pdf
+* https://arxiv.org/pdf/1501.07873.pdf
+* https://arxiv.org/pdf/1803.00942.pdf
+* https://arxiv.org/pdf/1804.00021.pdf
+* http://cybertron.cg.tu-berlin.de/eitz/pdf/2012_siggraph_classifysketch.pdf
+* https://arxiv.org/pdf/1511.04534.pdf
+* https://arxiv.org/pdf/1405.3080.pdf
