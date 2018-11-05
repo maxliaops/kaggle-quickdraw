@@ -109,27 +109,27 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
-        if False:
+        if True:
             categories_to_exclude = [
-                "alarm clock", "angel", "anvil", "apple", "bandage",
-                "baseball bat", "bee", "binoculars", "book", "bowtie", "butterfly",
-                "cactus", "camel", "camera", "carrot", "castle", "chair", "clock",
-                "computer", "crab", "crown", "cruise ship", "diamond", "donut",
-                "drill", "ear", "envelope", "eye", "eyeglasses", "fish",
-                "flashlight", "flower", "fork", "giraffe", "hand", "harp",
-                "headphones", "helicopter", "hourglass", "house plant",
-                "ice cream", "jacket", "jail", "key", "ladder", "lighthouse",
-                "lightning", "lollipop", "megaphone", "mountain", "mushroom",
-                "octopus", "palm tree", "pants", "paper clip", "parachute",
-                "pineapple", "popsicle", "postcard", "power outlet", "rain",
-                "rainbow", "rhinoceros", "rollerskates", "sailboat", "saw",
-                "scissors", "scorpion", "see saw", "sink", "skateboard", "skull",
-                "snail", "snorkel", "snowflake", "snowman", "sock", "stairs",
-                "star", "stethoscope", "stitches", "stop sign", "strawberry",
-                "sun", "swing set", "sword", "teapot", "television",
-                "tennis racquet", "The Eiffel Tower", "The Mona Lisa", "tooth",
-                "traffic light", "triangle", "t-shirt", "umbrella", "vase",
-                "whale", "windmill", "wine bottle", "wine glass", "wristwatch"
+                'alarm clock', 'angel', 'ant', 'apple', 'bandage', 'bee',
+                'binoculars', 'bowtie', 'butterfly', 'cactus', 'calculator',
+                'camel', 'camera', 'campfire', 'candle', 'carrot', 'chair',
+                'chandelier', 'clock', 'crown', 'cruise ship', 'donut', 'drill',
+                'dumbbell', 'ear', 'envelope', 'eye', 'eyeglasses', 'fireplace',
+                'fish', 'flamingo', 'flashlight', 'flip flops', 'flower',
+                'giraffe', 'hand', 'harp', 'hat', 'headphones', 'hedgehog',
+                'helicopter', 'hot air balloon', 'hourglass', 'ice cream',
+                'jacket', 'key', 'ladder', 'lightning', 'lion', 'lipstick',
+                'lollipop', 'megaphone', 'mermaid', 'octopus', 'palm tree',
+                'panda', 'pants', 'paper clip', 'parachute', 'pig', 'pineapple',
+                'pizza', 'popsicle', 'rabbit', 'rain', 'rainbow', 'rhinoceros',
+                'rollerskates', 'sailboat', 'saw', 'sea turtle', 'see saw',
+                'sheep', 'skateboard', 'skull', 'snail', 'snorkel', 'snowman',
+                'sock', 'squirrel', 'stairs', 'star', 'stethoscope', 'stitches',
+                'stop sign', 'strawberry', 'sun', 'swing set', 'sword', 'teapot',
+                'television', 'tennis racquet', 'tent', 'The Eiffel Tower',
+                'The Mona Lisa', 'toaster', 'toilet', 'traffic light', 'triangle',
+                'umbrella', 'windmill', 'wine glass'
             ]
 
             categories_mask = np.array([c not in categories_to_exclude for c in categories])
