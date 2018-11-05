@@ -421,7 +421,7 @@ def main():
 
     test_data.df["word"] = predicted_words
 
-    test_data.df.to_csv("{}/submission.csv".format(output_dir), columns=["key_id", "word"])
+    test_data.df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
 
 
 if __name__ == "__main__":
