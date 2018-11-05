@@ -40,7 +40,7 @@ class HcFcCnn(nn.Module):
         self.conv3 = ConvBlock(128, 256, kernel_size=3, padding=1)
         self.max_pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.hc_conv = ConvBlock(64 + 128 + 256, 512, kernel_size=3, padding=1)
+        self.hc_conv = ConvBlock(6 + 64 + 128 + 256, 512, kernel_size=3, padding=1)
 
         self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)
         self.fc = nn.Conv2d(512, num_classes, kernel_size=1)
@@ -55,6 +55,7 @@ class HcFcCnn(nn.Module):
         hc_inputs = []
 
         x = self.bn0(x)
+        hc_inputs.append(F.interpolate(x, scale_factor=1. / 8, mode="area"))
 
         x = self.conv1(x)
         hc_inputs.append(F.interpolate(x, scale_factor=1. / 8, mode="area"))
