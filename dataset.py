@@ -199,22 +199,14 @@ class TrainDataset(Dataset):
                 fliplr=fliplr,
                 extended_channels=self.use_extended_stroke_channels)
 
-        image = self.image_to_tensor(image)
-        category = self.category_to_tensor(category)
+        image = image_to_tensor(image)
+        category = category_to_tensor(category)
 
         # image_mean = 0.0
         # image_stdev = 1.0
         # image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
 
         return image, category
-
-    def image_to_tensor(self, image):
-        if len(image.shape) == 2:
-            image = np.expand_dims(image, 0)
-        return torch.from_numpy((image / 255.)).float()
-
-    def category_to_tensor(self, category):
-        return torch.tensor(category.item()).long()
 
 
 class TestData:
@@ -244,4 +236,16 @@ class TestDataset(Dataset):
             padding=3,
             extended_channels=self.use_extended_stroke_channels)
 
+        image = image_to_tensor(image)
+
         return tuple(image)
+
+
+def image_to_tensor(image):
+    if len(image.shape) == 2:
+        image = np.expand_dims(image, 0)
+    return torch.from_numpy((image / 255.)).float()
+
+
+def category_to_tensor(category):
+    return torch.tensor(category.item()).long()

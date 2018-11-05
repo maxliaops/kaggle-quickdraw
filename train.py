@@ -164,6 +164,7 @@ def main():
     max_sgdr_cycles = args.max_sgdr_cycles
 
     use_extended_stroke_channels = model_type in ["cnn","residual_cnn", "fc_cnn", "hc_fc_cnn"]
+    print("use_extended_stroke_channels: {}".format(use_extended_stroke_channels), flush=True)
 
     progressive_image_sizes = list(range(progressive_image_size_min, image_size + 1, progressive_image_size_step))
 
@@ -413,7 +414,6 @@ def main():
     with torch.no_grad():
         for batch in test_set_data_loader:
             images = batch[0].to(device, non_blocking=True)
-            print(images.shape)
             prediction_logits = model(images)
             predictions = F.softmax(prediction_logits, dim=1)
             _, predicted_categories = torch.topk(predictions, 3, dim=1, sorted=True)
