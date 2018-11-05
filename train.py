@@ -120,7 +120,6 @@ def main():
     input_dir = args.input_dir
     output_dir = args.output_dir
     image_size = args.image_size
-    use_extended_stroke_channels = args.use_extended_stroke_channels
     augment = args.augment
     use_dummy_image = args.use_dummy_image
     use_progressive_image_sizes = args.use_progressive_image_sizes
@@ -157,6 +156,8 @@ def main():
     sgdr_cycle_end_prolongation = args.sgdr_cycle_end_prolongation
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
+
+    use_extended_stroke_channels = model_type in ["cnn", "fc_cnn", "hc_fc_cnn"]
 
     progressive_image_sizes = list(range(progressive_image_size_min, image_size + 1, progressive_image_size_step))
 
@@ -393,7 +394,6 @@ if __name__ == "__main__":
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--image_size", default=64, type=int)
-    argparser.add_argument("--use_extended_stroke_channels", default=True, type=str2bool)
     argparser.add_argument("--augment", default=False, type=str2bool)
     argparser.add_argument("--use_dummy_image", default=False, type=str2bool)
     argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
