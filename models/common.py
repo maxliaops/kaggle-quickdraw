@@ -12,4 +12,7 @@ class ExpandChannels2d(nn.Module):
         self.num_channels = num_channels
 
     def forward(self, x):
-        return x.expand(-1, self.num_channels, -1, -1)
+        if x.size(1) != self.num_channels:
+            return x.expand(-1, self.num_channels, -1, -1)
+        else:
+            return x

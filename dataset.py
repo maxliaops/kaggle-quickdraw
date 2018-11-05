@@ -162,10 +162,11 @@ class TrainData:
 
 
 class TrainDataset(Dataset):
-    def __init__(self, df, image_size, augment, use_dummy_image):
+    def __init__(self, df, image_size, use_extended_stroke_channels, augment, use_dummy_image):
         super().__init__()
         self.df = df
         self.image_size = image_size
+        self.use_extended_stroke_channels = use_extended_stroke_channels
         self.augment = augment
         self.use_dummy_image = use_dummy_image
 
@@ -190,8 +191,12 @@ class TrainDataset(Dataset):
                 if np.random.rand() < 0.2:
                     padding += np.random.randint(5, 50)
 
-            # image = draw_strokes(drawing, size=self.image_size, padding=padding, fliplr=fliplr)
-            image = draw_temporal_strokes(drawing, size=self.image_size, padding=padding, fliplr=fliplr)
+            image = draw_temporal_strokes(
+                drawing,
+                size=self.image_size,
+                padding=padding,
+                fliplr=fliplr,
+                extended_channels=self.use_extended_stroke_channels)
 
         image = self.image_to_tensor(image)
         category = self.category_to_tensor(category)
