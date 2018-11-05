@@ -236,21 +236,15 @@ class TestDataset(Dataset):
             padding=3,
             extended_channels=self.use_extended_stroke_channels)
 
-        print("before", flush=True)
-        print(image.shape, flush=True)
-
         image = image_to_tensor(image)
 
-        print("after", flush=True)
-        print(image.shape, flush=True)
-
-        return tuple(image)
+        return image
 
 
 def image_to_tensor(image):
     if len(image.shape) == 2:
         image = np.expand_dims(image, 0)
-    return torch.from_numpy((image / 255.)).float()
+    return torch.from_numpy(image / 255.).float()
 
 
 def category_to_tensor(category):
