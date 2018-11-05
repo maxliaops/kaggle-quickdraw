@@ -244,4 +244,4 @@ class TestDataset(Dataset):
             padding=3,
             extended_channels=self.use_extended_stroke_channels)
 
-        return image
+        return tuple(image)

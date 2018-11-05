@@ -7,20 +7,22 @@ import sys
 import time
 from math import ceil
 
+import numpy as np
 import psutil
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
-from dataset import TrainDataset, TrainDataProvider
+from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset
 from metrics import accuracy, mapk
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet
-from utils import get_learning_rate, str2bool
+from utils import get_learning_rate, str2bool, read_categories
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -396,8 +398,29 @@ def main():
     print()
     print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)), flush=True)
 
-    # TODO: check how to do proper cleanup
-    # train_data_provider.shutdown()
+    test_data = TestData(input_dir)
+    test_set = TestDataset(test_data.df, image_size, use_extended_stroke_channels)
+    test_set_data_loader = \
+        DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
+
+    model.load_state_dict(torch.load("{}/model.pth".format(output_dir), map_location=device))
+    model.eval()
+
+    categories = read_categories("{}/categories.txt".format(input_dir))
+    categories = np.array([c.replace(" ", "_") for c in categories])
+
+    predicted_words = []
+    with torch.no_grad():
+        for batch in test_set_data_loader:
+            images = batch[0].to(device, non_blocking=True)
+            prediction_logits = model(images)
+            predictions = F.softmax(prediction_logits, dim=1)
+            _, predicted_categories = torch.topk(predictions, 3, dim=1, sorted=True)
+            predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in predicted_categories])
+
+    test_data.df["word"] = predicted_words
+
+    test_data.df.to_csv("{}/submission.csv".format(output_dir), columns=["key_id", "word"])
 
 
 if __name__ == "__main__":
