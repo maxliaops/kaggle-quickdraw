@@ -2,6 +2,7 @@ import argparse
 import datetime
 import glob
 import os
+import shutil
 import sys
 import time
 from math import ceil
@@ -121,6 +122,7 @@ def main():
 
     input_dir = args.input_dir
     output_dir = args.output_dir
+    base_model_dir = args.base_model_dir
     image_size = args.image_size
     augment = args.augment
     use_dummy_image = args.use_dummy_image
@@ -183,8 +185,21 @@ def main():
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
-    model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
+    if base_model_dir:
+        for model_file_path in glob.glob("{}/model*.pth".format(base_model_dir)):
+            shutil.copyfile(model_file_path, "{}/{}".format(output_dir, os.path.basename(model_file_path)))
+        model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
+        model.load_state_dict(torch.load("{}/model.pth".format(output_dir), map_location=device))
+    else:
+        model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
+
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
+
+    ensemble_model_index = 0
+    for model_file_path in glob.glob("{}/model-*.pth".format(output_dir)):
+        model_file_name = os.path.basename(model_file_path)
+        model_index = int(model_file_name.replace("model-", "").replace(".pth", ""))
+        ensemble_model_index = max(ensemble_model_index, model_index + 1)
 
     epoch_iterations = ceil(len(train_set) / batch_size)
 
@@ -209,12 +224,6 @@ def main():
     epoch_of_last_improval = 0
 
     lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.8)
-
-    ensemble_model_index = 0
-    for model_file_path in glob.glob("{}/model-*.pth".format(output_dir)):
-        model_file_name = os.path.basename(model_file_path)
-        model_index = int(model_file_name.replace("model-", "").replace(".pth", ""))
-        ensemble_model_index = max(ensemble_model_index, model_index + 1)
 
     print('{"chart": "best_val_mapk", "axis": "epoch"}')
     print('{"chart": "val_mapk", "axis": "epoch"}')
@@ -395,6 +404,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
+    argparser.add_argument("--base_model_dir", default=None)
     argparser.add_argument("--image_size", default=64, type=int)
     argparser.add_argument("--augment", default=False, type=str2bool)
     argparser.add_argument("--use_dummy_image", default=False, type=str2bool)
