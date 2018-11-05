@@ -236,7 +236,13 @@ class TestDataset(Dataset):
             padding=3,
             extended_channels=self.use_extended_stroke_channels)
 
+        print("before", flush=True)
+        print(image.shape, flush=True)
+
         image = image_to_tensor(image)
+
+        print("after", flush=True)
+        print(image.shape, flush=True)
 
         return tuple(image)
 
