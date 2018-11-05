@@ -59,19 +59,19 @@ class HcFcCnn(nn.Module):
         x = self.bn0(x)
 
         x = self.conv1(x)
-        hc_inputs.append(x)
+        hc_inputs.append(F.interpolate(x, scale_factor=1. / 8, mode="bilinear"))
         x = self.max_pool1(x)
 
         x = self.conv2(x)
-        hc_inputs.append(F.upsample_bilinear(x, scale_factor=2))
+        hc_inputs.append(F.interpolate(x, scale_factor=1. / 4, mode="bilinear"))
         x = self.max_pool2(x)
 
         x = self.conv3(x)
-        hc_inputs.append(F.upsample_bilinear(x, scale_factor=4))
+        hc_inputs.append(F.interpolate(x, scale_factor=1. / 2, mode="bilinear"))
         x = self.max_pool3(x)
 
         x = self.conv4(x)
-        hc_inputs.append(F.upsample_bilinear(x, scale_factor=8))
+        hc_inputs.append(x)
 
         x = self.hc_conv(torch.cat(hc_inputs, dim=1))
 
