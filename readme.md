@@ -19,6 +19,7 @@
 * remove the first maxpool layer from resnet/senet models
 * use attention
 * use hypercolumns
+* add residual connections
 * add simple augmentation (fliplr + scaling) which can be implemented while drawing strokes
 * use cv2.polylines?
 * stratify mini-batches
