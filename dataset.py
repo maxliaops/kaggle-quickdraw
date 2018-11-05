@@ -238,7 +238,7 @@ class TestDataset(Dataset):
 
         image = image_to_tensor(image)
 
-        return image
+        return (image,)
 
 
 def image_to_tensor(image):
