@@ -20,6 +20,7 @@
 * use attention
 * use hypercolumns
 * add swa
+* use small epsilon threshold to consider a model improvement a relevant improvement (for early abort etc.)
 * add residual connections
 * add simple augmentation (fliplr + scaling) which can be implemented while drawing strokes
 * use cv2.polylines?
