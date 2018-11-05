@@ -413,6 +413,7 @@ def main():
     with torch.no_grad():
         for batch in test_set_data_loader:
             images = batch[0].to(device, non_blocking=True)
+            print(images.shape)
             prediction_logits = model(images)
             predictions = F.softmax(prediction_logits, dim=1)
             _, predicted_categories = torch.topk(predictions, 3, dim=1, sorted=True)
