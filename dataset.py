@@ -110,7 +110,8 @@ class TrainData:
             data_recognized = data_recognized[category_filter]
 
         if True:
-            categories_to_exclude = [
+            categories_to_exclude = []
+            categories_to_exclude.extend([
                 'alarm clock', 'angel', 'ant', 'apple', 'bandage', 'bee',
                 'binoculars', 'bowtie', 'butterfly', 'cactus', 'calculator',
                 'camel', 'camera', 'campfire', 'candle', 'carrot', 'chair',
@@ -130,7 +131,7 @@ class TrainData:
                 'television', 'tennis racquet', 'tent', 'The Eiffel Tower',
                 'The Mona Lisa', 'toaster', 'toilet', 'traffic light', 'triangle',
                 'umbrella', 'windmill', 'wine glass'
-            ]
+            ])
 
             categories_mask = np.array([c not in categories_to_exclude for c in categories])
 
