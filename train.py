@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader
 from dataset import TrainDataset, TrainDataProvider
 from metrics import accuracy, mapk
 from metrics.smooth_topk_loss.svm import SmoothSVM
-from models import ResNet, SimpleCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet
+from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet
 from utils import get_learning_rate, str2bool
 
 cudnn.enabled = True
@@ -34,6 +34,8 @@ def create_model(type, input_size, num_classes):
         model = SeNet(type=type, num_classes=num_classes)
     elif type == "cnn":
         model = SimpleCnn(num_classes=num_classes)
+    elif type == "residual_cnn":
+        model = ResidualCnn(num_classes=num_classes)
     elif type == "fc_cnn":
         model = FcCnn(num_classes=num_classes)
     elif type == "hc_fc_cnn":
@@ -157,7 +159,7 @@ def main():
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
 
-    use_extended_stroke_channels = model_type in ["cnn", "fc_cnn", "hc_fc_cnn"]
+    use_extended_stroke_channels = model_type in ["cnn","residual_cnn", "fc_cnn", "hc_fc_cnn"]
 
     progressive_image_sizes = list(range(progressive_image_size_min, image_size + 1, progressive_image_size_step))
 

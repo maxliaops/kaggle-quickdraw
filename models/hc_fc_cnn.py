@@ -43,7 +43,7 @@ class HcFcCnn(nn.Module):
         self.hc_conv = ConvBlock(6 + 64 + 128 + 256, 512, kernel_size=3, padding=1)
 
         self.avg_pool = nn.AdaptiveAvgPool2d(output_size=1)
-        self.fc = nn.Conv2d(512, num_classes, kernel_size=1)
+        self.fc = nn.Conv2d(512, num_classes, kernel_size=1, bias=False)
         self.flatten = Flatten()
 
         for m in self.modules():
