@@ -125,7 +125,13 @@ def predict(model, data_loader, categories, tta=False):
         for batch in data_loader:
             images = batch[0].to(device, non_blocking=True)
 
-            predictions = F.softmax(model(images), dim=1)
+            if tta:
+                predictions1 = F.softmax(model(images), dim=1)
+                predictions2 = F.softmax(model(images.flip(3)), dim=1)
+                predictions = 0.5 * (predictions1 + predictions2)
+            else:
+                predictions = F.softmax(model(images), dim=1)
+
             prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
 
             predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in prediction_categories])
@@ -429,9 +435,13 @@ def main():
 
     categories = read_categories("{}/categories.txt".format(input_dir))
 
-    test_data.df["word"] = predict(model, test_set_data_loader, categories)
+    submission_df = test_data.df.copy()
+    submission_df["word"] = predict(model, test_set_data_loader, categories, tta=False)
+    submission_df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
 
-    test_data.df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
+    submission_df = test_data.df.copy()
+    submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
+    submission_df.to_csv("{}/submission_tta.csv".format(output_dir), columns=["word"])
 
 
 if __name__ == "__main__":
