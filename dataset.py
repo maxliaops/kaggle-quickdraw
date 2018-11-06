@@ -132,6 +132,21 @@ class TrainData:
                 'The Mona Lisa', 'toaster', 'toilet', 'traffic light', 'triangle',
                 'umbrella', 'windmill', 'wine glass'
             ])
+            categories_to_exclude.extend([
+                'airplane', 'anvil', 'baseball bat', 'basket', 'basketball', 'bat',
+                'bed', 'belt', 'brain', 'bridge', 'cannon', 'castle',
+                'ceiling fan', 'cloud', 'compass', 'computer', 'couch', 'crab',
+                'crocodile', 'diamond', 'dolphin', 'drums', 'fence',
+                'flying saucer', 'fork', 'grass', 'hamburger', 'hammer',
+                'hospital', 'hot dog', 'house', 'house plant', 'kangaroo',
+                'lantern', 'leaf', 'light bulb', 'lighthouse', 'map', 'microphone',
+                'mountain', 'mouth', 'mushroom', 'ocean', 'pear', 'penguin',
+                'police car', 'postcard', 'rake', 'remote control', 'scissors',
+                'shorts', 'sink', 'smiley face', 'snowflake', 'soccer ball',
+                'spider', 'submarine', 'swan', 'sweater', 'teddy-bear',
+                'telephone', 'toothbrush', 'train', 'vase', 'washing machine',
+                'wine bottle', 'wristwatch', 'zigzag'
+            ])
 
             categories_mask = np.array([c not in categories_to_exclude for c in categories])
 
