@@ -115,7 +115,7 @@ def create_optimizer(type, model, lr):
         raise Exception("Unsupported optimizer type: '{}".format(type))
 
 
-def predict(model, data_loader, categories):
+def predict(model, data_loader, categories, tta=False):
     categories = np.array([c.replace(" ", "_") for c in categories])
 
     model.eval()
@@ -124,10 +124,11 @@ def predict(model, data_loader, categories):
     with torch.no_grad():
         for batch in data_loader:
             images = batch[0].to(device, non_blocking=True)
-            prediction_logits = model(images)
-            predictions = F.softmax(prediction_logits, dim=1)
-            _, predicted_categories = torch.topk(predictions, 3, dim=1, sorted=True)
-            predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in predicted_categories])
+
+            predictions = F.softmax(model(images), dim=1)
+            prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
+
+            predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in prediction_categories])
 
     return predicted_words
 
@@ -428,8 +429,7 @@ def main():
 
     categories = read_categories("{}/categories.txt".format(input_dir))
 
-    predicted_words = predict(model, test_set_data_loader, categories)
-    test_data.df["word"] = predicted_words
+    test_data.df["word"] = predict(model, test_set_data_loader, categories)
 
     test_data.df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
 
