@@ -115,6 +115,23 @@ def create_optimizer(type, model, lr):
         raise Exception("Unsupported optimizer type: '{}".format(type))
 
 
+def predict(model, data_loader, categories):
+    categories = np.array([c.replace(" ", "_") for c in categories])
+
+    model.eval()
+
+    predicted_words = []
+    with torch.no_grad():
+        for batch in data_loader:
+            images = batch[0].to(device, non_blocking=True)
+            prediction_logits = model(images)
+            predictions = F.softmax(prediction_logits, dim=1)
+            _, predicted_categories = torch.topk(predictions, 3, dim=1, sorted=True)
+            predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in predicted_categories])
+
+    return predicted_words
+
+
 def main():
     args = argparser.parse_args()
     print("Arguments:")
@@ -164,7 +181,7 @@ def main():
     sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
     max_sgdr_cycles = args.max_sgdr_cycles
 
-    use_extended_stroke_channels = model_type in ["cnn","residual_cnn", "fc_cnn", "hc_fc_cnn"]
+    use_extended_stroke_channels = model_type in ["cnn", "residual_cnn", "fc_cnn", "hc_fc_cnn"]
     print("use_extended_stroke_channels: {}".format(use_extended_stroke_channels), flush=True)
 
     progressive_image_sizes = list(range(progressive_image_size_min, image_size + 1, progressive_image_size_step))
@@ -182,7 +199,8 @@ def main():
 
     train_data = train_data_provider.get_next()
 
-    train_set = TrainDataset(train_data.train_set_df, image_size, use_extended_stroke_channels, augment, use_dummy_image)
+    train_set = TrainDataset(train_data.train_set_df, image_size, use_extended_stroke_channels, augment,
+                             use_dummy_image)
     train_set_data_loader = \
         DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
 
@@ -407,20 +425,10 @@ def main():
         DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
     model.load_state_dict(torch.load("{}/model.pth".format(output_dir), map_location=device))
-    model.eval()
 
     categories = read_categories("{}/categories.txt".format(input_dir))
-    categories = np.array([c.replace(" ", "_") for c in categories])
 
-    predicted_words = []
-    with torch.no_grad():
-        for batch in test_set_data_loader:
-            images = batch[0].to(device, non_blocking=True)
-            prediction_logits = model(images)
-            predictions = F.softmax(prediction_logits, dim=1)
-            _, predicted_categories = torch.topk(predictions, 3, dim=1, sorted=True)
-            predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in predicted_categories])
-
+    predicted_words = predict(model, test_set_data_loader, categories)
     test_data.df["word"] = predicted_words
 
     test_data.df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
