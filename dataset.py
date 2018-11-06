@@ -21,12 +21,14 @@ class TrainDataProvider:
             test_size,
             train_on_unrecognized,
             num_category_shards,
-            category_shard):
+            category_shard,
+            exclude_categories):
         self.data_dir = data_dir
         self.test_size = test_size
         self.train_on_unrecognized = train_on_unrecognized
         self.num_category_shards = num_category_shards
         self.category_shard = category_shard
+        self.exclude_categories = exclude_categories
 
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
@@ -64,7 +66,8 @@ class TrainDataProvider:
                 self.test_size,
                 self.train_on_unrecognized,
                 self.num_category_shards,
-                self.category_shard
+                self.category_shard,
+                self.exclude_categories
             )))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
@@ -75,13 +78,14 @@ class TrainDataProvider:
             test_size,
             train_on_unrecognized,
             num_category_shards,
-            category_shard):
+            category_shard,
+            exclude_categories):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard)
+        return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard, exclude_categories)
 
 
 class TrainData:
-    def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard):
+    def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard, exclude_categories):
         self.shard = shard
 
         start_time = time.time()
@@ -109,7 +113,7 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
-        if True:
+        if exclude_categories:
             categories_to_exclude = []
             categories_to_exclude.extend([
                 'alarm clock', 'angel', 'ant', 'apple', 'bandage', 'bee',
