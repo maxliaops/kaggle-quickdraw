@@ -22,6 +22,7 @@ from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset
 from metrics import accuracy, mapk
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet
+from models.ensemble import Ensemble
 from utils import get_learning_rate, str2bool, read_categories
 
 cudnn.enabled = True
@@ -432,6 +433,7 @@ def main():
         DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
     model.load_state_dict(torch.load("{}/model.pth".format(output_dir), map_location=device))
+    model = Ensemble([model])
 
     categories = read_categories("{}/categories.txt".format(input_dir))
 
@@ -442,6 +444,33 @@ def main():
     submission_df = test_data.df.copy()
     submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
     submission_df.to_csv("{}/submission_tta.csv".format(output_dir), columns=["word"])
+
+    model = load_ensemble_model(output_dir, 3, test_set_data_loader, criterion, model_type, image_size, len(categories))
+    submission_df = test_data.df.copy()
+    submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
+    submission_df.to_csv("{}/submission_ensemble_tta.csv".format(output_dir), columns=["word"])
+
+
+def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
+    ensemble_model_candidates = glob.glob("{}/model-*.pth".format(base_dir))
+
+    score_to_model = {}
+    for model_file_path in ensemble_model_candidates:
+        model_file_name = os.path.basename(model_file_path)
+        model = create_model(type=model_type, input_size=input_size, num_classes=num_classes).to(device)
+        model.load_state_dict(torch.load(model_file_path, map_location=device))
+
+        val_loss_avg, val_mapk_avg, _, _, _, _ = evaluate(model, data_loader, criterion, 3)
+        print("ensemble '%s': val_loss=%.4f, val_mapk=%.4f" % (model_file_name, val_loss_avg, val_mapk_avg))
+
+        if len(score_to_model) < ensemble_model_count or min(score_to_model.keys()) < val_mapk_avg:
+            if len(score_to_model) >= ensemble_model_count:
+                del score_to_model[min(score_to_model.keys())]
+            score_to_model[val_mapk_avg] = model
+
+    ensemble_models = list(score_to_model.values())
+
+    return Ensemble(ensemble_models)
 
 
 if __name__ == "__main__":
