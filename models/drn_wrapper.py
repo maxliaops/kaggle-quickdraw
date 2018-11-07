@@ -1,6 +1,6 @@
 from torch import nn
 
-from models.drn import drn_d_107
+from models.drn import drn_d_105
 from .common import ExpandChannels2d
 
 
@@ -11,7 +11,7 @@ class Drn(nn.Module):
         self.expand_channels = ExpandChannels2d(3)
         self.bn = nn.BatchNorm2d(3)
 
-        self.drn = drn_d_107(pretrained=True)
+        self.drn = drn_d_105(pretrained=True)
 
         self.avgpool = nn.AdaptiveAvgPool2d(output_size=1)
         self.fc = nn.Conv2d(self.drn.out_dim, num_classes, kernel_size=1, stride=1, padding=0, bias=True)
