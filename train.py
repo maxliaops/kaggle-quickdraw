@@ -133,7 +133,7 @@ def predict(model, data_loader, categories, tta=False):
             else:
                 predictions = F.softmax(model(images), dim=1)
 
-            prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
+            _, prediction_categories = predictions.topk(3, dim=1, sorted=True)
 
             predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in prediction_categories])
 
@@ -149,7 +149,7 @@ def calculate_confusion(model, data_loader, num_categories):
             batch[1].to(device, non_blocking=True)
 
         predictions = F.softmax(model(images), dim=1)
-        prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
+        _, prediction_categories = predictions.topk(3, dim=1, sorted=True)
 
         for bpc, bc in zip(prediction_categories[:, 0], categories):
             confusion[bpc, bc] += 1
