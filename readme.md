@@ -32,6 +32,7 @@
 * train on category subset and add "other" category for samples on in complementary category set
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
 * include statistics in one of the channels used for training: http://rstudio-pubs-static.s3.amazonaws.com/292508_8ef4c9ec5f76421e92803fccba9765df.html
+* https://github.com/KaiyangZhou/pytorch-center-loss
 
 ### Papers
 
