@@ -140,6 +140,50 @@ def predict(model, data_loader, categories, tta=False):
     return predicted_words
 
 
+def calculate_confusion(model, data_loader, num_categories):
+    confusion = np.zeros((num_categories, num_categories), dtype=np.float32)
+
+    for batch in data_loader:
+        images, categories = \
+            batch[0].to(device, non_blocking=True), \
+            batch[1].to(device, non_blocking=True)
+
+        predictions = F.softmax(model(images), dim=1)
+        prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
+
+        for bpc, bc in zip(prediction_categories[:, 0], categories):
+            confusion[bpc, bc] += 1
+
+    for c in range(confusion.shape[0]):
+        category_count = confusion[c, :].sum()
+        if category_count != 0:
+            confusion[c, :] /= category_count
+
+    return confusion
+
+
+def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
+    ensemble_model_candidates = glob.glob("{}/model-*.pth".format(base_dir))
+
+    score_to_model = {}
+    for model_file_path in ensemble_model_candidates:
+        model_file_name = os.path.basename(model_file_path)
+        model = create_model(type=model_type, input_size=input_size, num_classes=num_classes).to(device)
+        model.load_state_dict(torch.load(model_file_path, map_location=device))
+
+        val_loss_avg, val_mapk_avg, _, _, _, _ = evaluate(model, data_loader, criterion, 3)
+        print("ensemble '%s': val_loss=%.4f, val_mapk=%.4f" % (model_file_name, val_loss_avg, val_mapk_avg))
+
+        if len(score_to_model) < ensemble_model_count or min(score_to_model.keys()) < val_mapk_avg:
+            if len(score_to_model) >= ensemble_model_count:
+                del score_to_model[min(score_to_model.keys())]
+            score_to_model[val_mapk_avg] = model
+
+    ensemble_models = list(score_to_model.values())
+
+    return Ensemble(ensemble_models)
+
+
 def main():
     args = argparser.parse_args()
     print("Arguments:")
@@ -450,27 +494,17 @@ def main():
     submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
     submission_df.to_csv("{}/submission_ensemble_tta.csv".format(output_dir), columns=["word"])
 
+    confusion = calculate_confusion(model, val_set_data_loader, len(categories))
+    precisions = np.array([confusion[c, c] for c in range(confusion.shape[0])])
+    percentiles = np.percentile(precisions, q=np.linspace(0, 100, 10))
 
-def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
-    ensemble_model_candidates = glob.glob("{}/model-*.pth".format(base_dir))
+    print()
+    print("Category precision percentiles:")
+    print(percentiles)
 
-    score_to_model = {}
-    for model_file_path in ensemble_model_candidates:
-        model_file_name = os.path.basename(model_file_path)
-        model = create_model(type=model_type, input_size=input_size, num_classes=num_classes).to(device)
-        model.load_state_dict(torch.load(model_file_path, map_location=device))
-
-        val_loss_avg, val_mapk_avg, _, _, _, _ = evaluate(model, data_loader, criterion, 3)
-        print("ensemble '%s': val_loss=%.4f, val_mapk=%.4f" % (model_file_name, val_loss_avg, val_mapk_avg))
-
-        if len(score_to_model) < ensemble_model_count or min(score_to_model.keys()) < val_mapk_avg:
-            if len(score_to_model) >= ensemble_model_count:
-                del score_to_model[min(score_to_model.keys())]
-            score_to_model[val_mapk_avg] = model
-
-    ensemble_models = list(score_to_model.values())
-
-    return Ensemble(ensemble_models)
+    print()
+    print("Categories sorted by precision:")
+    print(np.array(categories)[np.argsort(precisions)])
 
 
 if __name__ == "__main__":
