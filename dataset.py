@@ -115,42 +115,7 @@ class TrainData:
 
         if exclude_categories:
             categories_to_exclude = []
-            categories_to_exclude.extend([
-                'alarm clock', 'angel', 'ant', 'apple', 'bandage', 'bee',
-                'binoculars', 'bowtie', 'butterfly', 'cactus', 'calculator',
-                'camel', 'camera', 'campfire', 'candle', 'carrot', 'chair',
-                'chandelier', 'clock', 'crown', 'cruise ship', 'donut', 'drill',
-                'dumbbell', 'ear', 'envelope', 'eye', 'eyeglasses', 'fireplace',
-                'fish', 'flamingo', 'flashlight', 'flip flops', 'flower',
-                'giraffe', 'hand', 'harp', 'hat', 'headphones', 'hedgehog',
-                'helicopter', 'hot air balloon', 'hourglass', 'ice cream',
-                'jacket', 'key', 'ladder', 'lightning', 'lion', 'lipstick',
-                'lollipop', 'megaphone', 'mermaid', 'octopus', 'palm tree',
-                'panda', 'pants', 'paper clip', 'parachute', 'pig', 'pineapple',
-                'pizza', 'popsicle', 'rabbit', 'rain', 'rainbow', 'rhinoceros',
-                'rollerskates', 'sailboat', 'saw', 'sea turtle', 'see saw',
-                'sheep', 'skateboard', 'skull', 'snail', 'snorkel', 'snowman',
-                'sock', 'squirrel', 'stairs', 'star', 'stethoscope', 'stitches',
-                'stop sign', 'strawberry', 'sun', 'swing set', 'sword', 'teapot',
-                'television', 'tennis racquet', 'tent', 'The Eiffel Tower',
-                'The Mona Lisa', 'toaster', 'toilet', 'traffic light', 'triangle',
-                'umbrella', 'windmill', 'wine glass'
-            ])
-            categories_to_exclude.extend([
-                'airplane', 'anvil', 'baseball bat', 'basket', 'basketball', 'bat',
-                'bed', 'belt', 'brain', 'bridge', 'cannon', 'castle',
-                'ceiling fan', 'cloud', 'compass', 'computer', 'couch', 'crab',
-                'crocodile', 'diamond', 'dolphin', 'drums', 'fence',
-                'flying saucer', 'fork', 'grass', 'hamburger', 'hammer',
-                'hospital', 'hot dog', 'house', 'house plant', 'kangaroo',
-                'lantern', 'leaf', 'light bulb', 'lighthouse', 'map', 'microphone',
-                'mountain', 'mouth', 'mushroom', 'ocean', 'pear', 'penguin',
-                'police car', 'postcard', 'rake', 'remote control', 'scissors',
-                'shorts', 'sink', 'smiley face', 'snowflake', 'soccer ball',
-                'spider', 'submarine', 'swan', 'sweater', 'teddy-bear',
-                'telephone', 'toothbrush', 'train', 'vase', 'washing machine',
-                'wine bottle', 'wristwatch', 'zigzag'
-            ])
+            categories_to_exclude.extend(['vase', 'flip flops', 'hospital', 'lollipop', 'hammer', 'toothbrush', 'fork', 'moustache', 'sailboat', 'couch', 'underwear', 'church', 'tooth', 'penguin', 'apple', 'bulldozer', 'drums', 'kangaroo', 'alarm clock', 'submarine', 'spider', 'owl', 'stethoscope', 'mushroom', 'popsicle', 'airplane', 'flamingo', 'backpack', 'hot air balloon', 'toilet', 'candle', 'palm tree', 'camera', 'sock', 'power outlet', 'teapot', 'computer', 'triangle', 'diamond', 'snowflake', 'donut', 'compass', 'stitches', 'eyeglasses', 'paper clip', 'carrot', 'binoculars', 'envelope', 'cactus', 'flashlight', 'sun', 'traffic light', 'television', 'crown', 'pineapple', 'strawberry', 'saw', 'bee', 'megaphone', 'squirrel', 'wristwatch', 'flower', 'fish', 'rain', 'key', 'hourglass', 'clock', 'sheep', 'tennis racquet', 'star', 'parachute', 'giraffe', 'rollerskates', 'The Mona Lisa', 'sword', 'butterfly', 'mermaid', 'wine glass', 'bowtie', 'angel', 'eye', 'stairs', 'scorpion', 'house plant', 'anvil', 'chair', 'umbrella', 'see saw', 'snail', 'The Eiffel Tower', 'ladder', 'camel', 'octopus', 'skateboard', 'harp', 'snowman', 'skull', 'swing set', 'ice cream', 'stop sign', 'headphones', 'helicopter'])
 
             categories_mask = np.array([c not in categories_to_exclude for c in categories])
 
