@@ -24,13 +24,14 @@
 * add residual connections
 * add simple augmentation (fliplr + scaling) which can be implemented while drawing strokes
 * use cv2.polylines?
-* stratify mini-batches
+* stratify mini-batches (https://discuss.pytorch.org/t/how-to-enable-the-dataloader-to-sample-from-each-class-with-equal-probability/911)
 * combine lr-plateau scheduling with sgdr
 * augment the number of feature maps in the cnn model and add se/scse block
 * use drop connect
 * use fully convolutional model with progressive image resizing
 * train on category subset and add "other" category for samples on in complementary category set
 * http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/
+* include statistics in one of the channels used for training: http://rstudio-pubs-static.s3.amazonaws.com/292508_8ef4c9ec5f76421e92803fccba9765df.html
 
 ### Papers
 
@@ -45,3 +46,4 @@
 * http://cybertron.cg.tu-berlin.de/eitz/pdf/2012_siggraph_classifysketch.pdf
 * https://arxiv.org/pdf/1511.04534.pdf
 * https://arxiv.org/pdf/1405.3080.pdf
+* https://ydwen.github.io/papers/WenECCV16.pdf
