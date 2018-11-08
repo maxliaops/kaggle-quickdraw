@@ -13,7 +13,7 @@ class NasNet(nn.Module):
         self.expand_channels = ExpandChannels2d(3)
         self.bn = nn.BatchNorm2d(3)
 
-        self.nasnet.last_linear = nn.Linear(4032, self.num_classes)
+        self.nasnet.last_linear = nn.Linear(4032, num_classes)
 
     def forward(self, x):
         x = self.expand_channels(x)
