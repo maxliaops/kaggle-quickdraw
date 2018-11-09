@@ -217,10 +217,10 @@ def main2():
     use_extended_stroke_channels = model_type in ["cnn", "residual_cnn", "fc_cnn", "hc_fc_cnn"]
 
     submission_files = [
-        "/storage/models/quickdraw/l1",
-        "/storage/models/quickdraw/l2",
-        "/storage/models/quickdraw/l3",
-        "/storage/models/quickdraw/l4"
+        "/storage/models/quickdraw/seresnext50/submission_ensemble_tta.csv",
+        "/storage/models/quickdraw/seresnext50_l2/submission_ensemble_tta.csv",
+        "/storage/models/quickdraw/seresnext50_l3/submission_ensemble_tta.csv",
+        "/storage/models/quickdraw/seresnext50_l4/submission_ensemble_tta.csv"
     ]
 
     model_categories = [
