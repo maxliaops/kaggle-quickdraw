@@ -129,6 +129,8 @@ def main():
         print("Predicting...", flush=True)
         all_model_predictions.append(predict(model, test_set_data_loader, tta=True))
 
+    print("Merging predictions...", flush=True)
+
     final_predictions = all_model_predictions[0].copy()
     cumulative_categories = model_categories[0].copy()
     for m in range(1, len(all_model_predictions)):
