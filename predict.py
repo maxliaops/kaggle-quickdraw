@@ -232,6 +232,7 @@ def main2():
 
     all_model_predictions = []
     for submission_file in submission_files:
+        print("Loading submission file...", flush=True)
         df = pd.read_csv(
             submission_file,
             index_col="key_id",
