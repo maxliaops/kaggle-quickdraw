@@ -87,7 +87,8 @@ def main():
 
     criterion = create_criterion(loss_type, len(categories))
 
-    model = load_ensemble_model(output_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
+    model_dir = "/storage/models/quickdraw/seresnext50"
+    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
     for i in range(50):
