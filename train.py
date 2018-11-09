@@ -167,7 +167,7 @@ def calculate_confusion(model, data_loader, num_categories):
 
 
 def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
-    ensemble_model_candidates = glob.glob("{}/model-*.pth".format(base_dir))
+    ensemble_model_candidates = sorted(glob.glob("{}/model-*.pth".format(base_dir)))
 
     score_to_model = {}
     for model_file_path in ensemble_model_candidates:

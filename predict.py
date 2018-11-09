@@ -133,6 +133,7 @@ def main():
 
     all_model_predictions = []
     for base_model_dir in base_model_dirs:
+        print("Processing model dir '{}'".format(base_model_dir), flush=True)
         model = load_ensemble_model(base_model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
         all_model_predictions.append(predict(model, test_set_data_loader, tta=True))
 
