@@ -20,7 +20,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def predict(model, data_loader, tta=False):
     model.eval()
 
-    predictions = []
+    result = []
     with torch.no_grad():
         for batch in data_loader:
             images = batch[0].to(device, non_blocking=True)
@@ -36,9 +36,9 @@ def predict(model, data_loader, tta=False):
             prediction_scores = prediction_scores.cpu().data.numpy()
             prediction_categories = prediction_categories.cpu().data.numpy()
 
-            predictions.extend([(ps, pc) for ps, pc in zip(prediction_scores, prediction_categories)])
+            result.extend([(ps, pc) for ps, pc in zip(prediction_scores, prediction_categories)])
 
-    return predictions
+    return result
 
 
 def main():
