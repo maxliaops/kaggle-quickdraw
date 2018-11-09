@@ -36,8 +36,8 @@ def predict(model, data_loader, tta=False):
                 predictions = F.softmax(model(images), dim=1)
 
             prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
-            prediction_scores = prediction_scores.cpu().data.numpy().tolist()
-            prediction_categories = prediction_categories.cpu().data.numpy().tolist()
+            prediction_scores = prediction_scores.cpu().data.numpy()
+            prediction_categories = prediction_categories.cpu().data.numpy()
 
             result.extend([(ps, pc) for ps, pc in zip(prediction_scores, prediction_categories)])
 
@@ -151,11 +151,11 @@ def main():
                 if final_category_contained == current_category_contained:
                     if current_prediction_score > final_prediction_score:
                         final_prediction_scores[r] = current_prediction_score
-                        final_prediction_category[r] = current_prediction_category
+                        final_prediction_categories[r] = current_prediction_category
                 else:
                     if current_category_contained:
                         final_prediction_scores[r] = current_prediction_score
-                        final_prediction_category[r] = current_prediction_category
+                        final_prediction_categories[r] = current_prediction_category
         cumulative_categories.extend(model_categories[m])
 
     words = np.array([c.replace(" ", "_") for c in categories])
@@ -254,7 +254,7 @@ def main2():
                 final_category_contained = final_prediction_category in cumulative_categories
                 current_category_contained = current_prediction_category in model_categories[m]
                 if current_category_contained and not final_category_contained:
-                    final_prediction_category[r] = current_prediction_category
+                    final_prediction_categories[r] = current_prediction_category
         cumulative_categories.extend(model_categories[m])
 
     test_data = TestData(input_dir)
