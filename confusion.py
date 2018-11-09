@@ -93,7 +93,7 @@ def main():
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
     for i in range(50):
         print("{}".format(i), flush=True)
-        confusion += calculate_confusion(model, val_set_data_loader, len(categories))
+        confusion += calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
         train_data = train_data_provider.get_next()
         val_set.df = train_data.val_set_df
 

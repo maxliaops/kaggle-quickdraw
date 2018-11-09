@@ -144,7 +144,7 @@ def predict(model, data_loader, categories, tta=False):
     return predicted_words
 
 
-def calculate_confusion(model, data_loader, num_categories):
+def calculate_confusion(model, data_loader, num_categories, scale=True):
     confusion = np.zeros((num_categories, num_categories), dtype=np.float32)
 
     for batch in data_loader:
@@ -158,10 +158,11 @@ def calculate_confusion(model, data_loader, num_categories):
         for bpc, bc in zip(prediction_categories[:, 0], categories):
             confusion[bpc, bc] += 1
 
-    for c in range(confusion.shape[0]):
-        category_count = confusion[c, :].sum()
-        if category_count != 0:
-            confusion[c, :] /= category_count
+    if scale:
+        for c in range(confusion.shape[0]):
+            category_count = confusion[c, :].sum()
+            if category_count != 0:
+                confusion[c, :] /= category_count
 
     return confusion
 
