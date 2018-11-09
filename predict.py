@@ -259,7 +259,7 @@ def main2():
 
     test_data = TestData(input_dir)
     submission_df = test_data.df.copy()
-    submission_df["word"] = [" ".join(fp) for fp in final_predictions]
+    submission_df["word"] = [" ".join([x.replace(" ", "_") for x in fp]) for fp in final_predictions]
     submission_df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
 
 
