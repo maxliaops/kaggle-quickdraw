@@ -202,7 +202,7 @@ if __name__ == "__main__":
     argparser.add_argument("--lr_max", default=0.1, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
     argparser.add_argument("--lr_max_decay", default=1.0, type=float)
-    argparser.add_argument("--model", default="cnn")
+    argparser.add_argument("--model", default="seresnext50")
     argparser.add_argument("--patience", default=5, type=int)
     argparser.add_argument("--optimizer", default="sgd")
     argparser.add_argument("--loss", default="cce")
