@@ -1,4 +1,5 @@
 import argparse
+import glob
 
 import numpy as np
 
@@ -8,8 +9,9 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 
 from dataset import TestData, TestDataset, TrainDataset, TrainDataProvider
-from train import load_ensemble_model, create_criterion
-from utils import str2bool
+from models.ensemble import Ensemble
+from train import create_model
+from utils import str2bool, read_categories
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -106,25 +108,7 @@ def main():
         ['camouflage', 'mug', 'cello', 'hurricane', 'bus', 'truck', 'pond', 'birthday cake', 'garden hose', 'cake', 'school bus', 'leg', 'van', 'guitar', 'cup', 'pool', 'hockey stick', 'bear', 'marker', 'blackberry', 'squiggle', 'tornado', 'crayon', 'circle', 'pickup truck', 'coffee cup', 'cooler', 'square', 'river', 'paint can', 'oven', 'string bean', 'The Great Wall of China', 'hockey puck', 'car', 'spreadsheet', 'trombone', 'bucket', 'trumpet', 'eraser', 'line', 'pencil', 'pillow', 'blueberry', 'frog', 'bush', 'keyboard', 'steak', 'potato', 'ocean', 'bicycle', 'mosquito', 'stereo', 'dog', 'suitcase', 'violin', 'octagon', 'bathtub', 'raccoon', 'hot tub', 'cat', 'bench', 'piano', 'stove', 'golf club', 'motorbike', 'grapes', 'hexagon']
     ]
 
-    train_data_provider = TrainDataProvider(
-        input_dir,
-        50,
-        num_shard_preload=num_shard_preload,
-        num_workers=num_shard_loaders,
-        test_size=test_size,
-        train_on_unrecognized=train_on_unrecognized,
-        num_category_shards=num_category_shards,
-        category_shard=category_shard,
-        exclude_categories=exclude_categories)
-
-    train_data = train_data_provider.get_next()
-    categories = train_data.categories
-
-    val_set = TrainDataset(train_data.val_set_df, image_size, use_extended_stroke_channels, False, use_dummy_image)
-    val_set_data_loader = \
-        DataLoader(val_set, batch_size=64, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
-
-    criterion = create_criterion(loss_type, len(categories))
+    categories = read_categories("{}/categories.txt".format(input_dir))
 
     test_data = TestData(input_dir)
     test_set = TestDataset(test_data.df, image_size, use_extended_stroke_channels)
@@ -134,7 +118,15 @@ def main():
     all_model_predictions = []
     for base_model_dir in base_model_dirs:
         print("Processing model dir '{}'".format(base_model_dir), flush=True)
-        model = load_ensemble_model(base_model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
+
+        ms = []
+        for model_file_path in glob.glob("{}/model-*.pth".format(base_model_dir)):
+            m = create_model(type=model_type, input_size=image_size, num_classes=len(categories)).to(device)
+            m.load_state_dict(torch.load(model_file_path, map_location=device))
+            ms.append(m)
+        model = Ensemble(ms)
+
+        print("Predicting...", flush=True)
         all_model_predictions.append(predict(model, test_set_data_loader, tta=True))
 
     final_predictions = all_model_predictions[0].copy()
