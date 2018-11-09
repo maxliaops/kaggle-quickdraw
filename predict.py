@@ -253,7 +253,7 @@ def main2():
                 current_prediction_category = current_prediction_categories[r]
                 final_category_contained = final_prediction_category in cumulative_categories
                 current_category_contained = current_prediction_category in model_categories[m]
-                if current_category_contained and not final_category_contained:
+                if current_category_contained and not final_category_contained and not current_prediction_category in final_prediction_categories:
                     final_prediction_categories[r] = current_prediction_category
         cumulative_categories.extend(model_categories[m])
 
