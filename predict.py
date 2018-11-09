@@ -35,8 +35,8 @@ def predict(model, data_loader, tta=False):
                 predictions = F.softmax(model(images), dim=1)
 
             prediction_scores, prediction_categories = predictions.topk(3, dim=1, sorted=True)
-            prediction_scores = prediction_scores.cpu().data.numpy()
-            prediction_categories = prediction_categories.cpu().data.numpy()
+            prediction_scores = prediction_scores.cpu().data.numpy().tolist()
+            prediction_categories = prediction_categories.cpu().data.numpy().tolist()
 
             result.extend([(ps, pc) for ps, pc in zip(prediction_scores, prediction_categories)])
 
