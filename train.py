@@ -552,10 +552,10 @@ if __name__ == "__main__":
     argparser.add_argument("--loss", default="cce")
     argparser.add_argument("--loss2", default=None)
     argparser.add_argument("--loss2_start_sgdr_cycle", default=None, type=int)
-    argparser.add_argument("--sgdr_cycle_epochs", default=5, type=int)
+    argparser.add_argument("--sgdr_cycle_epochs", default=6, type=int)
     argparser.add_argument("--sgdr_cycle_epochs_mult", default=1.0, type=float)
     argparser.add_argument("--sgdr_cycle_end_prolongation", default=0, type=int)
-    argparser.add_argument("--sgdr_cycle_end_patience", default=1, type=int)
+    argparser.add_argument("--sgdr_cycle_end_patience", default=2, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=None, type=int)
 
     main()
