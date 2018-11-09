@@ -2,6 +2,7 @@ import argparse
 import glob
 
 import numpy as np
+import pandas as pd
 
 import torch
 import torch.nn.functional as F
@@ -164,6 +165,103 @@ def main():
     submission_df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
 
 
+def main2():
+    args = argparser.parse_args()
+    print("Arguments:")
+    for arg in vars(args):
+        print("  {}: {}".format(arg, getattr(args, arg)))
+    print()
+
+    input_dir = args.input_dir
+    output_dir = args.output_dir
+    base_model_dir = args.base_model_dir
+    image_size = args.image_size
+    augment = args.augment
+    use_dummy_image = args.use_dummy_image
+    use_progressive_image_sizes = args.use_progressive_image_sizes
+    progressive_image_size_min = args.progressive_image_size_min
+    progressive_image_size_step = args.progressive_image_size_step
+    progressive_image_epoch_step = args.progressive_image_epoch_step
+    batch_size = args.batch_size
+    batch_iterations = args.batch_iterations
+    test_size = args.test_size
+    train_on_unrecognized = args.train_on_unrecognized
+    num_category_shards = args.num_category_shards
+    category_shard = args.category_shard
+    exclude_categories = args.exclude_categories
+    eval_train_mapk = args.eval_train_mapk
+    mapk_topk = args.mapk_topk
+    num_shard_preload = args.num_shard_preload
+    num_shard_loaders = args.num_shard_loaders
+    num_workers = args.num_workers
+    pin_memory = args.pin_memory
+    epochs_to_train = args.epochs
+    lr_scheduler_type = args.lr_scheduler
+    lr_patience = args.lr_patience
+    lr_min = args.lr_min
+    lr_max = args.lr_max
+    lr_min_decay = args.lr_min_decay
+    lr_max_decay = args.lr_max_decay
+    optimizer_type = args.optimizer
+    loss_type = args.loss
+    loss2_type = args.loss2
+    loss2_start_sgdr_cycle = args.loss2_start_sgdr_cycle
+    model_type = args.model
+    patience = args.patience
+    sgdr_cycle_epochs = args.sgdr_cycle_epochs
+    sgdr_cycle_epochs_mult = args.sgdr_cycle_epochs_mult
+    sgdr_cycle_end_prolongation = args.sgdr_cycle_end_prolongation
+    sgdr_cycle_end_patience = args.sgdr_cycle_end_patience
+    max_sgdr_cycles = args.max_sgdr_cycles
+
+    use_extended_stroke_channels = model_type in ["cnn", "residual_cnn", "fc_cnn", "hc_fc_cnn"]
+
+    submission_files = [
+        "/storage/models/quickdraw/l1",
+        "/storage/models/quickdraw/l2",
+        "/storage/models/quickdraw/l3",
+        "/storage/models/quickdraw/l4"
+    ]
+
+    model_categories = [
+        ['vase', 'flip flops', 'hospital', 'lollipop', 'hammer', 'toothbrush', 'fork', 'moustache', 'sailboat', 'couch', 'underwear', 'church', 'tooth', 'penguin', 'apple', 'bulldozer', 'drums', 'kangaroo', 'alarm clock', 'submarine', 'spider', 'owl', 'stethoscope', 'mushroom', 'popsicle', 'airplane', 'flamingo', 'backpack', 'hot air balloon', 'toilet', 'candle', 'palm tree', 'camera', 'sock', 'power outlet', 'teapot', 'computer', 'triangle', 'diamond', 'snowflake', 'donut', 'compass', 'stitches', 'eyeglasses', 'paper clip', 'carrot', 'binoculars', 'envelope', 'cactus', 'flashlight', 'sun', 'traffic light', 'television', 'crown', 'pineapple', 'strawberry', 'saw', 'bee', 'megaphone', 'squirrel', 'wristwatch', 'flower', 'fish', 'rain', 'key', 'hourglass', 'clock', 'sheep', 'tennis racquet', 'star', 'parachute', 'giraffe', 'rollerskates', 'The Mona Lisa', 'sword', 'butterfly', 'mermaid', 'wine glass', 'bowtie', 'angel', 'eye', 'stairs', 'scorpion', 'house plant', 'anvil', 'chair', 'umbrella', 'see saw', 'snail', 'The Eiffel Tower', 'ladder', 'camel', 'octopus', 'skateboard', 'harp', 'snowman', 'skull', 'swing set', 'ice cream', 'stop sign', 'headphones', 'helicopter'],
+        ['banana', 'parrot', 'tree', 'lipstick', 'teddy-bear', 'horse', 'arm', 'basket', 'necklace', 'baseball bat', 'sandwich', 'zebra', 'telephone', 'elephant', 'hot dog', 'streetlight', 'shorts', 'face', 'table', 'cow', 'postcard', 'boomerang', 'pear', 'shovel', 'zigzag', 'rhinoceros', 'onion', 'picture frame', 'saxophone', 'hat', 'cruise ship', 'train', 'ceiling fan', 'nose', 'belt', 'speedboat', 'bridge', 'barn', 'door', 'skyscraper', 'fence', 'scissors', 'shark', 'rake', 'microphone', 'ear', 'whale', 'fireplace', 'lightning', 'screwdriver', 'jacket', 'crab', 'roller coaster', 'cannon', 'garden', 'helmet', 'dresser', 'bed', 'nail', 'swan', 'fan', 'bat', 'rabbit', 'mountain', 'shoe', 'floor lamp', 'soccer ball', 'mailbox', 'laptop', 'washing machine', 'drill', 'calculator', 'ant', 'chandelier', 'hamburger', 'lighthouse', 'sea turtle', 'goatee', 'pizza', 'crocodile', 'dolphin', 'rainbow', 'frying pan', 'leaf', 'mouth', 'snorkel', 'remote control', 'light bulb', 'axe', 'hand', 'pig', 'sink', 'baseball', 'lion', 'pants', 'windmill', 'castle', 'dumbbell', 'hedgehog', 'tent', 'wine bottle', 'bandage'],
+        ['animal migration', 'monkey', 'watermelon', 'radio', 'panda', 'beach', 'dishwasher', 'calendar', 'peas', 'bottlecap', 'bird', 'police car', 'ambulance', 'clarinet', 'mouse', 'snake', 'asparagus', 'cloud', 'finger', 'dragon', 'foot', 'microwave', 'cookie', 'book', 'tiger', 'sleeping bag', 'canoe', 'toothpaste', 'toe', 'broom', 'tractor', 'matches', 'brain', 'bread', 'bracelet', 'purse', 'knee', 'diving board', 'peanut', 'paintbrush', 'lantern', 'firetruck', 'pliers', 'duck', 'map', 't-shirt', 'toaster', 'yoga', 'lobster', 'elbow', 'passport', 'waterslide', 'broccoli', 'moon', 'campfire', 'jail', 'basketball', 'sweater', 'fire hydrant', 'feather', 'flying saucer', 'grass', 'spoon', 'cell phone', 'smiley face', 'beard', 'wheel', 'house'],
+        ['camouflage', 'mug', 'cello', 'hurricane', 'bus', 'truck', 'pond', 'birthday cake', 'garden hose', 'cake', 'school bus', 'leg', 'van', 'guitar', 'cup', 'pool', 'hockey stick', 'bear', 'marker', 'blackberry', 'squiggle', 'tornado', 'crayon', 'circle', 'pickup truck', 'coffee cup', 'cooler', 'square', 'river', 'paint can', 'oven', 'string bean', 'The Great Wall of China', 'hockey puck', 'car', 'spreadsheet', 'trombone', 'bucket', 'trumpet', 'eraser', 'line', 'pencil', 'pillow', 'blueberry', 'frog', 'bush', 'keyboard', 'steak', 'potato', 'ocean', 'bicycle', 'mosquito', 'stereo', 'dog', 'suitcase', 'violin', 'octagon', 'bathtub', 'raccoon', 'hot tub', 'cat', 'bench', 'piano', 'stove', 'golf club', 'motorbike', 'grapes', 'hexagon']
+    ]
+
+    all_model_predictions = []
+    for submission_file in submission_files:
+        df = pd.read_csv(
+            submission_file,
+            index_col="key_id",
+            converters={ "word": lambda word: [w.replace("_", " ") for w in word.split()] })
+        all_model_predictions.append(df.word.tolist())
+
+    print("Merging predictions...", flush=True)
+
+    final_predictions = all_model_predictions[0].copy()
+    cumulative_categories = model_categories[0].copy()
+    for m in range(1, len(all_model_predictions)):
+        model_predictions = all_model_predictions[m]
+        for p in range(len(model_predictions)):
+            final_prediction_categories = final_predictions[p]
+            current_prediction_categories = model_predictions[p]
+            for r in range(len(final_prediction_categories)):
+                final_prediction_category = final_prediction_categories[r]
+                current_prediction_category = current_prediction_categories[r]
+                final_category_contained = final_prediction_category in cumulative_categories
+                current_category_contained = current_prediction_category in model_categories[m]
+                if current_category_contained and not final_category_contained:
+                    final_prediction_category[r] = current_prediction_category
+        cumulative_categories.extend(model_categories[m])
+
+    test_data = TestData(input_dir)
+    submission_df = test_data.df.copy()
+    submission_df["word"] = [" ".join(fp) for fp in final_predictions]
+    submission_df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
+
+
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
@@ -208,4 +306,4 @@ if __name__ == "__main__":
     argparser.add_argument("--sgdr_cycle_end_patience", default=1, type=int)
     argparser.add_argument("--max_sgdr_cycles", default=None, type=int)
 
-    main()
+    main2()
