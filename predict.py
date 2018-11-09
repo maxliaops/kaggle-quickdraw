@@ -175,7 +175,7 @@ if __name__ == "__main__":
     argparser.add_argument("--input_dir", default="/storage/kaggle/quickdraw")
     argparser.add_argument("--output_dir", default="/artifacts")
     argparser.add_argument("--base_model_dir", default=None)
-    argparser.add_argument("--image_size", default=64, type=int)
+    argparser.add_argument("--image_size", default=128, type=int)
     argparser.add_argument("--augment", default=False, type=str2bool)
     argparser.add_argument("--use_dummy_image", default=False, type=str2bool)
     argparser.add_argument("--use_progressive_image_sizes", default=False, type=str2bool)
