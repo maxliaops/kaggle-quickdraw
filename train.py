@@ -495,9 +495,9 @@ def main():
     submission_df.to_csv("{}/submission_tta.csv".format(output_dir), columns=["word"])
 
     val_set_data_loader = \
-        DataLoader(val_set, batch_size=32, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
+        DataLoader(val_set, batch_size=64, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
-    model = load_ensemble_model(output_dir, 5, val_set_data_loader, criterion, model_type, image_size, len(categories))
+    model = load_ensemble_model(output_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
     submission_df = test_data.df.copy()
     submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
     submission_df.to_csv("{}/submission_ensemble_tta.csv".format(output_dir), columns=["word"])
