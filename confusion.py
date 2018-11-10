@@ -99,6 +99,11 @@ def main():
 
     np.save("{}/confusion.npy".format(output_dir), confusion)
 
+    for c in range(confusion.shape[0]):
+        category_count = confusion[c, :].sum()
+        if category_count != 0:
+            confusion[c, :] /= category_count
+
     confusion_bitmap = confusion > 0.01
     for i in range(confusion_bitmap.shape[0]):
         confusion_bitmap[i, i] = True
