@@ -8,7 +8,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
-from utils import read_categories, draw_temporal_strokes
+from utils import read_categories, draw_temporal_strokes, read_confusion_set
 
 
 class TrainDataProvider:
@@ -20,12 +20,14 @@ class TrainDataProvider:
             num_workers,
             test_size,
             train_on_unrecognized,
+            confusion_set,
             num_category_shards,
             category_shard,
             exclude_categories):
         self.data_dir = data_dir
         self.test_size = test_size
         self.train_on_unrecognized = train_on_unrecognized
+        self.confusion_set = confusion_set
         self.num_category_shards = num_category_shards
         self.category_shard = category_shard
         self.exclude_categories = exclude_categories
@@ -65,6 +67,7 @@ class TrainDataProvider:
                 next_shard,
                 self.test_size,
                 self.train_on_unrecognized,
+                self.confusion_set,
                 self.num_category_shards,
                 self.category_shard,
                 self.exclude_categories
@@ -77,15 +80,33 @@ class TrainDataProvider:
             shard,
             test_size,
             train_on_unrecognized,
+            confusion_set,
             num_category_shards,
             category_shard,
             exclude_categories):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
-        return TrainData(data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard, exclude_categories)
+        return TrainData(
+            data_dir,
+            shard,
+            test_size,
+            train_on_unrecognized,
+            confusion_set,
+            num_category_shards,
+            category_shard,
+            exclude_categories)
 
 
 class TrainData:
-    def __init__(self, data_dir, shard, test_size, train_on_unrecognized, num_category_shards, category_shard, exclude_categories):
+    def __init__(
+            self,
+            data_dir,
+            shard,
+            test_size,
+            train_on_unrecognized,
+            confusion_set,
+            num_category_shards,
+            category_shard,
+            exclude_categories):
         self.shard = shard
 
         start_time = time.time()
@@ -115,11 +136,55 @@ class TrainData:
 
         if exclude_categories:
             categories_to_exclude = []
-            categories_to_exclude.extend(['vase', 'flip flops', 'hospital', 'lollipop', 'hammer', 'toothbrush', 'fork', 'moustache', 'sailboat', 'couch', 'underwear', 'church', 'tooth', 'penguin', 'apple', 'bulldozer', 'drums', 'kangaroo', 'alarm clock', 'submarine', 'spider', 'owl', 'stethoscope', 'mushroom', 'popsicle', 'airplane', 'flamingo', 'backpack', 'hot air balloon', 'toilet', 'candle', 'palm tree', 'camera', 'sock', 'power outlet', 'teapot', 'computer', 'triangle', 'diamond', 'snowflake', 'donut', 'compass', 'stitches', 'eyeglasses', 'paper clip', 'carrot', 'binoculars', 'envelope', 'cactus', 'flashlight', 'sun', 'traffic light', 'television', 'crown', 'pineapple', 'strawberry', 'saw', 'bee', 'megaphone', 'squirrel', 'wristwatch', 'flower', 'fish', 'rain', 'key', 'hourglass', 'clock', 'sheep', 'tennis racquet', 'star', 'parachute', 'giraffe', 'rollerskates', 'The Mona Lisa', 'sword', 'butterfly', 'mermaid', 'wine glass', 'bowtie', 'angel', 'eye', 'stairs', 'scorpion', 'house plant', 'anvil', 'chair', 'umbrella', 'see saw', 'snail', 'The Eiffel Tower', 'ladder', 'camel', 'octopus', 'skateboard', 'harp', 'snowman', 'skull', 'swing set', 'ice cream', 'stop sign', 'headphones', 'helicopter'])
-            categories_to_exclude.extend(['banana', 'parrot', 'tree', 'lipstick', 'teddy-bear', 'horse', 'arm', 'basket', 'necklace', 'baseball bat', 'sandwich', 'zebra', 'telephone', 'elephant', 'hot dog', 'streetlight', 'shorts', 'face', 'table', 'cow', 'postcard', 'boomerang', 'pear', 'shovel', 'zigzag', 'rhinoceros', 'onion', 'picture frame', 'saxophone', 'hat', 'cruise ship', 'train', 'ceiling fan', 'nose', 'belt', 'speedboat', 'bridge', 'barn', 'door', 'skyscraper', 'fence', 'scissors', 'shark', 'rake', 'microphone', 'ear', 'whale', 'fireplace', 'lightning', 'screwdriver', 'jacket', 'crab', 'roller coaster', 'cannon', 'garden', 'helmet', 'dresser', 'bed', 'nail', 'swan', 'fan', 'bat', 'rabbit', 'mountain', 'shoe', 'floor lamp', 'soccer ball', 'mailbox', 'laptop', 'washing machine', 'drill', 'calculator', 'ant', 'chandelier', 'hamburger', 'lighthouse', 'sea turtle', 'goatee', 'pizza', 'crocodile', 'dolphin', 'rainbow', 'frying pan', 'leaf', 'mouth', 'snorkel', 'remote control', 'light bulb', 'axe', 'hand', 'pig', 'sink', 'baseball', 'lion', 'pants', 'windmill', 'castle', 'dumbbell', 'hedgehog', 'tent', 'wine bottle', 'bandage'])
-            categories_to_exclude.extend(['animal migration', 'monkey', 'watermelon', 'radio', 'panda', 'beach', 'dishwasher', 'calendar', 'peas', 'bottlecap', 'bird', 'police car', 'ambulance', 'clarinet', 'mouse', 'snake', 'asparagus', 'cloud', 'finger', 'dragon', 'foot', 'microwave', 'cookie', 'book', 'tiger', 'sleeping bag', 'canoe', 'toothpaste', 'toe', 'broom', 'tractor', 'matches', 'brain', 'bread', 'bracelet', 'purse', 'knee', 'diving board', 'peanut', 'paintbrush', 'lantern', 'firetruck', 'pliers', 'duck', 'map', 't-shirt', 'toaster', 'yoga', 'lobster', 'elbow', 'passport', 'waterslide', 'broccoli', 'moon', 'campfire', 'jail', 'basketball', 'sweater', 'fire hydrant', 'feather', 'flying saucer', 'grass', 'spoon', 'cell phone', 'smiley face', 'beard', 'wheel', 'house'])
+            categories_to_exclude.extend(
+                ['vase', 'flip flops', 'hospital', 'lollipop', 'hammer', 'toothbrush', 'fork', 'moustache', 'sailboat',
+                 'couch', 'underwear', 'church', 'tooth', 'penguin', 'apple', 'bulldozer', 'drums', 'kangaroo',
+                 'alarm clock', 'submarine', 'spider', 'owl', 'stethoscope', 'mushroom', 'popsicle', 'airplane',
+                 'flamingo', 'backpack', 'hot air balloon', 'toilet', 'candle', 'palm tree', 'camera', 'sock',
+                 'power outlet', 'teapot', 'computer', 'triangle', 'diamond', 'snowflake', 'donut', 'compass',
+                 'stitches', 'eyeglasses', 'paper clip', 'carrot', 'binoculars', 'envelope', 'cactus', 'flashlight',
+                 'sun', 'traffic light', 'television', 'crown', 'pineapple', 'strawberry', 'saw', 'bee', 'megaphone',
+                 'squirrel', 'wristwatch', 'flower', 'fish', 'rain', 'key', 'hourglass', 'clock', 'sheep',
+                 'tennis racquet', 'star', 'parachute', 'giraffe', 'rollerskates', 'The Mona Lisa', 'sword',
+                 'butterfly', 'mermaid', 'wine glass', 'bowtie', 'angel', 'eye', 'stairs', 'scorpion', 'house plant',
+                 'anvil', 'chair', 'umbrella', 'see saw', 'snail', 'The Eiffel Tower', 'ladder', 'camel', 'octopus',
+                 'skateboard', 'harp', 'snowman', 'skull', 'swing set', 'ice cream', 'stop sign', 'headphones',
+                 'helicopter'])
+            categories_to_exclude.extend(
+                ['banana', 'parrot', 'tree', 'lipstick', 'teddy-bear', 'horse', 'arm', 'basket', 'necklace',
+                 'baseball bat', 'sandwich', 'zebra', 'telephone', 'elephant', 'hot dog', 'streetlight', 'shorts',
+                 'face', 'table', 'cow', 'postcard', 'boomerang', 'pear', 'shovel', 'zigzag', 'rhinoceros', 'onion',
+                 'picture frame', 'saxophone', 'hat', 'cruise ship', 'train', 'ceiling fan', 'nose', 'belt',
+                 'speedboat', 'bridge', 'barn', 'door', 'skyscraper', 'fence', 'scissors', 'shark', 'rake',
+                 'microphone', 'ear', 'whale', 'fireplace', 'lightning', 'screwdriver', 'jacket', 'crab',
+                 'roller coaster', 'cannon', 'garden', 'helmet', 'dresser', 'bed', 'nail', 'swan', 'fan', 'bat',
+                 'rabbit', 'mountain', 'shoe', 'floor lamp', 'soccer ball', 'mailbox', 'laptop', 'washing machine',
+                 'drill', 'calculator', 'ant', 'chandelier', 'hamburger', 'lighthouse', 'sea turtle', 'goatee', 'pizza',
+                 'crocodile', 'dolphin', 'rainbow', 'frying pan', 'leaf', 'mouth', 'snorkel', 'remote control',
+                 'light bulb', 'axe', 'hand', 'pig', 'sink', 'baseball', 'lion', 'pants', 'windmill', 'castle',
+                 'dumbbell', 'hedgehog', 'tent', 'wine bottle', 'bandage'])
+            categories_to_exclude.extend(
+                ['animal migration', 'monkey', 'watermelon', 'radio', 'panda', 'beach', 'dishwasher', 'calendar',
+                 'peas', 'bottlecap', 'bird', 'police car', 'ambulance', 'clarinet', 'mouse', 'snake', 'asparagus',
+                 'cloud', 'finger', 'dragon', 'foot', 'microwave', 'cookie', 'book', 'tiger', 'sleeping bag', 'canoe',
+                 'toothpaste', 'toe', 'broom', 'tractor', 'matches', 'brain', 'bread', 'bracelet', 'purse', 'knee',
+                 'diving board', 'peanut', 'paintbrush', 'lantern', 'firetruck', 'pliers', 'duck', 'map', 't-shirt',
+                 'toaster', 'yoga', 'lobster', 'elbow', 'passport', 'waterslide', 'broccoli', 'moon', 'campfire',
+                 'jail', 'basketball', 'sweater', 'fire hydrant', 'feather', 'flying saucer', 'grass', 'spoon',
+                 'cell phone', 'smiley face', 'beard', 'wheel', 'house'])
 
             categories_mask = np.array([c not in categories_to_exclude for c in categories])
+
+            category_filter = np.array([categories_mask[dc] for dc in data_category])
+            data_category = data_category[category_filter]
+            data_drawing = data_drawing[category_filter]
+            data_recognized = data_recognized[category_filter]
+
+        if confusion_set is not None:
+            confusion_set_categories = read_confusion_set(
+                "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(confusion_set))
+
+            categories_mask = np.array([c in confusion_set_categories for c in categories])
 
             category_filter = np.array([categories_mask[dc] for dc in data_category])
             data_category = data_category[category_filter]
@@ -201,7 +266,7 @@ class TestData:
         self.df = pd.read_csv(
             "{}/test_simplified.csv".format(data_dir),
             index_col="key_id",
-            converters={ "drawing": lambda drawing: eval(drawing) })
+            converters={"drawing": lambda drawing: eval(drawing)})
 
 
 class TestDataset(Dataset):

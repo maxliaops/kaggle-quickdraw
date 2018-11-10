@@ -221,3 +221,8 @@ def save_confusion_set(file_path, confusion_set, categories):
     with open(file_path, "w") as file:
         for category in sorted(np.array(categories)[confusion_set]):
             file.write(category + "\n")
+
+
+def read_confusion_set(file_path):
+    with open(file_path) as categories_file:
+        return [l.rstrip("\n") for l in categories_file.readlines()]
