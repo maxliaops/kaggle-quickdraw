@@ -208,3 +208,9 @@ def pack_confusion_sets(confusion_bitmap, max_size):
     q = [x for x in b if x.sum() != 0]
 
     return q
+
+
+def save_confusion_set(file_path, confusion_set, categories):
+    with open(file_path, "w") as file:
+        for category in sorted(np.array(categories)[confusion_set]):
+            file.write(category + "\n")
