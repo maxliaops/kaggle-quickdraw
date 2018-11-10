@@ -180,3 +180,31 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3, fliplr=Fal
         final_images.append(merge_stroke_drawings([partition_images[0], partition_images[1], partition_images[2]]))
 
     return np.array(final_images)
+
+
+def pack_confusion_sets(confusion_bitmap, max_size):
+    s = np.array(confusion_bitmap)
+    b = s.copy()
+    n = s.shape[0]
+    L = max_size
+
+    while True:
+        c = np.zeros((n, n), dtype=np.int32)
+        for i in range(n):
+            for j in range(n):
+                if i != j and b[i].sum() != 0 and b[j].sum() != 0:
+                    m = b[i] | b[j]
+                    if m.sum() <= L:
+                        c[i, j] = m.sum()
+
+        if np.max(c) == 0:
+            break
+
+        o = np.argwhere(c == np.max(c))
+        i, j = o[np.random.randint(len(o))]
+        b[i] = b[i] | b[j]
+        b[j] = False
+
+    q = [x for x in b if x.sum() != 0]
+
+    return q
