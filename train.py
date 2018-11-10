@@ -537,7 +537,6 @@ if __name__ == "__main__":
     argparser.add_argument("--confusion_set", default=None, type=int)
     argparser.add_argument("--num_category_shards", default=1, type=int)
     argparser.add_argument("--category_shard", default=0, type=int)
-    argparser.add_argument("--exclude_categories", default=False, type=str2bool)
     argparser.add_argument("--eval_train_mapk", default=True, type=str2bool)
     argparser.add_argument("--mapk_topk", default=3, type=int)
     argparser.add_argument("--num_shard_preload", default=1, type=int)
