@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from dataset import TrainDataProvider, TrainDataset
 from train import calculate_confusion, load_ensemble_model, create_criterion
-from utils import str2bool, read_categories
+from utils import str2bool, read_categories, pack_confusion_sets, save_confusion_set
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -98,6 +98,14 @@ def main():
         val_set.df = train_data.val_set_df
 
     np.save("{}/confusion.npy".format(output_dir), confusion)
+
+    confusion_bitmap = confusion > 0.01
+    for i in range(confusion_bitmap.shape[0]):
+        confusion_bitmap[i, i] = True
+
+    confusion_sets = pack_confusion_sets(confusion_bitmap, 34)
+    for i, confusion_set in enumerate(confusion_sets):
+        save_confusion_set("{}/confusion_set_{}.txt".format(output_dir, i), confusion_set, categories)
 
 
 if __name__ == "__main__":
