@@ -87,6 +87,15 @@ def main():
 
     criterion = create_criterion(loss_type, len(categories))
 
+    model_dir = "/storage/models/quickdraw/seresnext50"
+    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
+    loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg = \
+        evaluate(model, val_set_data_loader, criterion, mapk_topk)
+    print(
+        "loss: {:.3f}, map@3: {:.3f}, acc@1: {:.3f}, acc@3: {:.3f}, acc@5: {:.3f}, acc@10: {:.3f}"
+            .format(loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg),
+        flush=True)
+
     model_dir = "/storage/models/quickdraw/seresnext50_cs_0"
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
     loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg = \
