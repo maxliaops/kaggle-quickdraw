@@ -188,6 +188,8 @@ def pack_confusion_sets(confusion_bitmap, max_size):
     n = s.shape[0]
     L = max_size
 
+    r = [[i] for i in range(n)]
+
     while True:
         c = np.zeros((n, n), dtype=np.int32)
         for i in range(n):
@@ -202,12 +204,17 @@ def pack_confusion_sets(confusion_bitmap, max_size):
 
         o = np.argwhere(c == np.max(c))
         i, j = o[np.random.randint(len(o))]
+
         b[i] = b[i] | b[j]
         b[j] = False
 
-    q = [x for x in b if x.sum() != 0]
+        r[i] = r[i] + r[j]
+        r[j] = []
 
-    return q
+    q = [x for x in b if x.sum() != 0]
+    m = [sorted(y) for x, y in zip(b, r) if x.sum() != 0]
+
+    return q, m
 
 
 def save_confusion_set(file_path, confusion_set, categories):

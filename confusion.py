@@ -103,9 +103,15 @@ def main():
     for i in range(confusion_bitmap.shape[0]):
         confusion_bitmap[i, i] = True
 
-    confusion_sets = pack_confusion_sets(confusion_bitmap, 34)
+    confusion_sets, confusion_set_source_categories = pack_confusion_sets(confusion_bitmap, 34)
+
     for i, confusion_set in enumerate(confusion_sets):
         save_confusion_set("{}/confusion_set_{}.txt".format(output_dir, i), confusion_set, categories)
+
+    category_confusion_set_mapping = np.full((len(categories),), -1, dtype=np.int32)
+    for i, m in enumerate(confusion_set_source_categories):
+        category_confusion_set_mapping[m] = i
+    np.save("{}/category_confusion_set_mapping.npy".format(output_dir), category_confusion_set_mapping)
 
 
 if __name__ == "__main__":
