@@ -150,14 +150,14 @@ class TrainData:
 
             categories_mask = np.array([c in confusion_set_categories for c in categories])
 
-            category_filter = np.array([categories_mask[dc] for dc in train_categories])
-            train_categories = train_categories[category_filter]
-            train_drawing = train_drawing[category_filter]
-            train_recognized = train_recognized[category_filter]
+            train_category_filter = np.array([categories_mask[dc] for dc in train_categories])
+            train_categories = train_categories[train_category_filter]
+            train_drawing = train_drawing[train_category_filter]
+            train_recognized = train_recognized[train_category_filter]
 
-            category_filter = np.array([categories_mask[dc] for dc in val_categories])
-            val_categories = val_categories[category_filter]
-            val_drawing = val_drawing[category_filter]
+            val_category_filter = np.array([categories_mask[dc] for dc in val_categories])
+            val_categories = val_categories[val_category_filter]
+            val_drawing = val_drawing[val_category_filter]
 
         if not train_on_unrecognized:
             train_categories = train_categories[train_recognized]
