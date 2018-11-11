@@ -94,7 +94,7 @@ def main():
     prediction_mask = []
     for i, p in enumerate(predicted_words):
         cond1 = p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider', 'sun', 'tent', 'triangle', 'windmill']
-        cond2 = train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
+        cond2 = True # train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
         prediction_mask.append(cond1 and cond2)
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
 
