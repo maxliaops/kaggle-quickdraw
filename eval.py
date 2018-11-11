@@ -4,7 +4,7 @@ import torch
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 
-from dataset import TrainDataProvider, TrainDataset
+from dataset import TrainDataset, TrainData
 from train import load_ensemble_model, create_criterion, evaluate, predict
 from utils import str2bool, read_categories
 
@@ -64,24 +64,20 @@ def main():
 
     use_extended_stroke_channels = model_type in ["cnn", "residual_cnn", "fc_cnn", "hc_fc_cnn"]
 
-    train_data_provider = TrainDataProvider(
-        input_dir,
-        50,
-        num_shard_preload=num_shard_preload,
-        num_workers=num_shard_loaders,
+    train_data = TrainData(
+        data_dir=input_dir,
+        shard=0,
         test_size=test_size,
         train_on_unrecognized=train_on_unrecognized,
         confusion_set=None,
         num_category_shards=num_category_shards,
         category_shard=category_shard)
 
-    train_data = train_data_provider.get_next()
-
     val_set = TrainDataset(train_data.val_set_df, image_size, use_extended_stroke_channels, False, use_dummy_image)
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
-    categories = read_categories("{}/categories.txt".format(input_dir))
+    categories = train_data.categories
 
     criterion = create_criterion(loss_type, len(categories))
 
@@ -91,8 +87,9 @@ def main():
     predicted_words = predict(model, val_set_data_loader, categories, tta=False)
     prediction_mask = []
     for i, p in enumerate(predicted_words):
-        cond1 = p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider', 'sun', 'tent', 'triangle', 'windmill']
-        cond2 = True # train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
+        cond1 = p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider',
+                                    'sun', 'tent', 'triangle', 'windmill']
+        cond2 = True  # train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
         prediction_mask.append(cond1 and cond2)
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
 
