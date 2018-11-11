@@ -21,7 +21,7 @@ from torch.utils.data import DataLoader
 from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset
 from metrics import accuracy, mapk, FocalLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
-from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet
+from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs
 from models.ensemble import Ensemble
 from utils import get_learning_rate, str2bool
 
@@ -50,6 +50,8 @@ def create_model(type, input_size, num_classes):
         model = MobileNetV2(input_size=input_size, n_class=num_classes)
     elif type == "drn":
         model = Drn(num_classes=num_classes)
+    elif type == "seresnext50_cs":
+        model = SeResNext50Cs(num_classes=num_classes)
     else:
         raise Exception("Unsupported model type: '{}".format(type))
 

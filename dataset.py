@@ -153,6 +153,13 @@ class TrainData:
             val_categories = val_categories[val_category_filter]
             val_drawing = val_drawing[val_category_filter]
 
+            category_mapping = {}
+            for csc in confusion_set_categories:
+                category_mapping[categories.index(csc)] = confusion_set_categories.index(csc)
+            train_categories = np.array([category_mapping[c] for c in train_categories])
+            val_categories = np.array([category_mapping[c] for c in val_categories])
+            categories = confusion_set_categories
+
         if not train_on_unrecognized:
             train_categories = train_categories[train_recognized]
             train_drawing = train_drawing[train_recognized]

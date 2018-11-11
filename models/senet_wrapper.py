@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 from models.senet import se_resnet50, se_resnet101, se_resnet152, se_resnext50_32x4d, se_resnext101_32x4d, senet154
@@ -66,3 +67,19 @@ class SeNet(nn.Module):
         x = self.features(x)
         x = self.logits(x)
         return x
+
+
+class SeResNext50Cs(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+
+        self.parent = SeNet("seresnext50", 340)
+
+        self.parent.load_state_dict(
+            torch.load("/storage/models/quickdraw/seresnext50/model.pth",
+                       map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+
+        self.parent.last_linear = nn.Linear(2048, num_classes)
+
+    def forward(self, x):
+        return self.parent(x)
