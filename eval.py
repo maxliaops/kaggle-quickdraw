@@ -1,13 +1,12 @@
 import argparse
 
 import torch
-import numpy as np
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataset, TrainData
 from train import load_ensemble_model, create_criterion, evaluate, predict
-from utils import str2bool, read_categories, read_confusion_set
+from utils import str2bool, read_confusion_set
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -105,22 +104,19 @@ def main():
             .format(loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg),
         flush=True)
 
-    confusion_set_categories = read_confusion_set(
+    cs_categories = read_confusion_set(
         "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(0))
-    category_mapping = {}
-    for csc in confusion_set_categories:
-        category_mapping[categories.index(csc)] = confusion_set_categories.index(csc)
-    df["category"] = np.array([category_mapping[c] if c in category_mapping else -1 for c in df["category"]])
-    categories = confusion_set_categories
-    criterion = create_criterion(loss_type, len(categories))
+    criterion = create_criterion(loss_type, len(cs_categories))
     model_dir = "/storage/models/quickdraw/seresnext50_cs_0"
-    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, "seresnext50_cs", image_size, len(categories))
-    loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg = \
-        evaluate(model, val_set_data_loader, criterion, mapk_topk)
-    print(
-        "loss: {:.3f}, map@3: {:.3f}, acc@1: {:.3f}, acc@3: {:.3f}, acc@5: {:.3f}, acc@10: {:.3f}"
-            .format(loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg),
-        flush=True)
+    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, "seresnext50_cs", image_size, len(cs_categories))
+    predicted_words = predict(model, val_set_data_loader, cs_categories, tta=True)
+    match_count = 0
+    for i, p in enumerate(predicted_words):
+        predicted_word = p.split(" ")[0].replace("_", " ")
+        true_word = categories[df["category"][i]]
+        if predicted_word == true_word:
+            match_count += 1
+    print("acc@1: {}".format(match_count / len(predicted_words)), flush=True)
 
 
 if __name__ == "__main__":
