@@ -104,6 +104,15 @@ def main():
             .format(loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg),
         flush=True)
 
+    predicted_words = predict(model, val_set_data_loader, categories, tta=True)
+    match_count = 0
+    for i, p in enumerate(predicted_words):
+        predicted_word = p.split(" ")[0].replace("_", " ")
+        true_word = categories[df["category"][i]]
+        if predicted_word == true_word:
+            match_count += 1
+    print("acc@1: {}".format(match_count / len(predicted_words)), flush=True)
+
     cs_categories = read_confusion_set(
         "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(0))
     criterion = create_criterion(loss_type, len(cs_categories))
