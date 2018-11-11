@@ -83,12 +83,16 @@ def main():
 
     predicted_words = predict(model, val_set_data_loader, categories, tta=True)
     prediction_mask = []
+    actual_count = 0
     for i, p in enumerate(predicted_words):
         cond1 = p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider',
                                     'sun', 'tent', 'triangle', 'windmill']
         cond2 = True  # train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
         prediction_mask.append(cond1 and cond2)
+        if train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]:
+            actual_count += 1
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
+    print("actual_count: {}".format(actual_count), flush=True)
     df = {
         "category": train_data.val_set_df["category"][prediction_mask],
         "drawing": train_data.val_set_df["drawing"][prediction_mask]
