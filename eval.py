@@ -81,18 +81,26 @@ def main():
     model_dir = "/storage/models/quickdraw/seresnext50"
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
+    cs_entry_categories = ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider',
+                           'sun', 'tent', 'triangle', 'windmill']
+    cs_categories = read_confusion_set(
+        "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(0))
+
     predicted_words = predict(model, val_set_data_loader, categories, tta=True)
     prediction_mask = []
-    actual_count = 0
+    cs_entry_match_count = 0
+    cs_match_count = 0
     for i, p in enumerate(predicted_words):
-        cond1 = p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider',
-                                    'sun', 'tent', 'triangle', 'windmill']
-        cond2 = train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
+        predicted_word = p.split(" ")[0].replace("_", " ")
+        cond1 = predicted_word in cs_entry_categories
         prediction_mask.append(cond1)
-        if cond1 and cond2:
-            actual_count += 1
+        if cond1 and categories[train_data.val_set_df["category"][i]] in cs_entry_categories:
+            cs_entry_match_count += 1
+        if cond1 and categories[train_data.val_set_df["category"][i]] in cs_categories:
+            cs_match_count += 1
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
-    print("actual_count: {}".format(actual_count), flush=True)
+    print("cs_entry_match_count: {}".format(cs_entry_match_count), flush=True)
+    print("cs_match_count: {}".format(cs_match_count), flush=True)
     df = {
         "category": train_data.val_set_df["category"][prediction_mask],
         "drawing": train_data.val_set_df["drawing"][prediction_mask]
@@ -115,13 +123,10 @@ def main():
         true_word = categories[df["category"][i]]
         if predicted_word == true_word:
             match_count += 1
-        if predicted_word not in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider',
-                                  'sun', 'tent', 'triangle', 'windmill']:
+        if predicted_word not in cs_entry_categories:
             print("predicted unexpected word: '{}'".format(predicted_word), flush=True)
     print("acc@1: {}".format(match_count / len(predicted_words)), flush=True)
 
-    cs_categories = read_confusion_set(
-        "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(0))
     criterion = create_criterion(loss_type, len(cs_categories))
     model_dir = "/storage/models/quickdraw/seresnext50_cs_0"
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, "seresnext50_cs", image_size,
