@@ -1,12 +1,13 @@
 import argparse
 
 import torch
+import numpy as np
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataset, TrainData
 from train import load_ensemble_model, create_criterion, evaluate, predict
-from utils import str2bool, read_categories
+from utils import str2bool, read_categories, read_confusion_set
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -76,11 +77,8 @@ def main():
     val_set = TrainDataset(train_data.val_set_df, image_size, use_extended_stroke_channels, False, use_dummy_image)
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
-
     categories = train_data.categories
-
     criterion = create_criterion(loss_type, len(categories))
-
     model_dir = "/storage/models/quickdraw/seresnext50"
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
@@ -92,7 +90,6 @@ def main():
         cond2 = True  # train_data.val_set_df["category"][i] in [3, 8, 19, 20, 36, 147, 224, 272, 291, 302, 318, 333]
         prediction_mask.append(cond1 and cond2)
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
-
     df = {
         "category": train_data.val_set_df["category"][prediction_mask],
         "drawing": train_data.val_set_df["drawing"][prediction_mask]
@@ -108,8 +105,16 @@ def main():
             .format(loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg),
         flush=True)
 
+    confusion_set_categories = read_confusion_set(
+        "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(0))
+    category_mapping = {}
+    for csc in confusion_set_categories:
+        category_mapping[categories.index(csc)] = confusion_set_categories.index(csc)
+    df["category"] = np.array([category_mapping[c] for c in df["category"]])
+    categories = confusion_set_categories
+    criterion = create_criterion(loss_type, len(categories))
     model_dir = "/storage/models/quickdraw/seresnext50_cs_0"
-    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
+    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, "seresnext50_cs", image_size, len(categories))
     loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg = \
         evaluate(model, val_set_data_loader, criterion, mapk_topk)
     print(
