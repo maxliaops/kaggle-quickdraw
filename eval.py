@@ -5,7 +5,7 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataProvider, TrainDataset
-from train import load_ensemble_model, create_criterion, evaluate
+from train import load_ensemble_model, create_criterion, evaluate, predict
 from utils import str2bool, read_categories
 
 cudnn.enabled = True
@@ -89,6 +89,23 @@ def main():
 
     model_dir = "/storage/models/quickdraw/seresnext50"
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
+
+    predicted_words = predict(model, val_set_data_loader, categories, tta=False)
+    prediction_mask = []
+    for p in predicted_words:
+        prediction_mask.append(
+            p[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider', 'sun', 'tent',
+                     'triangle', 'windmill'])
+    print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
+
+    df = {
+        "category": train_data.val_set_df["category"][prediction_mask],
+        "drawing": train_data.val_set_df["drawing"][prediction_mask]
+    }
+    val_set = TrainDataset(df, image_size, use_extended_stroke_channels, False, use_dummy_image)
+    val_set_data_loader = \
+        DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
+
     loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg = \
         evaluate(model, val_set_data_loader, criterion, mapk_topk)
     print(
