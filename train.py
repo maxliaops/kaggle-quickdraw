@@ -213,7 +213,6 @@ def main():
     confusion_set = args.confusion_set
     num_category_shards = args.num_category_shards
     category_shard = args.category_shard
-    exclude_categories = args.exclude_categories
     eval_train_mapk = args.eval_train_mapk
     mapk_topk = args.mapk_topk
     num_shard_preload = args.num_shard_preload
@@ -253,8 +252,7 @@ def main():
         train_on_unrecognized=train_on_unrecognized,
         confusion_set=confusion_set,
         num_category_shards=num_category_shards,
-        category_shard=category_shard,
-        exclude_categories=exclude_categories)
+        category_shard=category_shard)
 
     train_data = train_data_provider.get_next()
 

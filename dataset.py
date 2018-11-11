@@ -22,15 +22,13 @@ class TrainDataProvider:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard,
-            exclude_categories):
+            category_shard):
         self.data_dir = data_dir
         self.test_size = test_size
         self.train_on_unrecognized = train_on_unrecognized
         self.confusion_set = confusion_set
         self.num_category_shards = num_category_shards
         self.category_shard = category_shard
-        self.exclude_categories = exclude_categories
 
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
@@ -69,8 +67,7 @@ class TrainDataProvider:
                 self.train_on_unrecognized,
                 self.confusion_set,
                 self.num_category_shards,
-                self.category_shard,
-                self.exclude_categories
+                self.category_shard
             )))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
@@ -82,8 +79,7 @@ class TrainDataProvider:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard,
-            exclude_categories):
+            category_shard):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
         return TrainData(
             data_dir,
@@ -92,8 +88,7 @@ class TrainDataProvider:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard,
-            exclude_categories)
+            category_shard)
 
 
 class TrainData:
@@ -105,8 +100,7 @@ class TrainData:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard,
-            exclude_categories):
+            category_shard):
         self.shard = shard
 
         start_time = time.time()
