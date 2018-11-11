@@ -51,3 +51,4 @@
 * https://arxiv.org/pdf/1511.04534.pdf
 * https://arxiv.org/pdf/1405.3080.pdf
 * https://ydwen.github.io/papers/WenECCV16.pdf
+* https://arxiv.org/pdf/1706.02677.pdf
