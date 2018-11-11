@@ -110,7 +110,7 @@ def main():
     category_mapping = {}
     for csc in confusion_set_categories:
         category_mapping[categories.index(csc)] = confusion_set_categories.index(csc)
-    df["category"] = np.array([category_mapping[c] for c in df["category"]])
+    df["category"] = np.array([category_mapping[c] if c in category_mapping else -1 for c in df["category"]])
     categories = confusion_set_categories
     criterion = create_criterion(loss_type, len(categories))
     model_dir = "/storage/models/quickdraw/seresnext50_cs_0"
