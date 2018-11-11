@@ -111,13 +111,17 @@ def main():
         true_word = categories[df["category"][i]]
         if predicted_word == true_word:
             match_count += 1
+        if predicted_word not in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider',
+                                  'sun', 'tent', 'triangle', 'windmill']:
+            print("predicted unexpected word: '{}".format(predicted_word), flush=True)
     print("acc@1: {}".format(match_count / len(predicted_words)), flush=True)
 
     cs_categories = read_confusion_set(
         "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(0))
     criterion = create_criterion(loss_type, len(cs_categories))
     model_dir = "/storage/models/quickdraw/seresnext50_cs_0"
-    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, "seresnext50_cs", image_size, len(cs_categories))
+    model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, "seresnext50_cs", image_size,
+                                len(cs_categories))
     predicted_words = predict(model, val_set_data_loader, cs_categories, tta=True)
     match_count = 0
     for i, p in enumerate(predicted_words):
