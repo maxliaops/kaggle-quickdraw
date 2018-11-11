@@ -84,7 +84,7 @@ def main():
     model_dir = "/storage/models/quickdraw/seresnext50"
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
-    predicted_words = predict(model, val_set_data_loader, categories, tta=False)
+    predicted_words = predict(model, val_set_data_loader, categories, tta=True)
     prediction_mask = []
     for i, p in enumerate(predicted_words):
         cond1 = p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider',
