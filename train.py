@@ -305,7 +305,7 @@ def main():
     batch_count = 0
     epoch_of_last_improval = 0
 
-    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.8)
+    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.9)
 
     print('{"chart": "best_val_mapk", "axis": "epoch"}')
     print('{"chart": "val_mapk", "axis": "epoch"}')

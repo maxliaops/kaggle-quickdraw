@@ -115,9 +115,9 @@ def main():
         true_word = categories[df["category"][i]]
         if predicted_word == true_word:
             match_count += 1
-        if predicted_word not in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police_car', 'spider',
+        if predicted_word not in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider',
                                   'sun', 'tent', 'triangle', 'windmill']:
-            print("predicted unexpected word: '{}".format(predicted_word), flush=True)
+            print("predicted unexpected word: '{}'".format(predicted_word), flush=True)
     print("acc@1: {}".format(match_count / len(predicted_words)), flush=True)
 
     cs_categories = read_confusion_set(
