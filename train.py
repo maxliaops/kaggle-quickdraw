@@ -478,6 +478,9 @@ def main():
     print()
     print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)), flush=True)
 
+    if confusion_set is not None:
+        return
+
     test_data = TestData(input_dir)
     test_set = TestDataset(test_data.df, image_size, use_extended_stroke_channels)
     test_set_data_loader = \
