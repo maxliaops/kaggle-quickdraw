@@ -73,7 +73,7 @@ class SeResNext50Cs(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
 
-        self.parent = SeNet("seresnext50", 340)
+        self.parent = nn.DataParallel(SeNet("seresnext50", 340))
 
         self.parent.load_state_dict(
             torch.load("/storage/models/quickdraw/seresnext50/model.pth",
