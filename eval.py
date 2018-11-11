@@ -94,8 +94,8 @@ def main():
     prediction_mask = []
     for p in predicted_words:
         prediction_mask.append(
-            p[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider', 'sun', 'tent',
-                     'triangle', 'windmill'])
+            p.split()[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider', 'sun',
+                             'tent', 'triangle', 'windmill'])
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
 
     df = {
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     argparser.add_argument("--progressive_image_size_step", default=16, type=int)
     argparser.add_argument("--progressive_image_epoch_step", default=7, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
-    argparser.add_argument("--batch_size", default=64, type=int)
+    argparser.add_argument("--batch_size", default=128, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
