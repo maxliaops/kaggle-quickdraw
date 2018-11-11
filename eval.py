@@ -94,7 +94,7 @@ def main():
     prediction_mask = []
     for p in predicted_words:
         prediction_mask.append(
-            p.split()[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider', 'sun',
+            p.split(" ")[0] in ['angel', 'arm', 'bat', 'bathtub', 'bottlecap', 'hospital', 'police car', 'spider', 'sun',
                              'tent', 'triangle', 'windmill'])
     print("matched {} of {}".format(sum(prediction_mask), len(prediction_mask)), flush=True)
 
