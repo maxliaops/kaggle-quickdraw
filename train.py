@@ -23,7 +23,7 @@ from metrics import accuracy, mapk, FocalLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet
 from models.ensemble import Ensemble
-from utils import get_learning_rate, str2bool, read_categories
+from utils import get_learning_rate, str2bool
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -484,7 +484,7 @@ def main():
     model.load_state_dict(torch.load("{}/model.pth".format(output_dir), map_location=device))
     model = Ensemble([model])
 
-    categories = read_categories("{}/categories.txt".format(input_dir))
+    categories = train_data.categories
 
     submission_df = test_data.df.copy()
     submission_df["word"] = predict(model, test_set_data_loader, categories, tta=False)
