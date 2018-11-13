@@ -23,6 +23,7 @@ from metrics import accuracy, mapk, FocalLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs
 from models.ensemble import Ensemble
+from swa_utils import moving_average, bn_update
 from utils import get_learning_rate, str2bool
 
 cudnn.enabled = True
@@ -171,6 +172,8 @@ def calculate_confusion(model, data_loader, num_categories, scale=True):
 
 def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
     ensemble_model_candidates = sorted(glob.glob("{}/model-*.pth".format(base_dir)))
+    if os.path.isfile("{}/swa_model.pth".format(base_dir)):
+        ensemble_model_candidates.append("{}/swa_model.pth".format(base_dir))
 
     score_to_model = {}
     for model_file_path in ensemble_model_candidates:
@@ -477,6 +480,17 @@ def main():
     train_end_time = time.time()
     print()
     print("Train time: %s" % str(datetime.timedelta(seconds=train_end_time - train_start_time)), flush=True)
+
+    swa_model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
+    swa_update_count = 0
+    for f in sorted(glob.glob("{}/model-*.pth".format(output_dir)), key=lambda e: int(os.path.basename(e)[6:-4])):
+        print("merging model '{}' into swa model".format(f), flush=True)
+        m = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
+        m.load_state_dict(torch.load(f, map_location=device))
+        swa_update_count += 1
+        moving_average(swa_model, m, 1.0 / swa_update_count)
+        bn_update(train_set_data_loader, swa_model)
+    torch.save(swa_model.state_dict(), "{}/swa_model.pth".format(output_dir))
 
     if confusion_set is not None:
         return
