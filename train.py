@@ -189,9 +189,12 @@ def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, 
                 del score_to_model[min(score_to_model.keys())]
             score_to_model[val_mapk_avg] = model
 
-    ensemble_models = list(score_to_model.values())
+    ensemble = Ensemble(list(score_to_model.values()))
 
-    return Ensemble(ensemble_models)
+    val_loss_avg, val_mapk_avg, _, _, _, _ = evaluate(ensemble, data_loader, criterion, 3)
+    print("ensemble: val_loss=%.4f, val_mapk=%.4f" % (val_loss_avg, val_mapk_avg))
+
+    return ensemble
 
 
 def main():
