@@ -492,7 +492,7 @@ def main():
         m.load_state_dict(torch.load(f, map_location=device))
         swa_update_count += 1
         moving_average(swa_model, m, 1.0 / swa_update_count)
-        bn_update(val_set_data_loader, swa_model)
+        # bn_update(train_set_data_loader, swa_model)
     torch.save(swa_model.state_dict(), "{}/swa_model.pth".format(output_dir))
 
     if confusion_set is not None:
