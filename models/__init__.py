@@ -7,3 +7,4 @@ from .mobilenetv2 import MobileNetV2
 from .nasnet_wrapper import NasNet
 from .resnet import ResNet
 from .senet_wrapper import SeNet, SeResNext50Cs
+from .stack import StackNet
