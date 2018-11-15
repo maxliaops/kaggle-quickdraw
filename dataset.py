@@ -128,6 +128,10 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
+        if True:
+            data_category //= 68
+            categories = ["cat0", "cat1", "cat2", "cat3", "cat4"]
+
         train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
             train_test_split(
                 data_category,
