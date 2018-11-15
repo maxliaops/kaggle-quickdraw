@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset
-from metrics import accuracy, mapk, FocalLoss
+from metrics import accuracy, mapk, FocalLoss, CceCenterLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs, \
     StackNet
@@ -112,6 +112,8 @@ def create_criterion(loss_type, num_classes):
         criterion = FocalLoss()
     elif loss_type == "topk_svm":
         criterion = SmoothSVM(n_classes=num_classes, k=3, tau=1., alpha=1.)
+    elif loss_type == "center":
+        criterion = CceCenterLoss(num_classes=num_classes, alpha=0.5)
     else:
         raise Exception("Unsupported loss type: '{}".format(loss_type))
     return criterion
