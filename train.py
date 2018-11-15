@@ -90,8 +90,8 @@ def evaluate(model, data_loader, criterion, mapk_topk):
             mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
             accuracy_top1_sum_t += accuracy(prediction_logits, categories, topk=1)
             accuracy_top3_sum_t += accuracy(prediction_logits, categories, topk=3)
-            accuracy_top5_sum_t += accuracy(prediction_logits, categories, topk=5)
-            accuracy_top10_sum_t += accuracy(prediction_logits, categories, topk=10)
+            accuracy_top5_sum_t += accuracy(prediction_logits, categories, topk=3)
+            accuracy_top10_sum_t += accuracy(prediction_logits, categories, topk=3)
 
             step_count += 1
 
