@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from metrics import CenterLoss
+from .center_loss import CenterLoss
 
 
 class CceCenterLoss(nn.Module):
