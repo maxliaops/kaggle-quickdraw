@@ -138,6 +138,20 @@ class TrainData:
                 random_state=42
             )
 
+        if False:
+            categories_subset = []
+
+            categories_mask = np.array([c in categories_subset for c in categories])
+
+            train_category_filter = np.array([categories_mask[dc] for dc in train_categories])
+            train_categories = train_categories[train_category_filter]
+            train_drawing = train_drawing[train_category_filter]
+            train_recognized = train_recognized[train_category_filter]
+
+            val_category_filter = np.array([categories_mask[dc] for dc in val_categories])
+            val_categories = val_categories[val_category_filter]
+            val_drawing = val_drawing[val_category_filter]
+
         if confusion_set is not None:
             confusion_set_categories = read_confusion_set(
                 "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(confusion_set))
