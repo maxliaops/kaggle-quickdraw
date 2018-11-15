@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from dataset import TrainDataProvider, TrainDataset
 from train import calculate_confusion, load_ensemble_model, create_criterion
-from utils import str2bool, read_categories, pack_confusion_sets, save_confusion_set
+from utils import str2bool, read_lines, pack_confusion_sets, save_confusion_set
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -84,7 +84,7 @@ def main():
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
-    categories = read_categories("{}/categories.txt".format(input_dir))
+    categories = read_lines("{}/categories.txt".format(input_dir))
 
     criterion = create_criterion(loss_type, len(categories))
 

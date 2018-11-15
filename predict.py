@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from dataset import TestData, TestDataset, TrainDataset, TrainDataProvider
 from models.ensemble import Ensemble
 from train import create_model
-from utils import str2bool, read_categories
+from utils import str2bool, read_lines
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -109,7 +109,7 @@ def main():
         ['camouflage', 'mug', 'cello', 'hurricane', 'bus', 'truck', 'pond', 'birthday cake', 'garden hose', 'cake', 'school bus', 'leg', 'van', 'guitar', 'cup', 'pool', 'hockey stick', 'bear', 'marker', 'blackberry', 'squiggle', 'tornado', 'crayon', 'circle', 'pickup truck', 'coffee cup', 'cooler', 'square', 'river', 'paint can', 'oven', 'string bean', 'The Great Wall of China', 'hockey puck', 'car', 'spreadsheet', 'trombone', 'bucket', 'trumpet', 'eraser', 'line', 'pencil', 'pillow', 'blueberry', 'frog', 'bush', 'keyboard', 'steak', 'potato', 'ocean', 'bicycle', 'mosquito', 'stereo', 'dog', 'suitcase', 'violin', 'octagon', 'bathtub', 'raccoon', 'hot tub', 'cat', 'bench', 'piano', 'stove', 'golf club', 'motorbike', 'grapes', 'hexagon']
     ]
 
-    categories = read_categories("{}/categories.txt".format(input_dir))
+    categories = read_lines("{}/categories.txt".format(input_dir))
 
     test_data = TestData(input_dir)
     test_set = TestDataset(test_data.df, image_size, use_extended_stroke_channels)

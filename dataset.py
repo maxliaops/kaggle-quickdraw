@@ -8,7 +8,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
-from utils import read_categories, draw_temporal_strokes, read_confusion_set
+from utils import read_lines, draw_temporal_strokes, read_confusion_set
 
 
 class TrainDataProvider:
@@ -115,7 +115,7 @@ class TrainData:
 
         print("Loaded {} samples".format(len(data_drawing)))
 
-        categories = read_categories("{}/categories.txt".format(data_dir))
+        categories = read_lines("{}/categories.txt".format(data_dir))
         if num_category_shards != 1:
             category_shard_size = len(categories) // num_category_shards
             min_category = category_shard * category_shard_size

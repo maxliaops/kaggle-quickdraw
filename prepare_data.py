@@ -8,11 +8,11 @@ import h5py
 import numpy as np
 import pandas as pd
 
-from utils import draw_strokes, read_categories, flatten_strokes, flatten_stroke_lens
+from utils import draw_strokes, read_lines, flatten_strokes, flatten_stroke_lens
 
 
 def calculate_total_data_size():
-    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+    categories = read_lines("/storage/kaggle/quickdraw/categories.txt")
 
     size = 0
     for category in categories:
@@ -26,7 +26,7 @@ def calculate_total_data_size():
 
 
 def prepare_strokes_pandas():
-    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+    categories = read_lines("/storage/kaggle/quickdraw/categories.txt")
 
     for category in categories:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified_shard_0/{}-0.csv".format(category)
@@ -50,7 +50,7 @@ def prepare_strokes_pandas():
 
 
 def prepare_strokes():
-    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+    categories = read_lines("/storage/kaggle/quickdraw/categories.txt")
 
     with h5py.File("quickdraw_train.hdf5", "w", libver="latest") as data_file:
         data_size = calculate_total_data_size()
@@ -88,7 +88,7 @@ def prepare_strokes():
 
 
 def prepare_thumbnails():
-    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+    categories = read_lines("/storage/kaggle/quickdraw/categories.txt")
 
     with h5py.File("quickdraw_train_thumbnails.hdf5", "w", libver="latest") as data_file:
         for category in categories:
@@ -118,7 +118,7 @@ def prepare_shards():
         shutil.rmtree("/storage/kaggle/quickdraw/train_simplified_shards")
     os.makedirs("/storage/kaggle/quickdraw/train_simplified_shards")
 
-    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+    categories = read_lines("/storage/kaggle/quickdraw/categories.txt")
 
     for category in categories:
         csv_file_name = "/storage/kaggle/quickdraw/train_simplified/{}.csv".format(category)
@@ -144,7 +144,7 @@ def prepare_shards():
 def csv_to_npz(csv_file_name):
     print("reading file '{}'".format(csv_file_name), flush=True)
 
-    categories = read_categories("/storage/kaggle/quickdraw/categories.txt")
+    categories = read_lines("/storage/kaggle/quickdraw/categories.txt")
 
     df = pd.read_csv(
         csv_file_name,

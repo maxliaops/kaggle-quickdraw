@@ -41,17 +41,9 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def read_categories(file_path):
+def read_lines(file_path):
     with open(file_path) as categories_file:
-        categories = [l.rstrip("\n") for l in categories_file.readlines()]
-
-        categories.remove('aircraft carrier')
-        categories.remove('knife')
-        categories.remove('lighter')
-        categories.remove('rifle')
-        categories.remove('syringe')
-
-        return categories
+        return [l.rstrip("\n") for l in categories_file.readlines()]
 
 
 def flatten_strokes(drawing, axis):
