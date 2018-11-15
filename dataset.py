@@ -214,8 +214,8 @@ class TrainDataset(Dataset):
             if self.augment:
                 if np.random.rand() < 0.5:
                     fliplr = True
-                if np.random.rand() < 0.2:
-                    padding += np.random.randint(5, 50)
+                # if np.random.rand() < 0.2:
+                #     padding += np.random.randint(5, 50)
 
             image = draw_temporal_strokes(
                 drawing,

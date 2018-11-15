@@ -75,8 +75,7 @@ def main():
         train_on_unrecognized=train_on_unrecognized,
         confusion_set=None,
         num_category_shards=num_category_shards,
-        category_shard=category_shard,
-        exclude_categories=exclude_categories)
+        category_shard=category_shard)
 
     train_data = train_data_provider.get_next()
 
