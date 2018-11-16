@@ -120,14 +120,13 @@ class TrainData:
             data_recognized = data_file["recognized"]
             data_countrycode = data_file["countrycode"]
 
-        print(np.unique(data_countrycode).tolist(), flush=True)
-
         print("Loaded {} samples".format(len(data_drawing)))
 
         categories = read_lines("{}/categories.txt".format(data_dir))
 
         countries = read_lines("{}/countries.txt".format(data_dir))
         country_index_map = {c: countries.index(c) for c in countries}
+        country_index_map[np.nan] = 255
 
         data_country = np.array([country_index_map[c] for c in data_countrycode], dtype=np.uint8)
 
