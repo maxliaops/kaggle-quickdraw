@@ -120,6 +120,8 @@ class TrainData:
             data_recognized = data_file["recognized"]
             data_countrycode = data_file["countrycode"]
 
+        print(np.unique(data_countrycode).tolist(), flush=True)
+
         print("Loaded {} samples".format(len(data_drawing)))
 
         categories = read_lines("{}/categories.txt".format(data_dir))
