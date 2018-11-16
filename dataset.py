@@ -126,9 +126,8 @@ class TrainData:
 
         countries = read_lines("{}/countries.txt".format(data_dir))
         country_index_map = {c: countries.index(c) for c in countries}
-        country_index_map[np.nan] = 255
 
-        data_country = np.array([country_index_map[c] for c in data_countrycode], dtype=np.uint8)
+        data_country = np.array([255 if np.isnan(c) else country_index_map[c] for c in data_countrycode], dtype=np.uint8)
 
         if num_category_shards != 1:
             category_shard_size = len(categories) // num_category_shards
