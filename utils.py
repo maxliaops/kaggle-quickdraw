@@ -5,6 +5,9 @@ import cv2
 import numpy as np
 from torch import nn
 
+from sklearn.model_selection import StratifiedKFold
+
+
 
 def adjust_learning_rate(optimizer, lr):
     for param_group in optimizer.param_groups:
@@ -30,6 +33,14 @@ def freeze(model):
 def unfreeze(model):
     for param in model.parameters():
         param.requires_grad = True
+
+
+def kfold_split(n_splits, values, classes):
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+    for train_value_indexes, test_value_indexes in skf.split(values, classes):
+        train_values = [values[i] for i in train_value_indexes]
+        test_values = [values[i] for i in test_value_indexes]
+        yield train_values, test_values
 
 
 def str2bool(v):

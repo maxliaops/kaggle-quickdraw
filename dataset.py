@@ -8,7 +8,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
-from utils import read_lines, draw_temporal_strokes, read_confusion_set
+from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
 
 
 class TrainDataProvider:
@@ -128,15 +128,25 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
-        train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
-            train_test_split(
-                data_category,
-                data_drawing,
-                data_recognized,
-                test_size=test_size,
-                stratify=data_category,
-                random_state=42
-            )
+        if True:
+            train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
+                train_test_split(
+                    data_category,
+                    data_drawing,
+                    data_recognized,
+                    test_size=test_size,
+                    stratify=data_category,
+                    random_state=42
+                )
+        else:
+            train_indexes, val_indexes = list(kfold_split(3, range(len(data_category)), data_category))[0]
+
+            train_categories = data_category[train_indexes]
+            train_drawing = data_drawing[train_indexes]
+            train_recognized = data_recognized[train_indexes]
+
+            val_categories = data_category[val_indexes]
+            val_drawing = data_drawing[val_indexes]
 
         if False:
             categories_subset = []
@@ -214,8 +224,8 @@ class TrainDataset(Dataset):
             if self.augment:
                 if np.random.rand() < 0.5:
                     fliplr = True
-                # if np.random.rand() < 0.2:
-                #     padding += np.random.randint(5, 50)
+                    # if np.random.rand() < 0.2:
+                    #     padding += np.random.randint(5, 50)
 
             image = draw_temporal_strokes(
                 drawing,
