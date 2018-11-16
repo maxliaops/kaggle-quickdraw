@@ -118,10 +118,17 @@ class TrainData:
             data_category = data_file["category"]
             data_drawing = data_file["drawing"]
             data_recognized = data_file["recognized"]
+            data_countrycode = data_file["countrycode"]
 
         print("Loaded {} samples".format(len(data_drawing)))
 
         categories = read_lines("{}/categories.txt".format(data_dir))
+
+        countries = read_lines("{}/countries.txt".format(data_dir))
+        country_index_map = {c: countries.index(c) for c in countries}
+
+        data_country = np.array([country_index_map[c] for c in data_countrycode], dtype=np.uint8)
+
         if num_category_shards != 1:
             category_shard_size = len(categories) // num_category_shards
             min_category = category_shard * category_shard_size
@@ -133,13 +140,15 @@ class TrainData:
             data_category = data_category[category_filter] - min_category
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
+            data_country = data_country[category_filter]
 
         if fold is None:
-            train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
+            train_categories, val_categories, train_drawing, val_drawing, train_recognized, val_recognized, train_country, val_country = \
                 train_test_split(
                     data_category,
                     data_drawing,
                     data_recognized,
+                    data_country,
                     test_size=test_size,
                     stratify=data_category,
                     random_state=42
@@ -150,9 +159,12 @@ class TrainData:
             train_categories = data_category[train_indexes]
             train_drawing = data_drawing[train_indexes]
             train_recognized = data_recognized[train_indexes]
+            train_country = data_country[train_indexes]
 
             val_categories = data_category[val_indexes]
             val_drawing = data_drawing[val_indexes]
+            val_recognized = data_recognized[val_indexes]
+            val_country = data_country[val_indexes]
 
         if False:
             categories_subset = []
@@ -163,10 +175,13 @@ class TrainData:
             train_categories = train_categories[train_category_filter]
             train_drawing = train_drawing[train_category_filter]
             train_recognized = train_recognized[train_category_filter]
+            train_country = train_country[train_category_filter]
 
             val_category_filter = np.array([categories_mask[dc] for dc in val_categories])
             val_categories = val_categories[val_category_filter]
             val_drawing = val_drawing[val_category_filter]
+            val_recognized = val_recognized[val_category_filter]
+            val_country = val_country[val_category_filter]
 
         if confusion_set is not None:
             confusion_set_categories = read_confusion_set(
@@ -178,10 +193,13 @@ class TrainData:
             train_categories = train_categories[train_category_filter]
             train_drawing = train_drawing[train_category_filter]
             train_recognized = train_recognized[train_category_filter]
+            train_country = train_country[train_category_filter]
 
             val_category_filter = np.array([categories_mask[dc] for dc in val_categories])
             val_categories = val_categories[val_category_filter]
             val_drawing = val_drawing[val_category_filter]
+            val_recognized = val_recognized[val_category_filter]
+            val_country = val_country[val_category_filter]
 
             category_mapping = {}
             for csc in confusion_set_categories:
@@ -193,9 +211,21 @@ class TrainData:
         if not train_on_unrecognized:
             train_categories = train_categories[train_recognized]
             train_drawing = train_drawing[train_recognized]
+            train_country = train_country[train_recognized]
+            train_recognized = train_recognized[train_recognized]
 
-        self.train_set_df = {"category": train_categories, "drawing": train_drawing}
-        self.val_set_df = {"category": val_categories, "drawing": val_drawing}
+        self.train_set_df = {
+            "category": train_categories,
+            "drawing": train_drawing,
+            "country": train_country,
+            "recognized": train_recognized
+        }
+        self.val_set_df = {
+            "category": val_categories,
+            "drawing": val_drawing,
+            "country": val_country,
+            "recognized": val_recognized
+        }
         self.categories = categories
 
         end_time = time.time()
@@ -218,6 +248,7 @@ class TrainDataset(Dataset):
     def __getitem__(self, index):
         drawing = self.df["drawing"][index]
         category = self.df["category"][index]
+        country = self.df["country"][index]
 
         if self.use_dummy_image:
             image = np.zeros((self.image_size, self.image_size))
@@ -242,6 +273,11 @@ class TrainDataset(Dataset):
 
         image = image_to_tensor(image)
         category = category_to_tensor(category)
+
+        if self.use_extended_stroke_channels:
+            country_channel = np.full((self.image_size, self.image_size), country / 255., dtype=np.float32)
+            country_channel_t = torch.from_numpy(country_channel).float()
+            image = torch.cat([image, country_channel_t.unsqueeze(0)], dim=0)
 
         # image_mean = 0.0
         # image_stdev = 1.0
