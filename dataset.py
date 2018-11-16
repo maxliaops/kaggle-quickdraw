@@ -19,12 +19,14 @@ class TrainDataProvider:
             num_shard_preload,
             num_workers,
             test_size,
+            fold,
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
             category_shard):
         self.data_dir = data_dir
         self.test_size = test_size
+        self.fold = fold
         self.train_on_unrecognized = train_on_unrecognized
         self.confusion_set = confusion_set
         self.num_category_shards = num_category_shards
@@ -64,6 +66,7 @@ class TrainDataProvider:
                 self.data_dir,
                 next_shard,
                 self.test_size,
+                self.fold,
                 self.train_on_unrecognized,
                 self.confusion_set,
                 self.num_category_shards,
@@ -76,6 +79,7 @@ class TrainDataProvider:
             data_dir,
             shard,
             test_size,
+            fold,
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
@@ -85,6 +89,7 @@ class TrainDataProvider:
             data_dir,
             shard,
             test_size,
+            fold,
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
@@ -97,6 +102,7 @@ class TrainData:
             data_dir,
             shard,
             test_size,
+            fold,
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
@@ -128,7 +134,7 @@ class TrainData:
             data_drawing = data_drawing[category_filter]
             data_recognized = data_recognized[category_filter]
 
-        if True:
+        if fold is None:
             train_categories, val_categories, train_drawing, val_drawing, train_recognized, _ = \
                 train_test_split(
                     data_category,
@@ -139,7 +145,7 @@ class TrainData:
                     random_state=42
                 )
         else:
-            train_indexes, val_indexes = list(kfold_split(3, range(len(data_category)), data_category))[0]
+            train_indexes, val_indexes = list(kfold_split(3, range(len(data_category)), data_category))[fold]
 
             train_categories = data_category[train_indexes]
             train_drawing = data_drawing[train_indexes]
