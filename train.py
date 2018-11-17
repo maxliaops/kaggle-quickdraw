@@ -50,8 +50,8 @@ def create_model(type, input_size, num_classes):
         model = HcFcCnn(num_classes=num_classes)
     elif type == "mobilenetv2":
         model = MobileNetV2(input_size=input_size, n_class=num_classes)
-    elif type == "drn":
-        model = Drn(num_classes=num_classes)
+    elif type in ["drn_d_38", "drn_d_54", "drn_d_105"]:
+        model = Drn(type=type, num_classes=num_classes)
     elif type == "seresnext50_cs":
         model = SeResNext50Cs(num_classes=num_classes)
     elif type == "stack":
