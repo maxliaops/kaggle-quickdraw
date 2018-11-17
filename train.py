@@ -111,7 +111,7 @@ def create_criterion(loss_type, num_classes):
     elif loss_type == "focal":
         criterion = FocalLoss()
     elif loss_type == "topk_svm":
-        criterion = SmoothSVM(n_classes=num_classes, k=3, tau=1., alpha=1.)
+        criterion = SmoothSVM(n_classes=num_classes, k=3, tau=0.5, alpha=1.)
     elif loss_type == "center":
         criterion = CceCenterLoss(num_classes=num_classes, alpha=0.5)
     else:
