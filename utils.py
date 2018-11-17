@@ -68,6 +68,10 @@ def flatten_stroke_lens(drawing):
     return [len(s[0]) for s in drawing]
 
 
+def calculate_mean_stroke_len(drawing):
+    return np.mean(flatten_stroke_lens(drawing))
+
+
 def encode_stroke_start(drawing):
     start = []
     for s in drawing:

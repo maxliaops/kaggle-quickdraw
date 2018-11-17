@@ -8,7 +8,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
-from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
+from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split, calculate_mean_stroke_len
 
 
 class TrainDataProvider:
@@ -127,7 +127,8 @@ class TrainData:
         countries = read_lines("{}/countries.txt".format(data_dir))
         country_index_map = {c: countries.index(c) for c in countries}
 
-        data_country = np.array([country_index_map[c] if isinstance(c, str) else 255 for c in data_countrycode], dtype=np.uint8)
+        data_country = np.array([country_index_map[c] if isinstance(c, str) else 255 for c in data_countrycode],
+                                dtype=np.uint8)
 
         if num_category_shards != 1:
             category_shard_size = len(categories) // num_category_shards
@@ -276,8 +277,13 @@ class TrainDataset(Dataset):
 
         if self.use_extended_stroke_channels:
             country_channel = np.full((self.image_size, self.image_size), country / 255., dtype=np.float32)
-            country_channel_t = torch.from_numpy(country_channel).float()
-            image = torch.cat([image, country_channel_t.unsqueeze(0)], dim=0)
+            num_strokes_channel = np.full((self.image_size, self.image_size), len(drawing) / 15., dtype=np.float32)
+            stroke_len_channel = np.full((self.image_size, self.image_size), calculate_mean_stroke_len(drawing) / 80.,
+                                         dtype=np.float32)
+
+            image = torch.cat([image, torch.from_numpy(country_channel).float().unsqueeze(0)], dim=0)
+            image = torch.cat([image, torch.from_numpy(num_strokes_channel).float().unsqueeze(0)], dim=0)
+            image = torch.cat([image, torch.from_numpy(stroke_len_channel).float().unsqueeze(0)], dim=0)
 
         # image_mean = 0.0
         # image_stdev = 1.0
