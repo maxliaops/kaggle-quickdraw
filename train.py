@@ -183,8 +183,12 @@ def calculate_confusion(model, data_loader, num_categories, scale=True):
     return confusion, all_predictions
 
 
+def find_sorted_model_files(base_dir):
+    return sorted(glob.glob("{}/model-*.pth".format(base_dir)), key=lambda e: int(os.path.basename(e)[6:-4]))
+
+
 def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
-    ensemble_model_candidates = sorted(glob.glob("{}/model-*.pth".format(base_dir)))
+    ensemble_model_candidates = find_sorted_model_files[-(ensemble_model_count + 2):]
     if os.path.isfile("{}/swa_model.pth".format(base_dir)):
         ensemble_model_candidates.append("{}/swa_model.pth".format(base_dir))
 
@@ -510,7 +514,7 @@ def main():
         swa_model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(
             device)
         swa_update_count = 0
-        for f in sorted(glob.glob("{}/model-*.pth".format(output_dir)), key=lambda e: int(os.path.basename(e)[6:-4])):
+        for f in find_sorted_model_files(output_dir):
             print("merging model '{}' into swa model".format(f), flush=True)
             m = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
             m.load_state_dict(torch.load(f, map_location=device))
