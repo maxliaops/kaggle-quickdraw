@@ -91,13 +91,17 @@ def main():
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
+    predictions = []
     for i in range(50):
         print("{}".format(i), flush=True)
-        confusion += calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
+        c, p = calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
+        confusion += c
+        predictions.extend(p)
         train_data = train_data_provider.get_next()
         val_set.df = train_data.val_set_df
 
     np.save("{}/confusion.npy".format(output_dir), confusion)
+    np.save("{}/predictions.npy".format(output_dir), np.array(predictions))
 
     for c in range(confusion.shape[0]):
         category_count = confusion[c, :].sum()
@@ -108,7 +112,7 @@ def main():
     for i in range(confusion_bitmap.shape[0]):
         confusion_bitmap[i, i] = True
 
-    confusion_sets, confusion_set_source_categories = pack_confusion_sets(confusion_bitmap, 34)
+    confusion_sets, confusion_set_source_categories = pack_confusion_sets(confusion_bitmap, 68)
 
     for i, confusion_set in enumerate(confusion_sets):
         save_confusion_set("{}/confusion_set_{}.txt".format(output_dir, i), confusion_set, categories)

@@ -155,6 +155,7 @@ def predict(model, data_loader, categories, tta=False):
 def calculate_confusion(model, data_loader, num_categories, scale=True):
     confusion = np.zeros((num_categories, num_categories), dtype=np.float32)
 
+    all_predictions = []
     for batch in data_loader:
         images, categories = \
             batch[0].to(device, non_blocking=True), \
@@ -166,13 +167,15 @@ def calculate_confusion(model, data_loader, num_categories, scale=True):
         for bpc, bc in zip(prediction_categories[:, 0], categories):
             confusion[bpc, bc] += 1
 
+        all_predictions.extend(predictions.cpu().data.numpy())
+
     if scale:
         for c in range(confusion.shape[0]):
             category_count = confusion[c, :].sum()
             if category_count != 0:
                 confusion[c, :] /= category_count
 
-    return confusion
+    return confusion, all_predictions
 
 
 def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
@@ -540,7 +543,7 @@ def main():
     submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
     submission_df.to_csv("{}/submission_ensemble_tta.csv".format(output_dir), columns=["word"])
 
-    confusion = calculate_confusion(model, val_set_data_loader, len(categories))
+    confusion, _ = calculate_confusion(model, val_set_data_loader, len(categories))
     precisions = np.array([confusion[c, c] for c in range(confusion.shape[0])])
     percentiles = np.percentile(precisions, q=np.linspace(0, 100, 10))
 
