@@ -339,7 +339,7 @@ def main():
     criterion = create_criterion(loss_type, len(train_data.categories))
 
     if loss_type == "center":
-        optimizer_centloss = torch.optim.SGD(criterion.center.parameters(), lr=0.5)
+        optimizer_centloss = torch.optim.SGD(criterion.center.parameters(), lr=0.01)
 
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
