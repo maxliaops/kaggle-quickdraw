@@ -72,6 +72,7 @@ def main():
         num_shard_preload=num_shard_preload,
         num_workers=num_shard_loaders,
         test_size=test_size,
+        fold=None,
         train_on_unrecognized=train_on_unrecognized,
         confusion_set=None,
         num_category_shards=num_category_shards,
