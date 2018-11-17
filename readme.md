@@ -36,6 +36,8 @@
 * ensembling
   * https://mlwave.com/kaggle-ensembling-guide/
   * https://www.analyticsvidhya.com/blog/2015/09/questions-ensemble-modeling/
+* https://github.com/batzner/indrnn
+
 
 ### Papers
 
