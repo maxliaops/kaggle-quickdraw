@@ -1,14 +1,15 @@
 import datetime
+import math
 import multiprocessing as mp
 import time
 
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from torch.utils.data import Dataset
 
-from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split, calculate_drawing_values_channel
+from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
 
 
 class TrainDataProvider:
@@ -329,3 +330,21 @@ def image_to_tensor(image):
 
 def category_to_tensor(category):
     return torch.tensor(category.item()).long()
+
+
+class StratifiedSampler:
+    def __init__(self, class_vector, batch_size):
+        self.class_vector = class_vector
+        self.batch_size = batch_size
+
+    def gen_sample_array(self):
+        n_splits = math.ceil(len(self.class_vector) / self.batch_size)
+        splitter = StratifiedShuffleSplit(n_splits=n_splits, test_size=0.5)
+        train_index, test_index = next(splitter.split(np.zeros(len(self.class_vector)), self.class_vector))
+        return np.hstack([train_index, test_index])
+
+    def __iter__(self):
+        return iter(self.gen_sample_array())
+
+    def __len__(self):
+        return len(self.class_vector)

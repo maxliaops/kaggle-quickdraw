@@ -18,7 +18,7 @@ from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
-from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset
+from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset, StratifiedSampler
 from metrics import accuracy, mapk, FocalLoss, CceCenterLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs, \
@@ -285,8 +285,10 @@ def main():
 
     train_set = TrainDataset(train_data.train_set_df, image_size, use_extended_stroke_channels, augment,
                              use_dummy_image)
+    stratified_sampler = StratifiedSampler(train_data.train_set_df["category"], batch_size * batch_iterations)
     train_set_data_loader = \
-        DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
+        DataLoader(train_set, batch_size=batch_size, shuffle=False, sampler=stratified_sampler, num_workers=num_workers,
+                   pin_memory=pin_memory)
 
     val_set = TrainDataset(train_data.val_set_df, image_size, use_extended_stroke_channels, False, use_dummy_image)
     val_set_data_loader = \
@@ -412,6 +414,7 @@ def main():
         train_set.df = train_data.train_set_df
         val_set.df = train_data.val_set_df
         epoch_iterations = ceil(len(train_set) / batch_size)
+        stratified_sampler.class_vector = train_data.train_set_df["category"]
 
         train_loss_avg = train_loss_sum_t.item() / epoch_batch_iter_count
         train_mapk_avg = train_mapk_sum_t.item() / epoch_batch_iter_count
