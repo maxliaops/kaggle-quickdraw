@@ -275,15 +275,17 @@ class TrainDataset(Dataset):
         image = image_to_tensor(image)
         category = category_to_tensor(category)
 
-        if self.use_extended_stroke_channels:
-            country_channel = np.full((self.image_size, self.image_size), country / 255., dtype=np.float32)
-            num_strokes_channel = np.full((self.image_size, self.image_size), len(drawing) / 15., dtype=np.float32)
-            stroke_len_channel = np.full((self.image_size, self.image_size), calculate_mean_stroke_len(drawing) / 80.,
-                                         dtype=np.float32)
+        country_value = country / 255.
+        num_strokes_value = len(drawing) / 15.
+        stroke_len_value = calculate_mean_stroke_len(drawing) / 80.
 
-            image = torch.cat([image, torch.from_numpy(country_channel).float().unsqueeze(0)], dim=0)
-            image = torch.cat([image, torch.from_numpy(num_strokes_channel).float().unsqueeze(0)], dim=0)
-            image = torch.cat([image, torch.from_numpy(stroke_len_channel).float().unsqueeze(0)], dim=0)
+        value_stride = self.image_size // 3
+        values_channel = np.zeros((self.image_size, self.image_size), dtype=np.float32)
+        values_channel[0:value_stride] = country_value
+        values_channel[value_stride:2 * value_stride] = num_strokes_value
+        values_channel[2 * value_stride:] = stroke_len_value
+
+        image = torch.cat([image, torch.from_numpy(values_channel).float().unsqueeze(0)], dim=0)
 
         # image_mean = 0.0
         # image_stdev = 1.0
