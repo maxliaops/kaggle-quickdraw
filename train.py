@@ -133,6 +133,7 @@ def predict(model, data_loader, categories, tta=False):
 
     model.eval()
 
+    all_predictions = []
     predicted_words = []
     with torch.no_grad():
         for batch in data_loader:
@@ -147,13 +148,16 @@ def predict(model, data_loader, categories, tta=False):
 
             _, prediction_categories = predictions.topk(3, dim=1, sorted=True)
 
+            all_predictions.extend(predictions.cpu().data.numpy())
             predicted_words.extend([" ".join(categories[pc.cpu().data.numpy()]) for pc in prediction_categories])
 
-    return predicted_words
+    return all_predictions, predicted_words
 
 
 def calculate_confusion(model, data_loader, num_categories, scale=True):
     confusion = np.zeros((num_categories, num_categories), dtype=np.float32)
+
+    model.eval()
 
     all_predictions = []
     for batch in data_loader:
@@ -528,11 +532,15 @@ def main():
     categories = train_data.categories
 
     submission_df = test_data.df.copy()
-    submission_df["word"] = predict(model, test_set_data_loader, categories, tta=False)
+    predictions, predicted_words = predict(model, test_set_data_loader, categories, tta=False)
+    submission_df["word"] = predicted_words
+    np.save("{}/submission_predictions.npy".format(output_dir), np.array(predictions))
     submission_df.to_csv("{}/submission.csv".format(output_dir), columns=["word"])
 
     submission_df = test_data.df.copy()
-    submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
+    predictions, predicted_words = predict(model, test_set_data_loader, categories, tta=True)
+    submission_df["word"] = predicted_words
+    np.save("{}/submission_predictions_tta.npy".format(output_dir), np.array(predictions))
     submission_df.to_csv("{}/submission_tta.csv".format(output_dir), columns=["word"])
 
     val_set_data_loader = \
@@ -540,7 +548,9 @@ def main():
 
     model = load_ensemble_model(output_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
     submission_df = test_data.df.copy()
-    submission_df["word"] = predict(model, test_set_data_loader, categories, tta=True)
+    predictions, predicted_words = predict(model, test_set_data_loader, categories, tta=True)
+    submission_df["word"] = predicted_words
+    np.save("{}/submission_predictions_ensemble_tta.npy".format(output_dir), np.array(predictions))
     submission_df.to_csv("{}/submission_ensemble_tta.csv".format(output_dir), columns=["word"])
 
     confusion, _ = calculate_confusion(model, val_set_data_loader, len(categories))
