@@ -93,13 +93,12 @@ def main():
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
-    predictions = []
     for i in range(50):
         start_time = time.time()
 
         c, p = calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
         confusion += c
-        predictions.extend(p)
+        np.save("{}/predictions_{}.npy".format(output_dir, train_data.shard), np.array(p))
         train_data = train_data_provider.get_next()
         val_set.df = train_data.val_set_df
 
@@ -108,7 +107,6 @@ def main():
         print("[{:02d}/{:02d}] {}s".format(i + 1, 50, duration_time), flush=True)
 
     np.save("{}/confusion.npy".format(output_dir), confusion)
-    np.save("{}/predictions.npy".format(output_dir), np.array(predictions))
 
     for c in range(confusion.shape[0]):
         category_count = confusion[c, :].sum()
@@ -143,7 +141,7 @@ if __name__ == "__main__":
     argparser.add_argument("--progressive_image_size_step", default=16, type=int)
     argparser.add_argument("--progressive_image_epoch_step", default=7, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
-    argparser.add_argument("--batch_size", default=64, type=int)
+    argparser.add_argument("--batch_size", default=128, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
