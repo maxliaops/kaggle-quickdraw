@@ -188,7 +188,7 @@ def find_sorted_model_files(base_dir):
 
 
 def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, model_type, input_size, num_classes):
-    ensemble_model_candidates = find_sorted_model_files[-(ensemble_model_count + 2):]
+    ensemble_model_candidates = find_sorted_model_files(base_dir)[-(ensemble_model_count + 2):]
     if os.path.isfile("{}/swa_model.pth".format(base_dir)):
         ensemble_model_candidates.append("{}/swa_model.pth".format(base_dir))
 
