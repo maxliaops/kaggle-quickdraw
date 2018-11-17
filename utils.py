@@ -184,6 +184,18 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3, fliplr=Fal
     return np.array(final_images)
 
 
+def calculate_drawing_values_channel(drawing, country, size):
+    country_value = country / 255.
+    num_strokes_value = len(drawing) / 15.
+    stroke_len_value = calculate_mean_stroke_len(drawing) / 80.
+
+    value_stride = size // 3
+    values_channel = np.zeros((size, size), dtype=np.float32)
+    values_channel[0:value_stride] = country_value
+    values_channel[value_stride:2 * value_stride] = num_strokes_value
+    values_channel[2 * value_stride:] = stroke_len_value
+
+
 def pack_confusion_sets(confusion_bitmap, max_size):
     s = np.array(confusion_bitmap)
     b = s.copy()

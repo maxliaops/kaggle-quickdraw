@@ -8,7 +8,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
-from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split, calculate_mean_stroke_len
+from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split, calculate_drawing_values_channel
 
 
 class TrainDataProvider:
@@ -275,16 +275,7 @@ class TrainDataset(Dataset):
         image = image_to_tensor(image)
         category = category_to_tensor(category)
 
-        country_value = country / 255.
-        num_strokes_value = len(drawing) / 15.
-        stroke_len_value = calculate_mean_stroke_len(drawing) / 80.
-
-        value_stride = self.image_size // 3
-        values_channel = np.zeros((self.image_size, self.image_size), dtype=np.float32)
-        values_channel[0:value_stride] = country_value
-        values_channel[value_stride:2 * value_stride] = num_strokes_value
-        values_channel[2 * value_stride:] = stroke_len_value
-
+        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
         image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         # image_mean = 0.0
@@ -314,6 +305,7 @@ class TestDataset(Dataset):
 
     def __getitem__(self, index):
         drawing = self.df.iloc[index].drawing
+        country = self.df.iloc[index].countrycode
 
         image = draw_temporal_strokes(
             drawing,
@@ -322,6 +314,9 @@ class TestDataset(Dataset):
             extended_channels=self.use_extended_stroke_channels)
 
         image = image_to_tensor(image)
+
+        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
+        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         return (image,)
 
