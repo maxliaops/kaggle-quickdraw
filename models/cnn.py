@@ -28,8 +28,8 @@ class SimpleCnn(nn.Module):
         super().__init__()
 
         self.delegate = nn.Sequential(
-            nn.BatchNorm2d(7),
-            ConvBlock(7, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(9),
+            ConvBlock(9, 32, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             ConvBlock(32, 64, kernel_size=3, padding=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
