@@ -275,8 +275,8 @@ class TrainDataset(Dataset):
         image = image_to_tensor(image)
         category = category_to_tensor(category)
 
-        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
-        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
+        # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
+        # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         # image_mean = 0.0
         # image_stdev = 1.0
@@ -315,8 +315,8 @@ class TestDataset(Dataset):
 
         image = image_to_tensor(image)
 
-        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
-        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
+        # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
+        # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         return (image,)
 
