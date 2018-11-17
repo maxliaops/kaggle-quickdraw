@@ -94,7 +94,7 @@ def main():
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
     predictions = []
     for i in range(50):
-        print("{}/50".format(i), flush=True)
+        print("Processing val set shard {}/50".format(i), flush=True)
         c, p = calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
         confusion += c
         predictions.extend(p)
