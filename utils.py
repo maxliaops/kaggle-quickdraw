@@ -195,6 +195,8 @@ def calculate_drawing_values_channel(drawing, country, size):
     values_channel[value_stride:2 * value_stride] = num_strokes_value
     values_channel[2 * value_stride:] = stroke_len_value
 
+    return values_channel
+
 
 def pack_confusion_sets(confusion_bitmap, max_size):
     s = np.array(confusion_bitmap)
