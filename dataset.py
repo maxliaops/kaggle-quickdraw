@@ -8,6 +8,7 @@ import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from torch.utils.data import Dataset
+from torch.utils.data import Sampler
 
 from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
 
@@ -332,8 +333,9 @@ def category_to_tensor(category):
     return torch.tensor(category.item()).long()
 
 
-class StratifiedSampler:
+class StratifiedSampler(Sampler):
     def __init__(self, class_vector, batch_size):
+        super().__init__(None)
         self.class_vector = class_vector
         self.batch_size = batch_size
 
