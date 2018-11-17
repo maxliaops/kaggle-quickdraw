@@ -104,7 +104,7 @@ def main():
 
         end_time = time.time()
         duration_time = end_time - start_time
-        print("[{:02d}/{:02d}] {:d}s".format(i + 1, 50, int(duration_time)), flush=True)
+        print("[{:02d}/{:02d}] {}s".format(i + 1, 50, int(duration_time)), flush=True)
 
     np.save("{}/confusion.npy".format(output_dir), confusion)
 
