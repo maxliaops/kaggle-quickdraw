@@ -160,18 +160,19 @@ def calculate_confusion(model, data_loader, num_categories, scale=True):
     model.eval()
 
     all_predictions = []
-    for batch in data_loader:
-        images, categories = \
-            batch[0].to(device, non_blocking=True), \
-            batch[1].to(device, non_blocking=True)
+    with torch.no_grad():
+        for batch in data_loader:
+            images, categories = \
+                batch[0].to(device, non_blocking=True), \
+                batch[1].to(device, non_blocking=True)
 
-        predictions = F.softmax(model(images), dim=1)
-        _, prediction_categories = predictions.topk(3, dim=1, sorted=True)
+            predictions = F.softmax(model(images), dim=1)
+            _, prediction_categories = predictions.topk(3, dim=1, sorted=True)
 
-        for bpc, bc in zip(prediction_categories[:, 0], categories):
-            confusion[bpc, bc] += 1
+            for bpc, bc in zip(prediction_categories[:, 0], categories):
+                confusion[bpc, bc] += 1
 
-        all_predictions.extend(predictions.cpu().data.numpy())
+            all_predictions.extend(predictions.cpu().data.numpy())
 
     if scale:
         for c in range(confusion.shape[0]):
