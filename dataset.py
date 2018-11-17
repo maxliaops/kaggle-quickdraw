@@ -285,7 +285,7 @@ class TrainDataset(Dataset):
         values_channel[value_stride:2 * value_stride] = num_strokes_value
         values_channel[2 * value_stride:] = stroke_len_value
 
-        image = torch.cat([image, torch.from_numpy(values_channel).float().unsqueeze(0)], dim=0)
+        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         # image_mean = 0.0
         # image_stdev = 1.0
