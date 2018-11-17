@@ -1,4 +1,5 @@
 import argparse
+import time
 
 import numpy as np
 import torch
@@ -94,12 +95,17 @@ def main():
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
     predictions = []
     for i in range(50):
-        print("Processing val set shard {}/50".format(i + 1), flush=True)
+        start_time = time.time()
+
         c, p = calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
         confusion += c
         predictions.extend(p)
         train_data = train_data_provider.get_next()
         val_set.df = train_data.val_set_df
+
+        end_time = time.time()
+        duration_time = end_time - start_time
+        print("[{:02d}/{:02d}] {}s".format(i + 1, 50, duration_time), flush=True)
 
     np.save("{}/confusion.npy".format(output_dir), confusion)
     np.save("{}/predictions.npy".format(output_dir), np.array(predictions))
