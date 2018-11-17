@@ -338,6 +338,9 @@ def main():
 
     criterion = create_criterion(loss_type, len(train_data.categories))
 
+    if loss_type == "center":
+        optimizer_centloss = torch.optim.SGD(criterion.center.parameters(), lr=0.5)
+
     for epoch in range(epochs_to_train):
         epoch_start_time = time.time()
 
@@ -381,6 +384,10 @@ def main():
 
             if (b + 1) % batch_iterations == 0 or (b + 1) == len(train_set_data_loader):
                 optimizer.step()
+                if loss_type == "center":
+                    for param in criterion.center.parameters():
+                        param.grad.data *= (1. / 0.5)
+                    optimizer_centloss.step()
 
             sgdr_iterations += 1
             batch_count += 1
