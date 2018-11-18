@@ -42,6 +42,7 @@
   * https://hackernoon.com/cnns-with-noisy-labels-using-deepcognition-research-paper-1bf4094e3bd9
   * https://arxiv.org/pdf/1703.08774.pdf
   * https://arxiv.org/pdf/1412.6596.pdf
+  * https://arxiv.org/pdf/1710.09412.pdf
 
 
 ### Papers
