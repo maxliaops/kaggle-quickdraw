@@ -210,15 +210,14 @@ def pack_confusion_sets(confusion_bitmap, max_size):
     r = [[i] for i in range(n)]
 
     while True:
-        c = np.zeros((n, n), dtype=np.int32)
+        c = np.full((n, n), -1, dtype=np.int32)
         for i in range(n):
-            for j in range(n):
+            for j in range(i):
                 if i != j and b[i].sum() != 0 and b[j].sum() != 0:
-                    m = b[i] | b[j]
-                    if m.sum() <= L:
-                        c[i, j] = m.sum()
+                    if (b[i] | b[j]).sum() <= L:
+                        c[i, j] = (b[i] & b[j]).sum()
 
-        if np.max(c) == 0:
+        if np.max(c) == -1:
             break
 
         o = np.argwhere(c == np.max(c))
