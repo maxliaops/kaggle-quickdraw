@@ -310,6 +310,11 @@ def main():
         model_index = int(model_file_name.replace("model-", "").replace(".pth", ""))
         ensemble_model_index = max(ensemble_model_index, model_index + 1)
 
+    if confusion_set is not None:
+        shutil.copyfile(
+            "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(confusion_set),
+            "{}/confusion_set.txt".format(output_dir))
+
     epoch_iterations = ceil(len(train_set) / batch_size)
 
     print("train_set_samples: {}, val_set_samples: {}".format(len(train_set), len(val_set)), flush=True)
