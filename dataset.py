@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from torch.utils.data import Dataset
 from torch.utils.data import Sampler
 
-from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
+from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split, calculate_drawing_values_channel
 
 
 class TrainDataProvider:
@@ -294,6 +294,9 @@ class TestData:
             index_col="key_id",
             converters={"drawing": lambda drawing: eval(drawing)})
 
+        countries = read_lines("{}/countries.txt".format(data_dir))
+        self.df["country"] = [countries.index(c) if isinstance(c, str) else 255 for c in self.df.countrycode]
+
 
 class TestDataset(Dataset):
     def __init__(self, df, image_size, use_extended_stroke_channels):
@@ -307,7 +310,7 @@ class TestDataset(Dataset):
 
     def __getitem__(self, index):
         drawing = self.df.iloc[index].drawing
-        country = self.df.iloc[index].countrycode
+        country = self.df.iloc[index].country
 
         image = draw_temporal_strokes(
             drawing,
@@ -317,8 +320,8 @@ class TestDataset(Dataset):
 
         image = image_to_tensor(image)
 
-        # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
-        # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
+        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
+        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         return (image,)
 
