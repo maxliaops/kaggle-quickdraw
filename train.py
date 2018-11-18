@@ -531,9 +531,6 @@ def main():
             # bn_update(train_set_data_loader, swa_model)
         torch.save(swa_model.state_dict(), "{}/swa_model.pth".format(output_dir))
 
-    if confusion_set is not None:
-        return
-
     test_data = TestData(input_dir)
     test_set = TestDataset(test_data.df, image_size, use_extended_stroke_channels)
     test_set_data_loader = \
