@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from torch.utils.data import Dataset
 from torch.utils.data import Sampler
 
-from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split, calculate_drawing_values_channel
+from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
 
 
 class TrainDataProvider:
@@ -277,8 +277,8 @@ class TrainDataset(Dataset):
         image = image_to_tensor(image)
         category = category_to_tensor(category)
 
-        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
-        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
+        # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
+        # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         # image_mean = 0.0
         # image_stdev = 1.0
@@ -320,8 +320,8 @@ class TestDataset(Dataset):
 
         image = image_to_tensor(image)
 
-        values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
-        image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
+        # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
+        # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
         return (image,)
 
