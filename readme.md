@@ -37,6 +37,11 @@
   * https://mlwave.com/kaggle-ensembling-guide/
   * https://www.analyticsvidhya.com/blog/2015/09/questions-ensemble-modeling/
 * https://github.com/batzner/indrnn
+* noise
+  * https://arxiv.org/pdf/1705.03419.pdf
+  * https://hackernoon.com/cnns-with-noisy-labels-using-deepcognition-research-paper-1bf4094e3bd9
+  * https://arxiv.org/pdf/1703.08774.pdf
+  * https://arxiv.org/pdf/1412.6596.pdf
 
 
 ### Papers
