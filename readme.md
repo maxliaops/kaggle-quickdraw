@@ -1,3 +1,8 @@
+### Try Out
+
+* calculate confusion on val set, then use category confidence to "correct" category of noisy samples
+
+
 ### Ideas
 
 * train separate models for small number of categories
