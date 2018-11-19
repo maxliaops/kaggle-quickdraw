@@ -30,15 +30,22 @@ def predict():
     set_match = 0
     order_mismatch = 0
     for i in range(len(main_predictions)):
-        _, mp = torch.tensor(main_predictions[i]).topk(3, dim=0)
+        vmp, mp = torch.tensor(main_predictions[i]).topk(3, dim=0)
         mcats = categories[mp]
+        mmap = {c: v for c, v in zip(mcats, vmp)}
 
         cs_idx = category_confusion_set_mapping[mp[0]]
-        _, csp = torch.tensor(confusion_set_predictions[cs_idx][i]).topk(3, dim=0)
+        vcsp, csp = torch.tensor(confusion_set_predictions[cs_idx][i]).topk(3, dim=0)
         cscats = confusion_sets[cs_idx][csp]
+        csmap = {c: v for c, v in zip(cscats, vcsp)}
 
         if set(mcats) == set(cscats) and catpred(mcats) != catpred(cscats):
-            words.append(catpred(cscats))
+            # words.append(catpred(cscats))
+
+            fmap = {c: mmap[c] + csmap[c] for c in mcats}
+            ensemble_words = sorted(fmap, key=lambda k: -fmap[k])
+            words.append(catpred(ensemble_words))
+
             order_mismatch += 1
         else:
             words.append(catpred(mcats))
