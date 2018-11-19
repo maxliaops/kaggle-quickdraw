@@ -31,27 +31,28 @@ def predict():
     order_mismatch = 0
     for i in range(len(main_predictions)):
         _, mp = torch.tensor(main_predictions[i]).topk(3, dim=0)
+        mcats = categories[mp]
 
         cs_idx = category_confusion_set_mapping[mp[0]]
         _, csp = torch.tensor(confusion_set_predictions[cs_idx][i]).topk(3, dim=0)
+        cscats = confusion_sets[cs_idx][csp]
 
-        if set(categories[mp]) == set(confusion_sets[cs_idx][csp]) \
-                and catpred(categories[mp]) != catpred(confusion_sets[cs_idx][csp]):
-            words.append(catpred(confusion_sets[cs_idx][csp]))
+        if set(mcats) == set(cscats) and catpred(mcats) != catpred(cscats):
+            words.append(catpred(cscats))
             order_mismatch += 1
         else:
-            words.append(catpred(categories[mp]))
+            words.append(catpred(mcats))
 
-        if set(categories[mp]) == set(confusion_sets[cs_idx][csp]):
+        if set(mcats) == set(cscats):
             set_match += 1
 
-        if set(categories[mp]) != set(confusion_sets[cs_idx][csp]):
+        if set(mcats) != set(cscats):
             set_mismatch += 1
 
-        if catpred(categories[mp]) != catpred(confusion_sets[cs_idx][csp]):
+        if catpred(mcats) != catpred(cscats):
             mismatch += 1
 
-        if catpred(categories[mp]).split(" ")[0] != catpred(confusion_sets[cs_idx][csp]).split(" ")[0]:
+        if catpred(mcats).split(" ")[0] != catpred(cscats).split(" ")[0]:
             first_mismatch += 1
 
     print(mismatch)
