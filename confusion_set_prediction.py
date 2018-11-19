@@ -26,11 +26,27 @@ def predict():
     words = []
     mismatch = 0
     first_mismatch = 0
+    set_mismatch = 0
+    set_match = 0
+    order_mismatch = 0
     for i in range(len(main_predictions)):
         _, mp = torch.tensor(main_predictions[i]).topk(3, dim=0)
 
         cs_idx = category_confusion_set_mapping[mp[0]]
         _, csp = torch.tensor(confusion_set_predictions[cs_idx][i]).topk(3, dim=0)
+
+        if set(categories[mp]) == set(confusion_sets[cs_idx][csp]) \
+                and catpred(categories[mp]) != catpred(confusion_sets[cs_idx][csp]):
+            words.append(catpred(confusion_sets[cs_idx][csp]))
+            order_mismatch += 1
+        else:
+            words.append(catpred(categories[mp]))
+
+        if set(categories[mp]) == set(confusion_sets[cs_idx][csp]):
+            set_match += 1
+
+        if set(categories[mp]) != set(confusion_sets[cs_idx][csp]):
+            set_mismatch += 1
 
         if catpred(categories[mp]) != catpred(confusion_sets[cs_idx][csp]):
             mismatch += 1
@@ -38,10 +54,11 @@ def predict():
         if catpred(categories[mp]).split(" ")[0] != catpred(confusion_sets[cs_idx][csp]).split(" ")[0]:
             first_mismatch += 1
 
-        words.append(catpred(confusion_sets[cs_idx][csp]))
-
     print(mismatch)
     print(first_mismatch)
+    print(set_mismatch)
+    print(set_match)
+    print(order_mismatch)
 
     return words
 
