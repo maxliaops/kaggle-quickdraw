@@ -188,7 +188,7 @@ class TrainData:
 
         if confusion_set is not None:
             confusion_set_categories = read_confusion_set(
-                "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(confusion_set))
+                "/storage/models/quickdraw/cs/confusion_set_{}.txt".format(confusion_set))
 
             categories_mask = np.array([c in confusion_set_categories for c in categories])
 
