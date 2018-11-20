@@ -1,6 +1,10 @@
-### Try Out
+### Countdown
 
 * calculate confusion on val set, then use category confidence to "correct" category of noisy samples
+* k-fold
+* cnn tree
+* pseudo labeling
+* analyze test predictions which are likely to be wrong
 
 
 ### Ideas
