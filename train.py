@@ -312,7 +312,7 @@ def main():
 
     if confusion_set is not None:
         shutil.copyfile(
-            "/storage/models/quickdraw/cs/confusion_set_{}.txt".format(confusion_set),
+            "/storage/models/quickdraw/seresnext50_confusion/confusion_set_{}.txt".format(confusion_set),
             "{}/confusion_set.txt".format(output_dir))
 
     epoch_iterations = ceil(len(train_set) / batch_size)
