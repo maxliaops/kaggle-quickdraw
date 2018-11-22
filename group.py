@@ -10,20 +10,24 @@ for c in range(confusion.shape[0]):
     if category_count != 0:
         confusion[c, :] /= category_count
 
+for c in range(confusion.shape[0]):
+    confusion[c, c] = 0
+
 count = 0
-cats = set()
+cats = list()
 groups = np.array(range(confusion.shape[0]))
 for c1 in range(confusion.shape[0]):
-    for c2 in range(c1):
-        s = confusion[c1, c2] + confusion[c2, c1]
-        if s > 0.1:
-            # print("{} vs. {}: {:.3f}".format(categories[c1], categories[c2], s))
-            count += 1
-            cats.add(c1)
-            cats.add(c2)
-            g1 = groups[c1]
-            g2 = groups[c2]
-            groups[groups == g1] = g2
+    c2 = np.argmax(confusion[c1, :])
+    s = confusion[c1, c2] + confusion[c2, c1]
+    if s > 0.0:
+        cats.append(c1)
+        cats.append(c2)
+        g1 = groups[c1]
+        g2 = groups[c2]
+        groups[groups == g1] = g2
+
+for i, g in enumerate(np.unique(groups)):
+    groups[groups == g] = i
 
 print(count)
 print(len(cats))
