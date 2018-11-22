@@ -93,7 +93,7 @@ def main():
     model = load_ensemble_model(model_dir, 3, val_set_data_loader, criterion, model_type, image_size, len(categories))
 
     confusion = np.zeros((len(categories), len(categories)), dtype=np.float32)
-    for i in range(50):
+    for i in range(1):
         start_time = time.time()
 
         c, p = calculate_confusion(model, val_set_data_loader, len(categories), scale=False)
