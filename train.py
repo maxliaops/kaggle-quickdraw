@@ -86,12 +86,14 @@ def evaluate(model, data_loader, criterion, mapk_topk):
             prediction_logits = model(images)
             loss = criterion(prediction_logits, categories)
 
+            num_categories = prediction_logits.size(1)
+
             loss_sum_t += loss
-            mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
-            accuracy_top1_sum_t += accuracy(prediction_logits, categories, topk=1)
-            accuracy_top3_sum_t += accuracy(prediction_logits, categories, topk=3)
-            accuracy_top5_sum_t += accuracy(prediction_logits, categories, topk=5)
-            accuracy_top10_sum_t += accuracy(prediction_logits, categories, topk=10)
+            mapk_sum_t += mapk(prediction_logits, categories, topk=min(mapk_topk, num_categories))
+            accuracy_top1_sum_t += accuracy(prediction_logits, categories, topk=min(1, num_categories))
+            accuracy_top3_sum_t += accuracy(prediction_logits, categories, topk=min(3, num_categories))
+            accuracy_top5_sum_t += accuracy(prediction_logits, categories, topk=min(5, num_categories))
+            accuracy_top10_sum_t += accuracy(prediction_logits, categories, topk=min(10, num_categories))
 
             step_count += 1
 
@@ -399,7 +401,7 @@ def main():
             with torch.no_grad():
                 train_loss_sum_t += loss
                 if eval_train_mapk:
-                    train_mapk_sum_t += mapk(prediction_logits, categories, topk=mapk_topk)
+                    train_mapk_sum_t += mapk(prediction_logits, categories, topk=min(mapk_topk, len(categories)))
 
             if (b + 1) % batch_iterations == 0 or (b + 1) == len(train_set_data_loader):
                 optimizer.step()
