@@ -405,7 +405,7 @@ def main():
             with torch.no_grad():
                 train_loss_sum_t += loss
                 if eval_train_mapk:
-                    train_mapk_sum_t += mapk(prediction_logits, categories, topk=min(mapk_topk, len(categories)))
+                    train_mapk_sum_t += mapk(prediction_logits, categories, topk=min(mapk_topk, len(train_data.categories)))
 
             if (b + 1) % batch_iterations == 0 or (b + 1) == len(train_set_data_loader):
                 optimizer.step()
