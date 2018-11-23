@@ -216,6 +216,10 @@ def load_ensemble_model(base_dir, ensemble_model_count, data_loader, criterion, 
     return ensemble
 
 
+def check_model_improved(old_score, new_score, threshold=1e-3):
+    return new_score - old_score > threshold
+
+
 def main():
     args = argparser.parse_args()
     print("Arguments:")
@@ -339,7 +343,7 @@ def main():
     batch_count = 0
     epoch_of_last_improval = 0
 
-    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.8)
+    lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.8, threshold=1e-3)
 
     print('{"chart": "best_val_mapk", "axis": "epoch"}')
     print('{"chart": "val_mapk", "axis": "epoch"}')
@@ -432,12 +436,12 @@ def main():
         if lr_scheduler_type == "reduce_on_plateau":
             lr_scheduler_plateau.step(val_mapk_avg)
 
-        model_improved_within_sgdr_cycle = val_mapk_avg > sgdr_cycle_val_mapk_best_avg
+        model_improved_within_sgdr_cycle = check_model_improved(sgdr_cycle_val_mapk_best_avg, val_mapk_avg) 
         if model_improved_within_sgdr_cycle:
             torch.save(model.state_dict(), "{}/model-{}.pth".format(output_dir, ensemble_model_index))
             sgdr_cycle_val_mapk_best_avg = val_mapk_avg
 
-        model_improved = val_mapk_avg > global_val_mapk_best_avg
+        model_improved = check_model_improved(global_val_mapk_best_avg, val_mapk_avg)
         ckpt_saved = False
         if model_improved:
             torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
