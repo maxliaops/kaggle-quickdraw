@@ -5,6 +5,8 @@
 * cnn tree
 * pseudo labeling
 * analyze test predictions which are likely to be wrong
+* fine tuning
+* consider [entropy](https://www.kaggle.com/sorokin/sketch-entropy) to remove noisy samples for training or find unlikely predictions
 
 
 ### Ideas
