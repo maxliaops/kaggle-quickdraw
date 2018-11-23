@@ -613,7 +613,7 @@ if __name__ == "__main__":
     argparser.add_argument("--num_workers", default=8, type=int)
     argparser.add_argument("--pin_memory", default=True, type=str2bool)
     argparser.add_argument("--lr_scheduler", default="cosine_annealing")
-    argparser.add_argument("--lr_patience", default=3, type=int)
+    argparser.add_argument("--lr_patience", default=2, type=int)
     argparser.add_argument("--lr_min", default=0.01, type=float)
     argparser.add_argument("--lr_max", default=0.1, type=float)
     argparser.add_argument("--lr_min_decay", default=1.0, type=float)
