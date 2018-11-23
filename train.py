@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset, StratifiedSampler
-from metrics import accuracy, mapk, FocalLoss, CceCenterLoss
+from metrics import accuracy, mapk, FocalLoss, CceCenterLoss, SoftCrossEntropyLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs, \
     StackNet
@@ -110,6 +110,8 @@ def evaluate(model, data_loader, criterion, mapk_topk):
 def create_criterion(loss_type, num_classes):
     if loss_type == "cce":
         criterion = nn.CrossEntropyLoss()
+    elif loss_type == "scce":
+        criterion = SoftCrossEntropyLoss()
     elif loss_type == "focal":
         criterion = FocalLoss()
     elif loss_type == "topk_svm":
