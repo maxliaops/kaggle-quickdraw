@@ -464,6 +464,7 @@ def main():
 
             new_lr_min = lr_min * (lr_min_decay ** sgdr_cycle_count)
             new_lr_max = lr_max * (lr_max_decay ** sgdr_cycle_count)
+            new_lr_max = max(new_lr_max, new_lr_min)
 
             optimizer = create_optimizer(optimizer_type, model, new_lr_max)
             lr_scheduler = CosineAnnealingLR(optimizer, T_max=current_sgdr_cycle_epochs, eta_min=new_lr_min)
