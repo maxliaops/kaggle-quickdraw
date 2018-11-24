@@ -7,6 +7,6 @@ class SoftCrossEntropyLoss(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, logits, target, target_one_hot):
+    def forward(self, logits, target):
         nll = -F.log_softmax(logits, dim=1)
-        return torch.sum(nll * target_one_hot, dim=1).mean()
+        return torch.sum(nll * target, dim=1).mean()
