@@ -39,12 +39,13 @@ def predict():
         cscats = confusion_sets[cs_idx][csp]
         csmap = {c: v for c, v in zip(cscats, vcsp)}
 
-        if set(mcats) == set(cscats) and catpred(mcats) != catpred(cscats):
-            # words.append(catpred(cscats))
-
-            fmap = {c: mmap[c] + csmap[c] for c in mcats}
-            ensemble_words = sorted(fmap, key=lambda k: -fmap[k])
-            words.append(catpred(ensemble_words))
+        if set(mcats) == set(cscats) and catpred(mcats) != catpred(cscats) and cs_idx in [0, 2, 4]:
+            if True:
+                words.append(catpred(cscats))
+            else:
+                fmap = {c: mmap[c] + csmap[c] for c in mcats}
+                ensemble_words = sorted(fmap, key=lambda k: -fmap[k])
+                words.append(catpred(ensemble_words))
 
             order_mismatch += 1
         else:
@@ -62,6 +63,7 @@ def predict():
         if catpred(mcats).split(" ")[0] != catpred(cscats).split(" ")[0]:
             first_mismatch += 1
 
+    print(len(main_predictions))
     print(mismatch)
     print(first_mismatch)
     print(set_mismatch)
