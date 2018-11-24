@@ -309,12 +309,16 @@ def main():
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
     if base_model_dir:
-        for model_file_path in glob.glob("{}/model*.pth".format(base_model_dir)):
-            shutil.copyfile(model_file_path, "{}/{}".format(output_dir, os.path.basename(model_file_path)))
+        for base_file_path in glob.glob("{}/*.pth".format(base_model_dir)):
+            shutil.copyfile(base_file_path, "{}/{}".format(output_dir, os.path.basename(base_file_path)))
         model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
         model.load_state_dict(torch.load("{}/model.pth".format(output_dir), map_location=device))
+        optimizer = create_optimizer(optimizer_type, model, lr_max)
+        if os.path.isfile("{}/optimizer.pth".format(output_dir)):
+            optimizer.load_state_dict(torch.load("{}/optimizer.pth".format(output_dir)))
     else:
         model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
+        optimizer = create_optimizer(optimizer_type, model, lr_max)
 
     torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
 
@@ -337,7 +341,6 @@ def main():
     global_val_mapk_best_avg = float("-inf")
     sgdr_cycle_val_mapk_best_avg = float("-inf")
 
-    optimizer = create_optimizer(optimizer_type, model, lr_max)
     lr_scheduler = CosineAnnealingLR(optimizer, T_max=sgdr_cycle_epochs, eta_min=lr_min)
 
     optim_summary_writer = SummaryWriter(log_dir="{}/logs/optim".format(output_dir))
@@ -457,6 +460,7 @@ def main():
         ckpt_saved = False
         if model_improved:
             torch.save(model.state_dict(), "{}/model.pth".format(output_dir))
+            torch.save(optimizer.state_dict(), "{}/optimizer.pth".format(output_dir))
             global_val_mapk_best_avg = val_mapk_avg
             epoch_of_last_improval = epoch
             ckpt_saved = True
