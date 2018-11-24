@@ -336,7 +336,7 @@ def image_to_tensor(image):
 
 
 def category_to_tensor(category):
-    a = np.zeros((68, 68), dtype=np.float32)
+    a = np.zeros((68,), dtype=np.float32)
     a[category.item()] = 1.0
     return torch.tensor(a).float()
 
