@@ -180,7 +180,7 @@ class TrainData:
 
         if train_on_val:
             train_categories = data_category
-            train_drawing = data_category
+            train_drawing = data_drawing
             train_recognized = data_recognized
             train_country = data_country
 
