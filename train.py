@@ -22,7 +22,7 @@ from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset, Stra
 from metrics import accuracy, mapk, FocalLoss, CceCenterLoss, SoftCrossEntropyLoss, SoftBootstrapingLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs, \
-    StackNet
+    StackNet, AlexNetWrapper
 from models.ensemble import Ensemble
 from swa_utils import moving_average
 from utils import get_learning_rate, str2bool
@@ -42,6 +42,8 @@ def create_model(type, input_size, num_classes):
         model = ResNet(num_classes=num_classes)
     elif type in ["seresnext50", "seresnext101", "seresnet50", "seresnet101", "seresnet152", "senet154"]:
         model = SeNet(type=type, num_classes=num_classes)
+    elif type == "alexnet":
+        model = AlexNetWrapper(num_classes=num_classes)
     elif type == "nasnet":
         model = NasNet(num_classes=num_classes)
     elif type == "cnn":
