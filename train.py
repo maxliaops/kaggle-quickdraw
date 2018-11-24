@@ -91,7 +91,7 @@ def evaluate(model, data_loader, criterion, mapk_topk):
             prediction_logits = model(images)
             # if prediction_logits.size(1) == len(class_weights):
             #     criterion.weight = class_weights
-            loss = criterion(prediction_logits, categories)
+            loss = criterion(prediction_logits, categories_one_hot)
 
             num_categories = prediction_logits.size(1)
 
@@ -414,7 +414,7 @@ def main():
             prediction_logits = model(images)
             # if prediction_logits.size(1) == len(class_weights):
             #     criterion.weight = class_weights
-            loss = criterion(prediction_logits, categories)
+            loss = criterion(prediction_logits, categories_one_hot)
             loss.backward()
 
             with torch.no_grad():
