@@ -240,9 +240,10 @@ class TrainData:
 
 
 class TrainDataset(Dataset):
-    def __init__(self, df, image_size, use_extended_stroke_channels, augment, use_dummy_image):
+    def __init__(self, df, num_categories, image_size, use_extended_stroke_channels, augment, use_dummy_image):
         super().__init__()
         self.df = df
+        self.num_categories = num_categories
         self.image_size = image_size
         self.use_extended_stroke_channels = use_extended_stroke_channels
         self.augment = augment
@@ -279,6 +280,7 @@ class TrainDataset(Dataset):
 
         image = image_to_tensor(image)
         category = category_to_tensor(category)
+        category_one_hot = category_to_one_hot_tensor(category, self.num_categories)
 
         # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
         # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
@@ -287,7 +289,7 @@ class TrainDataset(Dataset):
         # image_stdev = 1.0
         # image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
 
-        return image, category
+        return image, category, category_one_hot
 
 
 class TestData:
@@ -336,7 +338,11 @@ def image_to_tensor(image):
 
 
 def category_to_tensor(category):
-    a = np.zeros((68,), dtype=np.float32)
+    return torch.tensor(category.item()).long()
+
+
+def category_to_one_hot_tensor(category, num_categories):
+    a = np.zeros((num_categories,), dtype=np.float32)
     a[category.item()] = 1.0
     return torch.tensor(a).float()
 

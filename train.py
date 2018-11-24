@@ -83,14 +83,15 @@ def evaluate(model, data_loader, criterion, mapk_topk):
 
     with torch.no_grad():
         for batch in data_loader:
-            images, categories = \
+            images, categories, categories_one_hot = \
                 batch[0].to(device, non_blocking=True), \
-                batch[1].to(device, non_blocking=True)
+                batch[1].to(device, non_blocking=True), \
+                batch[2].to(device, non_blocking=True)
 
             prediction_logits = model(images)
             # if prediction_logits.size(1) == len(class_weights):
             #     criterion.weight = class_weights
-            loss = criterion(prediction_logits, categories)
+            loss = criterion(prediction_logits, categories_one_hot)
 
             num_categories = prediction_logits.size(1)
 
@@ -297,14 +298,13 @@ def main():
 
     train_data = train_data_provider.get_next()
 
-    train_set = TrainDataset(train_data.train_set_df, image_size, use_extended_stroke_channels, augment,
-                             use_dummy_image)
+    train_set = TrainDataset(train_data.train_set_df, len(train_data.categories), image_size, use_extended_stroke_channels, augment, use_dummy_image)
     stratified_sampler = StratifiedSampler(train_data.train_set_df["category"], batch_size * batch_iterations)
     train_set_data_loader = \
         DataLoader(train_set, batch_size=batch_size, shuffle=False, sampler=stratified_sampler, num_workers=num_workers,
                    pin_memory=pin_memory)
 
-    val_set = TrainDataset(train_data.val_set_df, image_size, use_extended_stroke_channels, False, use_dummy_image)
+    val_set = TrainDataset(train_data.val_set_df, len(train_data.categories), image_size, use_extended_stroke_channels, False, use_dummy_image)
     val_set_data_loader = \
         DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
 
@@ -400,9 +400,10 @@ def main():
         epoch_batch_iter_count = 0
 
         for b, batch in enumerate(train_set_data_loader):
-            images, categories = \
+            images, categories, categories_one_hot = \
                 batch[0].to(device, non_blocking=True), \
-                batch[1].to(device, non_blocking=True)
+                batch[1].to(device, non_blocking=True), \
+                batch[2].to(device, non_blocking=True)
 
             if lr_scheduler_type == "cosine_annealing":
                 lr_scheduler.step(epoch=min(current_sgdr_cycle_epochs, sgdr_iterations / epoch_iterations))
@@ -413,7 +414,7 @@ def main():
             prediction_logits = model(images)
             # if prediction_logits.size(1) == len(class_weights):
             #     criterion.weight = class_weights
-            loss = criterion(prediction_logits, categories)
+            loss = criterion(prediction_logits, categories_one_hot)
             loss.backward()
 
             with torch.no_grad():
