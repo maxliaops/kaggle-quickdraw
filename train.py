@@ -120,7 +120,7 @@ def create_criterion(loss_type, num_classes):
     elif loss_type == "scce":
         criterion = SoftCrossEntropyLoss()
     elif loss_type == "sbs":
-        criterion = SoftBootstrapingLoss(beta=0.8)
+        criterion = SoftBootstrapingLoss(beta=0.6)
     elif loss_type == "focal":
         criterion = FocalLoss()
     elif loss_type == "topk_svm":
