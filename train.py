@@ -91,7 +91,7 @@ def evaluate(model, data_loader, criterion, mapk_topk):
             prediction_logits = model(images)
             # if prediction_logits.size(1) == len(class_weights):
             #     criterion.weight = class_weights
-            loss = criterion(prediction_logits, categories)
+            loss = criterion(prediction_logits, get_loss_target(criterion, categories, categories_one_hot))
 
             num_categories = prediction_logits.size(1)
 
@@ -128,6 +128,13 @@ def create_criterion(loss_type, num_classes):
     else:
         raise Exception("Unsupported loss type: '{}".format(loss_type))
     return criterion
+
+
+def get_loss_target(criterion, categories, categories_one_hot):
+    if isinstance(criterion, SoftCrossEntropyLoss):
+        return categories_one_hot
+    else:
+        return categories
 
 
 def create_optimizer(type, model, lr):
@@ -414,7 +421,7 @@ def main():
             prediction_logits = model(images)
             # if prediction_logits.size(1) == len(class_weights):
             #     criterion.weight = class_weights
-            loss = criterion(prediction_logits, categories)
+            loss = criterion(prediction_logits, get_loss_target(criterion, categories, categories_one_hot))
             loss.backward()
 
             with torch.no_grad():
