@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 from dataset import TrainDataProvider, TrainDataset, TestData, TestDataset, StratifiedSampler
-from metrics import accuracy, mapk, FocalLoss, CceCenterLoss, SoftCrossEntropyLoss
+from metrics import accuracy, mapk, FocalLoss, CceCenterLoss, SoftCrossEntropyLoss, SoftBootstrapingLoss
 from metrics.smooth_topk_loss.svm import SmoothSVM
 from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, Drn, SeNet, NasNet, SeResNext50Cs, \
     StackNet
@@ -119,6 +119,8 @@ def create_criterion(loss_type, num_classes):
         criterion = nn.CrossEntropyLoss()
     elif loss_type == "scce":
         criterion = SoftCrossEntropyLoss()
+    elif loss_type == "sbs":
+        criterion = SoftBootstrapingLoss(beta=0.8)
     elif loss_type == "focal":
         criterion = FocalLoss()
     elif loss_type == "topk_svm":
@@ -131,7 +133,7 @@ def create_criterion(loss_type, num_classes):
 
 
 def get_loss_target(criterion, categories, categories_one_hot):
-    if isinstance(criterion, SoftCrossEntropyLoss):
+    if isinstance(criterion, SoftCrossEntropyLoss) or isinstance(criterion, SoftBootstrapingLoss):
         return categories_one_hot
     else:
         return categories
