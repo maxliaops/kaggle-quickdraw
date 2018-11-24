@@ -25,7 +25,8 @@ class TrainDataProvider:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard):
+            category_shard,
+            train_on_val):
         self.data_dir = data_dir
         self.test_size = test_size
         self.fold = fold
@@ -33,6 +34,7 @@ class TrainDataProvider:
         self.confusion_set = confusion_set
         self.num_category_shards = num_category_shards
         self.category_shard = category_shard
+        self.train_on_val = train_on_val
 
         self.shards = list(range(num_shards))
         np.random.shuffle(self.shards)
@@ -72,7 +74,8 @@ class TrainDataProvider:
                 self.train_on_unrecognized,
                 self.confusion_set,
                 self.num_category_shards,
-                self.category_shard
+                self.category_shard,
+                self.train_on_val
             )))
         self.next_shard_index = (self.next_shard_index + 1) % len(self.shards)
 
@@ -85,7 +88,8 @@ class TrainDataProvider:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard):
+            category_shard,
+            train_on_val):
         print("[{}] Loading data for shard {}".format(mp.current_process().name, shard), flush=True)
         return TrainData(
             data_dir,
@@ -95,7 +99,8 @@ class TrainDataProvider:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard)
+            category_shard,
+            train_on_val)
 
 
 class TrainData:
@@ -108,7 +113,8 @@ class TrainData:
             train_on_unrecognized,
             confusion_set,
             num_category_shards,
-            category_shard):
+            category_shard,
+            train_on_val):
         self.shard = shard
 
         start_time = time.time()
@@ -171,6 +177,12 @@ class TrainData:
             val_drawing = data_drawing[val_indexes]
             val_recognized = data_recognized[val_indexes]
             val_country = data_country[val_indexes]
+
+        if train_on_val:
+            train_categories = data_category
+            train_drawing = data_category
+            train_recognized = data_recognized
+            train_country = data_country
 
         if False:
             categories_subset = []

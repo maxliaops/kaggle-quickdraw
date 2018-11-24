@@ -258,6 +258,7 @@ def main():
     batch_size = args.batch_size
     batch_iterations = args.batch_iterations
     test_size = args.test_size
+    train_on_val = args.train_on_val
     fold = args.fold
     train_on_unrecognized = args.train_on_unrecognized
     confusion_set = args.confusion_set
@@ -303,7 +304,8 @@ def main():
         train_on_unrecognized=train_on_unrecognized,
         confusion_set=confusion_set,
         num_category_shards=num_category_shards,
-        category_shard=category_shard)
+        category_shard=category_shard,
+        train_on_val=train_on_val)
 
     train_data = train_data_provider.get_next()
 
@@ -625,6 +627,7 @@ if __name__ == "__main__":
     argparser.add_argument("--batch_size", default=256, type=int)
     argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
+    argparser.add_argument("--train_on_val", default=False, type=str2bool)
     argparser.add_argument("--fold", default=None, type=int)
     argparser.add_argument("--train_on_unrecognized", default=True, type=str2bool)
     argparser.add_argument("--confusion_set", default=None, type=int)
