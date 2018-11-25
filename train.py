@@ -630,7 +630,7 @@ if __name__ == "__main__":
     argparser.add_argument("--progressive_image_epoch_step", default=7, type=int)
     argparser.add_argument("--epochs", default=500, type=int)
     argparser.add_argument("--batch_size", default=256, type=int)
-    argparser.add_argument("--batch_iterations", default=4, type=int)
+    argparser.add_argument("--batch_iterations", default=1, type=int)
     argparser.add_argument("--test_size", default=0.1, type=float)
     argparser.add_argument("--train_on_val", default=False, type=str2bool)
     argparser.add_argument("--fold", default=None, type=int)
