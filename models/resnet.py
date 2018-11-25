@@ -9,7 +9,6 @@ class ResNet(nn.Module):
         super().__init__()
 
         self.expand_channels = ExpandChannels2d(3)
-        self.bn = nn.BatchNorm2d(3)
 
         self.resnet = resnet50(pretrained=True)
 
@@ -18,7 +17,6 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.expand_channels(x)
-        x = self.bn(x)
 
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
