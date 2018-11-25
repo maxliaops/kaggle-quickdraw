@@ -81,7 +81,7 @@ def alexnet(pretrained=False, **kwargs):
     """
     model = AlexNet(**kwargs)
     if pretrained:
-        model_path = 'model_list/alexnet.pth.tar'
+        model_path = '/storage/models/alexnet.pth.tar'
         pretrained_model = torch.load(model_path)
         model.load_state_dict(pretrained_model['state_dict'])
     return model
