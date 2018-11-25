@@ -117,15 +117,15 @@ def evaluate(model, data_loader, criterion, mapk_topk):
     return loss_avg, mapk_avg, accuracy_top1_avg, accuracy_top3_avg, accuracy_top5_avg, accuracy_top10_avg
 
 
-def create_criterion(loss_type, num_classes):
+def create_criterion(loss_type, num_classes, bootstraping_loss_ratio):
     if loss_type == "cce":
         criterion = nn.CrossEntropyLoss()
     elif loss_type == "scce":
         criterion = SoftCrossEntropyLoss()
     elif loss_type == "sbs":
-        criterion = SoftBootstrapingLoss(beta=0.8)
+        criterion = SoftBootstrapingLoss(beta=bootstraping_loss_ratio)
     elif loss_type == "hbs":
-        criterion = HardBootstrapingLoss(beta=0.8)
+        criterion = HardBootstrapingLoss(beta=bootstraping_loss_ratio)
     elif loss_type == "focal":
         criterion = FocalLoss()
     elif loss_type == "topk_svm":
@@ -284,6 +284,7 @@ def main():
     lr_max_decay = args.lr_max_decay
     optimizer_type = args.optimizer
     loss_type = args.loss
+    bootstraping_loss_ratio = args.bootstraping_loss_ratio
     loss2_type = args.loss2
     loss2_start_sgdr_cycle = args.loss2_start_sgdr_cycle
     model_type = args.model
@@ -389,7 +390,7 @@ def main():
 
     train_start_time = time.time()
 
-    criterion = create_criterion(loss_type, len(train_data.categories))
+    criterion = create_criterion(loss_type, len(train_data.categories), bootstraping_loss_ratio)
 
     if loss_type == "center":
         optimizer_centloss = torch.optim.SGD(criterion.center.parameters(), lr=0.01)
@@ -501,7 +502,7 @@ def main():
             lr_scheduler = CosineAnnealingLR(optimizer, T_max=current_sgdr_cycle_epochs, eta_min=new_lr_min)
             if loss2_type is not None and sgdr_cycle_count >= loss2_start_sgdr_cycle:
                 print("switching to loss type '{}'".format(loss2_type), flush=True)
-                criterion = create_criterion(loss2_type, len(train_data.categories))
+                criterion = create_criterion(loss2_type, len(train_data.categories), bootstraping_loss_ratio)
 
         optim_summary_writer.add_scalar("sgdr_cycle", sgdr_cycle_count, epoch + 1)
 
@@ -654,6 +655,7 @@ if __name__ == "__main__":
     argparser.add_argument("--patience", default=5, type=int)
     argparser.add_argument("--optimizer", default="sgd")
     argparser.add_argument("--loss", default="cce")
+    argparser.add_argument("--bootstraping_loss_ratio", default=0.8, type=float)
     argparser.add_argument("--loss2", default=None)
     argparser.add_argument("--loss2_start_sgdr_cycle", default=None, type=int)
     argparser.add_argument("--sgdr_cycle_epochs", default=8, type=int)
