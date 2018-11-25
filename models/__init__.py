@@ -1,4 +1,4 @@
-from .alexnet import AlexNetWrapper
+from .alexnet_wrapper import AlexNetWrapper
 from .cnn import SimpleCnn
 from .drn_wrapper import Drn
 from .fc_cnn import FcCnn
