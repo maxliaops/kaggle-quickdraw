@@ -9,9 +9,9 @@ import torch
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from torch.utils.data import Dataset
 from torch.utils.data import Sampler
+from torchvision.transforms.functional import normalize
 
 from utils import read_lines, draw_temporal_strokes, read_confusion_set, kfold_split
-
 
 class TrainDataProvider:
     def __init__(
@@ -297,9 +297,7 @@ class TrainDataset(Dataset):
         # values_channel = calculate_drawing_values_channel(drawing, country, self.image_size)
         # image = torch.cat([torch.from_numpy(values_channel).float().unsqueeze(0), image], dim=0)
 
-        # image_mean = 0.0
-        # image_stdev = 1.0
-        # image = normalize(image, (image_mean, image_mean, image_mean), (image_stdev, image_stdev, image_stdev))
+        # image = normalize(image, (0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
 
         return image, category, category_one_hot
 
