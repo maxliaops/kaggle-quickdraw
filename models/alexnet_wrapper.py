@@ -17,7 +17,6 @@ class AlexNetWrapper(nn.Module):
         print(list(self.alexnet.classifier.children())[-1:])
         classifier.append(nn.Linear(4096, num_classes))
         self.alexnet.classifier = nn.Sequential(*classifier)
-        print(self.alexnet.classifier)
 
     def forward(self, x):
         x = self.expand_channels(x)
