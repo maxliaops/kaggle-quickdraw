@@ -180,8 +180,8 @@ def draw_temporal_strokes(strokes, size=256, line_width=7, padding=3, fliplr=Fal
         final_images.append(merge_stroke_drawings([partition_images[1], partition_images[2]]))
         final_images.append(merge_stroke_drawings([partition_images[0], partition_images[1], partition_images[2]]))
     else:
-        # final_images.append(partition_images[0])
-        # final_images.append(merge_stroke_drawings([partition_images[0], partition_images[1]]))
+        final_images.append(partition_images[0])
+        final_images.append(merge_stroke_drawings([partition_images[0], partition_images[1]]))
         final_images.append(merge_stroke_drawings([partition_images[0], partition_images[1], partition_images[2]]))
 
     return np.array(final_images)
