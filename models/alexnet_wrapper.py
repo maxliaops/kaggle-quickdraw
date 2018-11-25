@@ -1,11 +1,15 @@
 import torch.nn as nn
 
 from models.alexnet import alexnet
+from .common import ExpandChannels2d
 
 
 class AlexNetWrapper(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
+
+        self.expand_channels = ExpandChannels2d(3)
+        self.bn = nn.BatchNorm2d(3)
 
         self.alexnet = alexnet(pretrained=True)
 
@@ -16,4 +20,9 @@ class AlexNetWrapper(nn.Module):
         print(self.alexnet.classifier)
 
     def forward(self, x):
-        return self.alexnet(x)
+        x = self.expand_channels(x)
+        x = self.bn(x)
+
+        x = self.alexnet(x)
+
+        return x
