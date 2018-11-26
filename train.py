@@ -26,7 +26,7 @@ from models import ResNet, SimpleCnn, ResidualCnn, FcCnn, HcFcCnn, MobileNetV2, 
     StackNet, AlexNetWrapper
 from models.ensemble import Ensemble
 from swa_utils import moving_average
-from utils import get_learning_rate, str2bool, adjust_learning_rate
+from utils import get_learning_rate, str2bool, adjust_learning_rate, adjust_initial_learning_rate
 
 cudnn.enabled = True
 cudnn.benchmark = True
@@ -333,6 +333,7 @@ def main():
         optimizer = create_optimizer(optimizer_type, model, lr_max)
         if os.path.isfile("{}/optimizer.pth".format(output_dir)):
             optimizer.load_state_dict(torch.load("{}/optimizer.pth".format(output_dir)))
+            adjust_initial_learning_rate(optimizer, lr_max)
             adjust_learning_rate(optimizer, lr_max)
     else:
         model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)

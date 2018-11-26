@@ -7,10 +7,14 @@ from sklearn.model_selection import StratifiedKFold
 from torch import nn
 
 
+def adjust_initial_learning_rate(optimizer, lr):
+    for param_group in optimizer.param_groups:
+        param_group["initial_lr"] = lr
+
+
 def adjust_learning_rate(optimizer, lr):
     for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-    return lr
+        param_group["lr"] = lr
 
 
 def get_learning_rate(optimizer):
