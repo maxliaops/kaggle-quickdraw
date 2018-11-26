@@ -334,7 +334,6 @@ def main():
         if os.path.isfile("{}/optimizer.pth".format(output_dir)):
             optimizer.load_state_dict(torch.load("{}/optimizer.pth".format(output_dir)))
             adjust_learning_rate(optimizer, lr_max)
-            print("lrlrlr_1: {}".format(get_learning_rate(optimizer)), flush=True)
     else:
         model = create_model(type=model_type, input_size=image_size, num_classes=len(train_data.categories)).to(device)
         optimizer = create_optimizer(optimizer_type, model, lr_max)
@@ -361,7 +360,6 @@ def main():
     sgdr_cycle_val_mapk_best_avg = float("-inf")
 
     lr_scheduler = CosineAnnealingLR(optimizer, T_max=sgdr_cycle_epochs, eta_min=lr_min)
-    print("lrlrlr_2: {}".format(get_learning_rate(optimizer)), flush=True)
 
     optim_summary_writer = SummaryWriter(log_dir="{}/logs/optim".format(output_dir))
     train_summary_writer = SummaryWriter(log_dir="{}/logs/train".format(output_dir))
@@ -375,7 +373,6 @@ def main():
     epoch_of_last_improval = 0
 
     lr_scheduler_plateau = ReduceLROnPlateau(optimizer, mode="max", min_lr=lr_min, patience=lr_patience, factor=0.8, threshold=1e-4)
-    print("lrlrlr_3: {}".format(get_learning_rate(optimizer)), flush=True)
 
     print('{"chart": "best_val_mapk", "axis": "epoch"}')
     print('{"chart": "val_mapk", "axis": "epoch"}')
@@ -456,8 +453,6 @@ def main():
 
             optim_summary_writer.add_scalar("lr", get_learning_rate(optimizer), batch_count + 1)
 
-        print("lrlrlr_4: {}".format(get_learning_rate(optimizer)), flush=True)
-
         # TODO: recalculate epoch_iterations and maybe other values?
         train_data = train_data_provider.get_next()
         train_set.df = train_data.train_set_df
@@ -518,8 +513,6 @@ def main():
 
         epoch_end_time = time.time()
         epoch_duration_time = epoch_end_time - epoch_start_time
-
-        print("lrlrlr_5: {}".format(get_learning_rate(optimizer)), flush=True)
 
         print(
             "[%03d/%03d] %ds, lr: %.6f, loss: %.4f, val_loss: %.4f, acc: %.4f, val_acc: %.4f, ckpt: %d, rst: %d" % (
